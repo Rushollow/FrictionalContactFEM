@@ -64,7 +64,7 @@ lv_variable.add_concentrated_force(force=F, degree_of_freedom=3, vector_num=1)
 
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
-graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=None,
+graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
                    partition=10, scale_def=7, autorun=True)
 

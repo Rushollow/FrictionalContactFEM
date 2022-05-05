@@ -109,20 +109,13 @@ class InitialTable:
                 k += 1
         # if we have global displacements for variable load and using force increment algorithm
         if self.force_inc:
-            if isinstance(self.u_linear_variable[0], list):  # if there is multiple vectors
-                self.clv_variable = np.zeros(len(self.u_linear_variable), dtype=float)  # create list of lists
-                for i, u_linear_variable in enumerate(self.u_linear_variable):  # iterate over all loads
-                    self.clv_variable[i] = np.zeros(len(self.element_null), dtype=float)  # create zeros vec in vec
-                    k = 0
-                    for element in self.element_null:  # add forces to the clv
-                        self.clv_variable[i][k] = element.get_strain_effort(u_linear_variable)
-                        k += 1
-            else:
-                self.clv_variable = np.zeros(len(self.element_null), dtype=float)
-                k = 0
-                for element in self.element_null:
-                    self.clv_variable[k] = element.get_strain_effort(self.u_linear_variable)
-                    k += 1
+            # create list of lists
+            self.clv_variable = np.zeros([self.u_linear_variable[0].shape[0], len(self.u_linear_variable)],
+                                         dtype=float)
+            for i, u_linear_variable in enumerate(self.u_linear_variable):  # iterate over all loads
+                #self.clv_variable[i] = np.zeros(len(self.element_null), dtype=float)  # create zeros vec in vec
+                for j, element in enumerate(self.element_null):  # add forces to the clv
+                    self.clv_variable[j][i] = element.get_strain_effort(u_linear_variable)
 
     def _form_eta(self, n_amount):
         """
@@ -174,7 +167,7 @@ class InitialTable:
         n_amount = self.n_amount
         t_amount = self.t_amount
         self._form_unit_u()  # forming data for creating table for Lemke's algorithm
-        self._form_csm()  # form contact stiffness matrix
+        self._form_csm()  # form contact stiffness matrix  # TODO continue from here
         self._form_clv()  # form contact load vector
         self._form_eta(n_amount)  # form gaps vector
         f = FRICTION_COEFFICIENT

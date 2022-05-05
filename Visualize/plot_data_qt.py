@@ -63,7 +63,7 @@ class PlotScheme(Calculate):
     Class for plotting. methods for schemes, results.
     """
 
-    def __init__(self, nodes, sm, lv_const, partition=10, scale_def=SCALE_DEF,
+    def __init__(self, nodes, sm, partition=10, scale_def=SCALE_DEF,
                  text=True, autorun=False,
                  *args, **kwargs):
         """
@@ -76,7 +76,7 @@ class PlotScheme(Calculate):
         May be used to get some calculation data in console through PlotScheme.lemke.*some_data or some other
         """
         # initialize parent class
-        super().__init__(nodes, sm, lv_const, *args, **kwargs)
+        super().__init__(nodes, sm, *args, **kwargs)
         # parameters (attributes)
         self.partition = partition
         self.scale = scale_def

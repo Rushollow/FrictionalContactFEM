@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/ContactFEM.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ContactFEM.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/beam_with_force_incrementation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/beam_with_force_incrementation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FEM/scheme.py" beforeDir="false" afterPath="$PROJECT_DIR$/FEM/scheme.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LCP/initial_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/LCP/initial_table.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Visualize/plot_data_qt.py" beforeDir="false" afterPath="$PROJECT_DIR$/Visualize/plot_data_qt.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/calculation.py" beforeDir="false" afterPath="$PROJECT_DIR$/calculation.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -160,7 +163,30 @@
       <option name="presentableId" value="Default" />
       <updated>1651226311503</updated>
     </task>
+    <task id="LOCAL-00001" summary="Adding force increment algorithm v1">
+      <created>1651649402033</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1651649402033</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Adding force increment algorithm v1" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding force increment algorithm v1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

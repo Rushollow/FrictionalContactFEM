@@ -36,20 +36,9 @@ class Calculate:
             self.element_4node = element_container_obj
         else: self.element_4node = None
         self.element_null = element_null
+        self.lv_variable = lv_variable
         if lv_variable is None:  # if there was no variable load vector, create and make it nested
             self.lv_variable = FEM.scheme.LoadVector()
-            self.lv_variable.rf = [self.lv_variable.rf]
-        else:
-            self.lv_variable = lv_variable
-            if len(lv_variable.rf.shape) == 1:  # check if there is only one variable load vector and make it nested
-                self.lv_variable.rf = [lv_variable.rf]
-            else:  # if more than 1 -> make it nested list of arrays
-                temp_arr = []
-                print(lv_variable.rf[0])
-                for col in range(lv_variable.rf.shape[1]):
-                    temp_arr.append(lv_variable.rf[:, col])
-                self.lv_variable.rf = temp_arr
-
         # Variables to calculate
         self.u_linear_const = None  # linear global nodes displacements from constant load
         self.u_linear_variable = None  # linear global nodes displacements from variable load
@@ -67,6 +56,13 @@ class Calculate:
         self.lv_const.support()
         self.u_linear_const = np.linalg.solve(self.sm.r, self.lv_const.rf)
         self.u_linear_variable = np.linalg.solve(self.sm.r, self.lv_variable.rf)
+        if len(self.u_linear_variable.shape) == 1:
+            self.u_linear_variable = [self.u_linear_variable]
+        else:
+            tmp_arr = []
+            for i in range(self.u_linear_variable.shape[1]):
+                tmp_arr.append(self.u_linear_variable[:, i])
+            self.u_linear_variable = tmp_arr
 
     def form_initial_table(self):
         """

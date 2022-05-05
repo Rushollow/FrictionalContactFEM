@@ -325,6 +325,7 @@ class LoadVector:
                                    dtype=float)
             else:
                 raise ValueError("You can't create load vector for_csm without null_elements!")
+        # if we need multiple load vectors
         elif vectors_amount is not None:
             self.rf = np.zeros([max_dof + 1, vectors_amount], dtype=float)
         # if we creating simple load vector
