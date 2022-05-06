@@ -109,13 +109,11 @@ class InitialTable:
                 k += 1
         # if we have global displacements for variable load and using force increment algorithm
         if self.force_inc:
-            # create list of lists
-            self.clv_variable = np.zeros([self.u_linear_variable[0].shape[0], len(self.u_linear_variable)],
-                                         dtype=float)
+            self.clv_variable = []  # create list
             for i, u_linear_variable in enumerate(self.u_linear_variable):  # iterate over all loads
-                #self.clv_variable[i] = np.zeros(len(self.element_null), dtype=float)  # create zeros vec in vec
+                self.clv_variable.append(np.zeros(len(self.element_null), dtype=float))  # create zeros vec in list
                 for j, element in enumerate(self.element_null):  # add forces to the clv
-                    self.clv_variable[j][i] = element.get_strain_effort(u_linear_variable)
+                    self.clv_variable[i][j] = element.get_strain_effort(u_linear_variable)
 
     def _form_eta(self, n_amount):
         """
@@ -167,7 +165,7 @@ class InitialTable:
         n_amount = self.n_amount
         t_amount = self.t_amount
         self._form_unit_u()  # forming data for creating table for Lemke's algorithm
-        self._form_csm()  # form contact stiffness matrix  # TODO continue from here
+        self._form_csm()  # form contact stiffness matrix
         self._form_clv()  # form contact load vector
         self._form_eta(n_amount)  # form gaps vector
         f = FRICTION_COEFFICIENT
@@ -178,14 +176,10 @@ class InitialTable:
         rf_n = np.array([self.clv_const[:n_amount]]).T  # CLV in normal (n) directions
         rf_t = np.array([self.clv_const[n_amount:]]).T  # CLV in tangential (t) directions
         if self.force_inc:  # if using force incrementation algorithm
-            if isinstance(self.clv_variable[0], list):  # if there is multiple load vectors
-                rf_n_v, rf_t_v = [], []
-                for i, vec in enumerate(self.clv_variable):
-                    rf_n_v[i] = np.array([vec[:n_amount]]).T
-                    rf_t_v[i] = np.array([vec[n_amount:]]).T
-            else:
-                rf_n_v = np.array([self.clv_variable[:n_amount]]).T  # CLV in normal (n) directions for variable load
-                rf_t_v = np.array([self.clv_variable[n_amount:]]).T  # CLV in tangential (t) directions for variable load
+            rf_n_v, rf_t_v = [], []
+            for i, vec in enumerate(self.clv_variable):
+                rf_n_v.append(vec[:n_amount])  # CLV in normal (n) directions for variable load
+                rf_t_v.append(vec[n_amount:])  # CLV in tangential (t) directions for variable load
             if t_amount == 0:  # if there is no tangent null-elements
                 self._concatenate_table_n_force_inc(r_nn, rf_n, rf_n_v)
             else:
@@ -269,13 +263,15 @@ class InitialTable:
                                 r_tn.dot(self.eta)))
         rf_const = np.concatenate((rf_row1, rf_row2, rf_row3))
         # forming variable react vector for table
-        if isinstance(rf_n_v[0], list):
-            pass
-        else:
-            rf_var_row1 = rf_n_v
-            rf_var_row2 = np.add(rf_t_v, f * rf_n_v[:t_amount])
-            rf_var_row3 = np.add(-rf_t_v, f * rf_n_v[:t_amount])
-            rf_variable = np.concatenate((rf_var_row1, rf_var_row2, rf_var_row3))
+        # rf_var_row1 = rf_n_v  # np.expand_dims(arr2, 1)
+        # rf_var_row2 = np.add(rf_t_v, f * rf_n_v[:t_amount])
+        # rf_var_row3 = np.add(-rf_t_v, f * rf_n_v[:t_amount])
+        rf_n_v = np.array(rf_n_v).T
+        rf_t_v = np.array(rf_t_v).T
+        rf_var_row1 = rf_n_v  # np.expand_dims(arr2, 1)
+        rf_var_row2 = np.add(f * rf_n_v[:t_amount], rf_t_v)
+        rf_var_row3 = np.subtract(f * rf_n_v[:t_amount], rf_t_v)
+        rf_variable = np.concatenate((rf_var_row1, rf_var_row2, rf_var_row3))
         e = np.identity(n_amount + t_amount * 2, dtype=float)
         p = np.ones(shape=(n_amount + t_amount * 2, 1), dtype=float)
         if not np.any(rf_const):  # if there is no constant load (gaps or forces) than change table:

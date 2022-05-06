@@ -221,8 +221,10 @@ class Lemke:
         """
         # if it's the zero step - just take existing values from table
         if self.last_force_inc_step or self.steps == -1:
-            self.react_vector = self.table[:, -1] - self.table[:, self._rows_table * 2 + self.force_inc_step]
-            self.last_force_inc_step = False  # to allow use another logic for forming the results
+            if self._leading_column == self._rows_table * 2:  # if now we are solving constant load part
+                self.react_vector = self.table[:, -1]
+            else:  # if solving for variable load (react_vec - leading_col_rf*p)
+                self.react_vector = self.table[:, -1] - self.table[:, self._rows_table * 2 + self.force_inc_step]
             return
         # on other steps make additional step to get the table which is needed and then get the results
         table_state = self.table.copy()  # remember the table condition
