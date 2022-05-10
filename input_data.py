@@ -26,7 +26,7 @@ LEMKE_LIMIT_STEPS = 200
 
 # Set the value of accuracy for LCP Lemke solver.
 # This value means that how many tightening weight (p parameter) we can left to end the solution
-ACCURACY_OF_LCP = 10**(-14)
+ACCURACY_OF_LCP = 10**(-5)
 
 # Initial gap to start Force incrementation algorithm (Lemke's one)
 # It is an "ERROR rate" added in the beginning (too small values will lead to considerable error)

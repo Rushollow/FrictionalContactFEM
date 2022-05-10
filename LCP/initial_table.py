@@ -37,6 +37,7 @@ class InitialTable:
         self.lv_variable = lv_variable
         self.force_inc = False
         self.force_int_step = 0  # step number in force increment algorithm
+        self.rf_const = np.zeros(1)  # to know in Lemke's algorithm if lv_const exists
         # check if load vector was set for using force incrementation algorithm
         if np.any(lv_variable.rf):
             self.force_inc = True
@@ -196,7 +197,13 @@ class InitialTable:
         :param args: params from self.form_initial_table() function
         :return:
         """
-        f, r_nn, r_nt, r_tn, r_tt, rf_n, rf_t = args
+        r_nn, rf_n = args
+        n_amount = self.n_amount
+        r = r_nn  # get modified CSM
+        self.rf = rf_n
+        e = np.identity(n_amount, dtype=float)
+        p = np.ones(shape=(n_amount, 1), dtype=float)
+        self.table = np.concatenate((e, r, -p, self.rf), axis=1)
 
     def _concatenate_table_nt(self, *args):
         """
@@ -234,6 +241,20 @@ class InitialTable:
         :return:
         """
         r_nn, rf_n, rf_n_v = args
+        n_amount = self.n_amount
+
+        r = r_nn  # get modified CSM
+        # forming constant react vector for table
+        self.rf_const = np.subtract(rf_n, r_nn.dot(self.eta))
+        # forming variable react vector for table
+        rf_n_v = np.array(rf_n_v).T
+        rf_variable = rf_n_v
+        e = np.identity(n_amount, dtype=float)
+        p = np.ones(shape=(n_amount, 1), dtype=float)
+        if not np.any(self.rf_const):  # if there is no constant load (gaps or forces) than change table:
+            self.table = np.concatenate((e, r, -p, -rf_variable, p), axis=1)
+        else:  # general case
+            self.table = np.concatenate((e, r, -p, -rf_variable, self.rf_const), axis=1)
 
     def _concatenate_table_nt_force_inc(self, *args):
         """
@@ -261,7 +282,7 @@ class InitialTable:
         rf_row3 = np.add(-rf_t,
                          np.add(f * (np.subtract(rf_n[:t_amount], r_nn.dot(self.eta)[:t_amount])),
                                 r_tn.dot(self.eta)))
-        rf_const = np.concatenate((rf_row1, rf_row2, rf_row3))
+        self.rf_const = np.concatenate((rf_row1, rf_row2, rf_row3))
         # forming variable react vector for table
         # rf_var_row1 = rf_n_v  # np.expand_dims(arr2, 1)
         # rf_var_row2 = np.add(rf_t_v, f * rf_n_v[:t_amount])
@@ -274,12 +295,10 @@ class InitialTable:
         rf_variable = np.concatenate((rf_var_row1, rf_var_row2, rf_var_row3))
         e = np.identity(n_amount + t_amount * 2, dtype=float)
         p = np.ones(shape=(n_amount + t_amount * 2, 1), dtype=float)
-        if not np.any(rf_const):  # if there is no constant load (gaps or forces) than change table:
+        if not np.any(self.rf_const):  # if there is no constant load (gaps or forces) than change table:
             self.table = np.concatenate((e, r, -p, -rf_variable, p), axis=1)
-            self.force_inc = True  # start lemke's algorithm with solving force incrementation
-            self.force_int_step = 1  # start with rows_table * 2 + 1 leading column
         else:  # general case
-            self.table = np.concatenate((e, r, -p, rf_variable, rf_const), axis=1)
+            self.table = np.concatenate((e, r, -p, -rf_variable, self.rf_const), axis=1)
 
 
 

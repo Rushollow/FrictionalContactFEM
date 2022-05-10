@@ -66,7 +66,25 @@ lv_variable.add_concentrated_force(force=F, degree_of_freedom=3, vector_num=1)
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=7, autorun=True)
+                   partition=10, scale_def=7, autorun=False)
+
+# debug
+if True:
+    from LCP.lemke import Lemke
+    from LCP.initial_table import InitialTable
+    graph.intl_table = InitialTable(element_null=element_null, stiffness_matrix=sm, lv_const=lv_const, u_linear_const=None,
+                 u_linear_variable=None, lv_variable=lv_variable)
+    graph.intl_table.table = np.array([
+        [1, 0, 0, -4548.5,  3979.9,  1137.1, -1, 0.375,  -1.125,   3.98],
+        [0, 1, 0,  3979.9, -4548.5, -1705.7, -1,  -1.813, 5.438,  -4.549],
+        [0, 0, 1,  1137.1, -1705.7, -758.08, -1, 1.0001, -3.0004, -1.70588],
+    ], dtype=float)
+    graph.intl_table.force_inc = True
+    graph.intl_table.n_amount = 3
+    graph.intl_table.t_amount = 0
+    graph.intl_table.rf_const = np.array([1, 1])
+    graph.lemke = Lemke(graph.intl_table)
+    graph.lemke.lcp_solve()
 
 # calculate time
 end = time.time()

@@ -1,10 +1,9 @@
 import math
 import numpy as np
-import matplotlib as mpl
 import time
 
 from input_data import SCALE_DEF
-from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector, solve_slae
+from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector
 from FEM.element_null import ElementNullContainer
 from FEM.element_4node import Element4NodeLinearContainer
 from FEM.element_frame import ElementFrameContainer
@@ -13,15 +12,13 @@ from LCP.lemke import Lemke
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
-mpl.use('TkAgg')
-
 start = time.time()
 
 # set inputs
 Ar = 0.2  # Cross-section area
 Er = 2e11  # Yong's modulus
 Ix = 2.3 * 10 ** (-4)  # Moment of inertia
-F = 1e6  # Force external
+F = 1e7  # Force external
 # add nodes ---------------------------------------------------------------------
 nodes = NodeContainer()
 for i in range(6):  # adding nodes every 1 m (along x axis)
@@ -48,31 +45,21 @@ for i in range(0, 12, 2):
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=[], el_null=element_null)
 nodes_to_support = [i for i in range(1, 12, 2)]
 sm.support_nodes(nodes_to_support, direction='hv')
-print('rank and shape0:', np.linalg.matrix_rank(sm.r), sm.r.shape[0])
+print('rank and shape0:', np.linalg.matrix_rank(sm.r), sm.r.shape)
 print(f'cond: {np.linalg.cond(sm.r)}')
 #assert np.linalg.matrix_rank(sm.r) == sm.r.shape[0]  # check if system in construction
 
-lv = LoadVector()
-lv.add_concentrated_force(force=-F, degree_of_freedom=25)
+lv_const = LoadVector()
+lv_const.add_concentrated_force(force=-F, degree_of_freedom=25)
 #lv.add_concentrated_force(force=-F/100, degree_of_freedom=21)
+lv_variable = None
 
-u_linear = solve_slae(sm, lv)
-
-# set to show only first 5 numbers when printing numpy values
-np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
-
-
-# do stuff about contact SM and LV ---------------------------------------------
-intl_table = InitialTable(element_null, sm, lv, u_linear)
-intl_table.form_initial_table()
-# do lemke / solve LCP
-lemke = Lemke(intl_table)
-lemke.lcp_solve()
 
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
-graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, element_frame=element_frame, element_container_obj=None,
-                   element_null=element_null, partition=10, scale_def=1000)
+graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
+                   element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
+                   partition=10, scale_def=50, autorun=True)
 
 # calculate time
 end = time.time()
