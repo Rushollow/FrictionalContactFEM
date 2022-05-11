@@ -16,10 +16,9 @@ class Lemke:
         """
         self._rows_table = int((intl_table.table.shape[0]))
         self.force_inc = intl_table.force_inc
+        self.const_load = np.any(intl_table.rf_const)  # bool, if there is const load, first solve lemke for it
         # step number of the force increment algorithm, if = 0, than solving normal Lemke
         self.force_inc_step = 0
-        # used to different logic of getting the results xn,xt,zn,zt from table from last step
-        self.last_force_inc_step = False
         # if force incrementation algorithm was chosen than change initial table:
         self.react_vector = intl_table.table[:, -1]  # solving normal Lemke
         self.table = intl_table.table
@@ -31,7 +30,7 @@ class Lemke:
         self._leading_column = self._rows_table * 2 + self.force_inc_step
         self._leading_column_next = self._leading_column
         self._min_ratio = np.zeros(self._rows_table, dtype=float)
-        if self.force_inc:
+        if self.force_inc and not self.const_load:  # if there is no const load and force increment
             self._form_min_ratio()
             self._form_leading_row()
         else:
@@ -97,11 +96,8 @@ class Lemke:
         """
         if self._ray_solution():
             # p - tightening weight in each contact pair on directions where null_elements were added
-            p_index = np.where(self.basis == self._rows_table * 2)  # get the position in basis where is p value
-            if self.force_inc:
-                p_value = self.table[p_index, -2]  # get the p value
-            else:
-                p_value = self.table[p_index, -1]  # get the p value
+            p_index = np.where(self.basis == self._rows_table * 2 + self.force_inc_step)  # get the position in basis where is p value
+            p_value = self.table[p_index, -1]  # get the p value
             if p_value < ACCURACY_OF_LCP:
                 return True
         else:
@@ -112,19 +108,19 @@ class Lemke:
         Check if p (tightening weight) in basis
         :return: bool value
         """
-        p_index = np.where(self.basis == self._rows_table * 2)[0]
+        p_index = np.where(self.basis == self._rows_table * 2 + self.force_inc_step)[0]
         return False if p_index.size == 0 else True
     # endregion
 
     def _get_p(self):
         """
         Get p (tightening weight) value
-        :return: p
+        :return: p value
         """
-        p_row_index = np.where(self.basis == self._rows_table * 2)[0]
-        if not p_row_index:
+        p_row_index = np.where(self.basis == (self._rows_table * 2 + self.force_inc_step))[0]
+        if p_row_index.size == 0:
             return 0
-        return self.table[p_row_index[0], self._rows_table * 2]
+        return self.react_vector[p_row_index[0]]
 
     # region Lemke step
     def _form_table(self):
@@ -182,7 +178,7 @@ class Lemke:
             # if next value CLOSE to minimum
             if np.isclose(min_ratio_above_0[indx[0]], min_ratio_above_0[indx[i]], atol=ACCURACY_OF_LCP):
                 # check if p in this row
-                if self.basis[indx[i]] == self._rows_table * 2:
+                if self.basis[indx[i]] == self._rows_table * 2 + self.force_inc_step:
                     # if so - choose row with p value to end lemke's algorithm
                     self._leading_row_next = indx[i]
                     break
@@ -202,7 +198,7 @@ class Lemke:
         :return: None
         """
         # take react vector from table
-        if self.force_inc:
+        if self.force_inc and not self.const_load:  # if we are not solving for constant load
             self._results_force_inc()
             self.p_value = -self._get_p()
         else:
@@ -219,8 +215,8 @@ class Lemke:
         Form results for force increment algorithm
         :return:
         """
-        # if it's the zero step - just take existing values from table
-        if self.last_force_inc_step or self.steps == -1:
+        # if it's the zero step (or p not in basis) - just take existing values from table
+        if not self._p_in_basis():
             if self._leading_column == self._rows_table * 2:  # if now we are solving constant load part
                 self.react_vector = self.table[:, -1]
             else:  # if solving for variable load (react_vec - leading_col_rf*p)
@@ -230,9 +226,9 @@ class Lemke:
         table_state = self.table.copy()  # remember the table condition
         row_state = self._leading_row  # remember leading row
         # make one step of algorithm to remove 'p' from basis and form results
-        a = np.where(self.basis == self._rows_table * 2)
-        print(a[0])
-        p_row_index = np.where(self.basis == self._rows_table * 2)[0]
+        p_row_index = np.where(self.basis == self._rows_table * 2 + self.force_inc_step)[0]
+        if not p_row_index:
+            p_row_index = self._leading_row
         self._leading_row = p_row_index
         self._form_table()
         self.react_vector = self.table[:, -1] - self.table[:, self._rows_table * 2 + self.force_inc_step]
@@ -335,6 +331,17 @@ class Lemke:
             self._leading_row = self._leading_row_next
             # Do checks
             if self._ray_solution():
+                # if incrementation force algorithm than:
+                if self.force_inc:
+                    # if number of leading column was chosen last time penultimate (предпоследняя) column
+                    # if there are still unsolved load vectors
+                    if not self._rows_table * 2 + self.force_inc_step == self.table.shape[1] - 2:
+                        self.next_load_vector()  # continue to solve force increment algorithm
+                        continue
+                    else:  # form results and end
+                        p_row_index = np.where(self.basis == (self._rows_table * 2 + self.force_inc_step))[0]
+                        self._leading_row = p_row_index
+                        self._results_anim()
                 if not self._rough_solution():
                     print('Ray solution in LCP, you got the results for "almost broken" system,'
                           ' its {} step of Lemke, p={}'
@@ -346,38 +353,44 @@ class Lemke:
                           'p={} is lesser than value ACCURACY_OF_LCP={} settled by user'
                           .format(self._get_p(), ACCURACY_OF_LCP))
                     self._results_anim()
-                # if incrementation force algorithm than:
-                if self.force_inc:
-                    # if number of leading column was chosen last time penultimate (предпоследняя) column
-                    if self._rows_table * 2 + self.force_inc_step == self.table.shape[1]-1:
-                        self.last_force_inc_step = True  # need this to form results for this next step properly
-                        p_row_index = np.where(self.basis == (self._rows_table * 2 + self.force_inc_step))[0]
-                        self._leading_row = p_row_index
-                    self.modify_data_for_second_step()  # continue to solve force increment algorithm
-                else:
-                    return  # end
+                return  # end
+
             elif not self._p_in_basis():
                 print("Normal solution of LCP in {} steps".format(step+1))
                 if self.force_inc:  # if it is force incrementation algorithm
-                    if self._rows_table * 2 + self.force_inc_step == self.table.shape[1] - 1:
-                        self.last_force_inc_step = True
-                        self._results_anim()
-                        return  # end
-                    self.modify_data_for_second_step()  # continue to solve force increment algorithm
-                else:
-                    self._results_anim()
-                    return  # end
+                    # if there is still unsolved load vector
+                    if not self._rows_table * 2 + self.force_inc_step == self.table.shape[1] - 2:
+                        self.next_load_vector(p_in_basis=False)  # continue to solve force increment algorithm
+                        continue
+                self._results_anim()
+                return  # end
+
         print(f"LCP solver got maximum number of steps, no objective results, p={self._get_p()}")
         self._results_anim()
         return  # end
 
-    def modify_data_for_second_step(self):
+    def next_load_vector(self, p_in_basis=True):
         """
         Modifying table to prepare it for using as usual table for increment force algorithm
         :return:
         """
-        self.force_inc_step += 1
+        # before solving next load vector - do last step to kick 'p' from basis
+        if p_in_basis:
+            p_row_index = np.where(self.basis == self._rows_table * 2 + self.force_inc_step)[0]
+            self._leading_row = p_row_index[0]
+            self._lemke_step()
+            # remember data from previous step above
+            self.basis = self._basis_next.copy()
+        self.force_inc_step += 1  # choose next load vector
+        # if there is more than 1 step with variable load, than use previous "react_vec - p column" as react vector
+        if self.force_inc_step > 1:
+            # new react_vec---previous react_vec-------------previous p column (active load vector)--------
+            self.table[:, -1] = self.table[:, -1] - self.table[:, (self._rows_table * 2 + self.force_inc_step - 1)]
         # next we set table like it's first step
         self._leading_column = self._rows_table * 2 + self.force_inc_step  # choose new leading column
-        # choose new leading row (must choose minimum positive value), changed all negative values to +inf and takes min
-        self._leading_row = np.where(self.react_vector > 0, self.react_vector, np.inf).argmin()
+        self._leading_column_next = self._leading_column
+        # choose new leading row using min ratio
+        self._form_min_ratio()
+        self._form_leading_row()
+        self._leading_row = self._leading_row_next
+        self.const_load = False  # start/continue to solve for variable load

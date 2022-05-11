@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
         :return: nothing
         """
         # check if calculation is needed:
-        if self.graph.lemke.zt_anim:  # if there is a data, then problem is solved (probably)
+        if self.graph.lemke is None:  # if there is a data, then problem is solved (probably)
             self.graph.calculate_all()  # calculate the problem
         self.graph.fill_arrays_deformed_linear()  # form data to plot linear
         self._show_scheme_deformed()  # add data to UI linear deformation
@@ -119,15 +119,6 @@ class MainWindow(QMainWindow):
         """
         self.ui.graphicsView_Scheme_deformed.clear()  # clear previous data
         # creating plot items and connecting them
-        # nodes
-        item_nodes = pg.ScatterPlotItem(pos=self.graph.arr_nodes_pos_deformed, size=7, symbol='s', brush='g',
-                                        data=self.graph.nodes,  # list of nodes objects
-                                        tip='dx: {data.dx:.3g}\ndy: {data.dy:.3g}\n num={data.number}'.format,
-                                        hoverable=True,
-                                        # pxMode=False,  # Set pxMode=False to allow spots to transform with the view
-                                        hoverPen=pg.mkPen('r'),
-                                        hoverSize=1e-2)
-        self.ui.graphicsView_Scheme_deformed.addItem(item_nodes)
         # frame
         if self.graph.arr_frame_en_deformed is not None:
             frame_pen = pg.mkPen(color='b', width=5)
@@ -140,6 +131,15 @@ class MainWindow(QMainWindow):
             item_4node_elements = pg.GraphItem(pos=self.graph.arr_nodes_pos_deformed, adj=self.graph.arr_4node_en,
                                            symbolBrush=None, symbolPen=None)
             self.ui.graphicsView_Scheme_deformed.addItem(item_4node_elements)
+        # nodes
+        item_nodes = pg.ScatterPlotItem(pos=self.graph.arr_nodes_pos_deformed, size=7, symbol='s', brush='g',
+                                        data=self.graph.nodes,  # list of nodes objects
+                                        tip='dx: {data.dx:.3g}\ndy: {data.dy:.3g}\n num={data.number}'.format,
+                                        hoverable=True,
+                                        # pxMode=False,  # Set pxMode=False to allow spots to transform with the view
+                                        hoverPen=pg.mkPen('r'),
+                                        hoverSize=1e-2)
+        self.ui.graphicsView_Scheme_deformed.addItem(item_nodes)
 
     def _show_scheme_deformed_contact(self, i_step=-1):
         """
@@ -191,7 +191,7 @@ class MainWindow(QMainWindow):
         scale_lcp = 1
         if np.max(zn) > 1e-8:  # some smaller value will make plots unreadable
             scale_lcp = int(np.max(xn) / np.max(zn))
-        elif np.max(zt) > 1e-8:
+        elif zt.any() and np.max(zt) > 1e-8:
             scale_lcp = int(np.max(xt) / np.max(zt))
         # normal
         zn_item = pg.BarGraphItem(x=n_range, height=zn*scale_lcp, width=bar_width, brush='b',
@@ -203,10 +203,11 @@ class MainWindow(QMainWindow):
         xn_item = pg.BarGraphItem(x=n_range, height=xn, width=bar_width, brush='r')
         self.ui.graphicsView_contact_info_normal.addItem(xn_item)
         # tangent
-        zt_item = pg.BarGraphItem(x=n_range, height=zt*scale_lcp, width=bar_width, brush='b')
-        self.ui.graphicsView_contact_info_tangent.addItem(zt_item)
-        xt_item = pg.BarGraphItem(x=n_range, height=xt, width=bar_width, brush='r')
-        self.ui.graphicsView_contact_info_tangent.addItem(xt_item)
+        if zt:
+            zt_item = pg.BarGraphItem(x=n_range, height=zt * scale_lcp, width=bar_width, brush='b')
+            self.ui.graphicsView_contact_info_tangent.addItem(zt_item)
+            xt_item = pg.BarGraphItem(x=n_range, height=xt, width=bar_width, brush='r')
+            self.ui.graphicsView_contact_info_tangent.addItem(xt_item)
         # adding ultimate forces line (to tangent contact forces, friction)
         ultimate_forces_item1 = pg.PlotCurveItem(n_range, xn*FRICTION_COEFFICIENT,  pen=pg.mkPen(color=(255,170,100), width=2))
         ultimate_forces_item2 = pg.PlotCurveItem(n_range, -xn*FRICTION_COEFFICIENT, pen=pg.mkPen(color=(255,170,100), width=2))

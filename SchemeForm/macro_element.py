@@ -201,17 +201,17 @@ class ElementMacroContainer(ElementContainer):
                                 break
             me_checked += 1
 
-    def _node_have_null_element(self, node):  # TODO: do i need it?
-        """
-        Check if node have null element
-        In this case coinsident nodes could exist in scheme in case of contact boundary. (gap = 0)
-        :param node: node in scheme. FEM.scheme.Node
-        :return:
-        """
-        for element in node.elements:
-            if isinstance(element, ElementNull):
-                return True
-        return False
+    # def _node_have_null_element(self, node):
+    #     """
+    #     Check if node have null element
+    #     In this case coinsident nodes could exist in scheme in case of contact boundary. (gap = 0)
+    #     :param node: node in scheme. FEM.scheme.Node
+    #     :return:
+    #     """
+    #     for element in node.elements:
+    #         if isinstance(element, ElementNull):
+    #             return True
+    #     return False
 
     def _renumber_element_nodes_numbers(self, element_4node, element_frame, element_null, deleted):
         """
