@@ -203,7 +203,7 @@ class MainWindow(QMainWindow):
         xn_item = pg.BarGraphItem(x=n_range, height=xn, width=bar_width, brush='r')
         self.ui.graphicsView_contact_info_normal.addItem(xn_item)
         # tangent
-        if zt:
+        if zt.any():
             zt_item = pg.BarGraphItem(x=n_range, height=zt * scale_lcp, width=bar_width, brush='b')
             self.ui.graphicsView_contact_info_tangent.addItem(zt_item)
             xt_item = pg.BarGraphItem(x=n_range, height=xt, width=bar_width, brush='r')

@@ -25,8 +25,8 @@ class Lemke:
         self.n_amount = intl_table.n_amount
         self.t_amount = intl_table.t_amount
         # we need pairs of "variable" and "variable_next" to know values on previous steps
-        self.basis = np.arange(self._rows_table)
-        self._basis_next = self.basis.copy()
+        self._basis = np.arange(self._rows_table)
+        self._basis_next = self._basis.copy()
         self._leading_column = self._rows_table * 2 + self.force_inc_step
         self._leading_column_next = self._leading_column
         self._min_ratio = np.zeros(self._rows_table, dtype=float)
@@ -60,7 +60,7 @@ class Lemke:
         self._rows_table = None
         self.table = None
         self.react_vector = None
-        self.basis = None
+        self._basis = None
         self._basis_next = None
         self._leading_column = None
         self._leading_column_next = None
@@ -96,8 +96,7 @@ class Lemke:
         """
         if self._ray_solution():
             # p - tightening weight in each contact pair on directions where null_elements were added
-            p_index = np.where(self.basis == self._rows_table * 2 + self.force_inc_step)  # get the position in basis where is p value
-            p_value = self.table[p_index, -1]  # get the p value
+            p_value = self._get_p()
             if p_value < ACCURACY_OF_LCP:
                 return True
         else:
@@ -108,7 +107,7 @@ class Lemke:
         Check if p (tightening weight) in basis
         :return: bool value
         """
-        p_index = np.where(self.basis == self._rows_table * 2 + self.force_inc_step)[0]
+        p_index = np.where(self._basis == self._rows_table * 2 + self.force_inc_step)[0]
         return False if p_index.size == 0 else True
     # endregion
 
@@ -117,9 +116,9 @@ class Lemke:
         Get p (tightening weight) value
         :return: p value
         """
-        p_row_index = np.where(self.basis == (self._rows_table * 2 + self.force_inc_step))[0]
+        p_row_index = np.where(self._basis == (self._rows_table * 2 + self.force_inc_step))[0]
         if p_row_index.size == 0:
-            return 0
+            return 1 if self.const_load else 0
         return self.react_vector[p_row_index[0]]
 
     # region Lemke step
@@ -136,6 +135,10 @@ class Lemke:
                                   self.table[i, self._leading_column] * self.table[self._leading_row, j] / leading_element
             else:
                 table_tmp[i, j] = self.table[i, j] / leading_element
+        # if there are any negative numbers in react vector - change them to zero. It's error rate (погрешность)
+        for i in range(table_tmp.shape[0]):
+            if table_tmp[i, -1] < 0:
+                table_tmp[i, -1] = 0
         self.table = table_tmp
 
     def _form_basis(self):
@@ -150,7 +153,7 @@ class Lemke:
         Finding next leading column for new Lemke step
         :return: None
         """
-        tmp = self.basis[self._leading_row]
+        tmp = self._basis[self._leading_row]
         if tmp < self._rows_table:
             self._leading_column_next = tmp + self._rows_table
         else:
@@ -159,7 +162,8 @@ class Lemke:
     def _form_min_ratio(self):
         for i in range(self._rows_table):
             element = self.table[i, self._leading_column_next]  # element in table in leading column
-            if element != 0:
+            # if element != 0:
+            if element > 0:
                 self._min_ratio[i] = self.table[i, -1] / element
             else:
                 self._min_ratio[i] = np.Infinity
@@ -178,7 +182,7 @@ class Lemke:
             # if next value CLOSE to minimum
             if np.isclose(min_ratio_above_0[indx[0]], min_ratio_above_0[indx[i]], atol=ACCURACY_OF_LCP):
                 # check if p in this row
-                if self.basis[indx[i]] == self._rows_table * 2 + self.force_inc_step:
+                if self._basis[indx[i]] == self._rows_table * 2 + self.force_inc_step:
                     # if so - choose row with p value to end lemke's algorithm
                     self._leading_row_next = indx[i]
                     break
@@ -226,7 +230,7 @@ class Lemke:
         table_state = self.table.copy()  # remember the table condition
         row_state = self._leading_row  # remember leading row
         # make one step of algorithm to remove 'p' from basis and form results
-        p_row_index = np.where(self.basis == self._rows_table * 2 + self.force_inc_step)[0]
+        p_row_index = np.where(self._basis == self._rows_table * 2 + self.force_inc_step)[0]
         if not p_row_index:
             p_row_index = self._leading_row
         self._leading_row = p_row_index
@@ -240,22 +244,22 @@ class Lemke:
         # set previous results to zero
         self.xn = np.zeros(self.n_amount, dtype=float)
         # form xn (get all indices where numbers in basis < n_amount)
-        for i in np.where(self.basis < self.n_amount):
-            k = self.basis[i]
+        for i in np.where(self._basis < self.n_amount):
+            k = self._basis[i]
             self.xn[k] = self.react_vector[i]
 
     def _form_xt(self):
         # set previous results to zero
         self.xt = np.zeros(self.t_amount, dtype=float)
         xtp = np.zeros(self.t_amount, dtype=float)  # form xtp (xt plus)
-        for i in np.where((self.basis >= self.n_amount) &
-                          (self.basis < self.n_amount + self.t_amount)):
-            k = self.basis[i] - self.n_amount
+        for i in np.where((self._basis >= self.n_amount) &
+                          (self._basis < self.n_amount + self.t_amount)):
+            k = self._basis[i] - self.n_amount
             xtp[k] = self.react_vector[i]
         xtm = np.zeros(self.t_amount, dtype=float)  # form xtm (xt minus)
-        for i in np.where((self.basis >= self.n_amount + self.t_amount) &
-                          (self.basis < self.n_amount + self.t_amount * 2)):
-            k = self.basis[i] - (self.n_amount + self.t_amount)
+        for i in np.where((self._basis >= self.n_amount + self.t_amount) &
+                          (self._basis < self.n_amount + self.t_amount * 2)):
+            k = self._basis[i] - (self.n_amount + self.t_amount)
             xtm[k] = self.react_vector[i]
         for i in range(self.t_amount):
             self.xt[i] = (xtp[i] - xtm[i]) / 2
@@ -264,9 +268,9 @@ class Lemke:
         # set previous results to zero
         self.zn = np.zeros(self.n_amount, dtype=float)
         # form zn
-        for i in np.where((self.basis >= self.n_amount + self.t_amount * 2) &
-                          (self.basis < self.n_amount * 2 + self.t_amount * 2)):
-            k = self.basis[i] - (self.n_amount + self.t_amount * 2)
+        for i in np.where((self._basis >= self.n_amount + self.t_amount * 2) &
+                          (self._basis < self.n_amount * 2 + self.t_amount * 2)):
+            k = self._basis[i] - (self.n_amount + self.t_amount * 2)
             self.zn[k] = self.react_vector[i]
 
     def _form_zt(self):
@@ -274,16 +278,16 @@ class Lemke:
         self.zt = np.zeros(self.t_amount, dtype=float)
         # form zt
         ztp = np.zeros(self.t_amount, dtype=float)   # form ztp (zt plus)
-        indices_ztp = np.where((self.basis >= self.n_amount * 2 + self.t_amount * 2) &
-                               (self.basis < self.n_amount * 2 + self.t_amount * 3))[0]
+        indices_ztp = np.where((self._basis >= self.n_amount * 2 + self.t_amount * 2) &
+                               (self._basis < self.n_amount * 2 + self.t_amount * 3))[0]
         for i in indices_ztp:
-            k = self.basis[i] - (self.n_amount * 2 + self.t_amount * 2)
+            k = self._basis[i] - (self.n_amount * 2 + self.t_amount * 2)
             ztp[k] = self.react_vector[i]
         ztm = np.zeros(self.t_amount, dtype=float)
-        indices_ztm = np.where((self.basis >= self.n_amount * 2 + self.t_amount * 3) &
-                               (self.basis < self.n_amount * 2 + self.t_amount * 4))[0]
+        indices_ztm = np.where((self._basis >= self.n_amount * 2 + self.t_amount * 3) &
+                               (self._basis < self.n_amount * 2 + self.t_amount * 4))[0]
         for i in indices_ztm:
-            k = self.basis[i] - (self.n_amount * 2 + self.t_amount * 3)
+            k = self._basis[i] - (self.n_amount * 2 + self.t_amount * 3)
             ztm[k] = self.react_vector[i]
         for i in range(self.t_amount):
             self.zt[i] = ztp[i] - ztm[i]
@@ -326,7 +330,7 @@ class Lemke:
             self._results_anim()
             self._lemke_step()  # do the step
             # remember data from previous steps
-            self.basis = self._basis_next.copy()
+            self._basis = self._basis_next.copy()
             self._leading_column = self._leading_column_next
             self._leading_row = self._leading_row_next
             # Do checks
@@ -339,7 +343,7 @@ class Lemke:
                         self.next_load_vector()  # continue to solve force increment algorithm
                         continue
                     else:  # form results and end
-                        p_row_index = np.where(self.basis == (self._rows_table * 2 + self.force_inc_step))[0]
+                        p_row_index = np.where(self._basis == (self._rows_table * 2 + self.force_inc_step))[0]
                         self._leading_row = p_row_index
                         self._results_anim()
                 if not self._rough_solution():
@@ -358,6 +362,8 @@ class Lemke:
             elif not self._p_in_basis():
                 print("Normal solution of LCP in {} steps".format(step+1))
                 if self.force_inc:  # if it is force incrementation algorithm
+                    if not self.const_load:
+                        print('ERROR! p  must not be kicked from basis if force increment algorithm!!!!!!!!!!!!!!!!!!')
                     # if there is still unsolved load vector
                     if not self._rows_table * 2 + self.force_inc_step == self.table.shape[1] - 2:
                         self.next_load_vector(p_in_basis=False)  # continue to solve force increment algorithm
@@ -376,11 +382,11 @@ class Lemke:
         """
         # before solving next load vector - do last step to kick 'p' from basis
         if p_in_basis:
-            p_row_index = np.where(self.basis == self._rows_table * 2 + self.force_inc_step)[0]
+            p_row_index = np.where(self._basis == self._rows_table * 2 + self.force_inc_step)[0]
             self._leading_row = p_row_index[0]
             self._lemke_step()
             # remember data from previous step above
-            self.basis = self._basis_next.copy()
+            self._basis = self._basis_next.copy()
         self.force_inc_step += 1  # choose next load vector
         # if there is more than 1 step with variable load, than use previous "react_vec - p column" as react vector
         if self.force_inc_step > 1:

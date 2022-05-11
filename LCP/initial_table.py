@@ -133,7 +133,13 @@ class InitialTable:
         e|r|p|rf : where e - identity matrix, r - modified CSM, p - matrix with ones (1), rf - modified CLV
         p - coefficients of tightening weight in each contact pair on directions where null_elements were added
         f - coefficient of friction
-        How its forming:
+        How its forming: (frictionless contact)
+        ---------------------------------------------------------------------------
+        |         |                                               |    |          |
+        |    e    |                    -r_nn                      | -p |   rf_n   |
+        |         |                                               |    |          |
+        ---------------------------------------------------------------------------
+        If take into account friction: (frictional contact)
         ------------------------------------------------------------------------------------------
         |    | -r_nn                 -r_nt               r_nt            |    |  rf_n             |
         | e  | -r_tn - f * r_nn      -r_tt - f * r_nt    r_tt + f * r_nt | -p |  rf_t + f * rf_n  |
@@ -199,7 +205,7 @@ class InitialTable:
         """
         r_nn, rf_n = args
         n_amount = self.n_amount
-        r = r_nn  # get modified CSM
+        r = -r_nn  # get modified CSM
         self.rf = rf_n
         e = np.identity(n_amount, dtype=float)
         p = np.ones(shape=(n_amount, 1), dtype=float)
@@ -243,7 +249,7 @@ class InitialTable:
         r_nn, rf_n, rf_n_v = args
         n_amount = self.n_amount
 
-        r = r_nn  # get modified CSM
+        r = -r_nn  # get modified CSM
         # forming constant react vector for table
         self.rf_const = np.subtract(rf_n, r_nn.dot(self.eta))
         # forming variable react vector for table

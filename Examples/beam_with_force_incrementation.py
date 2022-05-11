@@ -69,7 +69,7 @@ graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variabl
                    partition=10, scale_def=7, autorun=False)
 
 # debug
-if True:
+if False:
     from LCP.lemke import Lemke
     from LCP.initial_table import InitialTable
     graph.intl_table = InitialTable(element_null=element_null, stiffness_matrix=sm, lv_const=lv_const, u_linear_const=None,
