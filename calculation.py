@@ -44,7 +44,7 @@ class Calculate:
         self.u_linear_variable = None  # linear global nodes displacements from variable load
         self.intl_table = None
         self.lemke = None
-        self.u_contact_anim = None
+        self.u_contact_anim = None  # global nodes displacements as nested array for each lemke's step
 
     def solve_slae(self):
         """
@@ -83,7 +83,7 @@ class Calculate:
 
     def form_u_contact(self):
         """
-        Forming vector of global displacements for unilateral frictional contact
+        Forming vector of global displacements for unilateral (frictional) contact
         :return:
         """
         zn = self.lemke.zn_anim
@@ -153,5 +153,4 @@ class Calculate:
         for i in range(array.shape[0]):
             for j in range(array.shape[1]):
                 worksheet.write(i, j, array[i][j])
-        #worksheet.write_column(0, array.shape[1]+4, ['zn']+list(self.lemke.zn_anim))
         workbook.close()

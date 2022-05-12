@@ -1,6 +1,6 @@
 import numpy as np
 from input_data import LEMKE_LIMIT_STEPS, ACCURACY_OF_LCP
-from input_data import INITIALIZE_GAP
+import xlsxwriter
 
 
 class Lemke:
@@ -19,6 +19,8 @@ class Lemke:
         self.const_load = np.any(intl_table.rf_const)  # bool, if there is const load, first solve lemke for it
         # step number of the force increment algorithm, if = 0, than solving normal Lemke
         self.force_inc_step = 0
+        if not self.const_load:
+            self.force_inc_step = 1
         # if force incrementation algorithm was chosen than change initial table:
         self.react_vector = intl_table.table[:, -1]  # solving normal Lemke
         self.table = intl_table.table
@@ -51,6 +53,9 @@ class Lemke:
         # number of steps in algorithm (how many steps were held in total)
         # start from -1 case at the beginning we add the data and make += 1 step, so for program it will be step num. 0
         self.steps = -1
+
+        self.workbook = xlsxwriter.Workbook('initial_table.xlsx')  # TODO DELETE THIS! after tests
+        self.worksheet = self.workbook.add_worksheet(name='Sheet1')
 
     def clear(self):
         """
@@ -136,9 +141,10 @@ class Lemke:
             else:
                 table_tmp[i, j] = self.table[i, j] / leading_element
         # if there are any negative numbers in react vector - change them to zero. It's error rate (погрешность)
-        for i in range(table_tmp.shape[0]):
-            if table_tmp[i, -1] < 0:
-                table_tmp[i, -1] = 0
+        if not self.force_inc:
+            for i in range(table_tmp.shape[0]):
+                if table_tmp[i, -1] < 0:
+                    table_tmp[i, -1] = 0
         self.table = table_tmp
 
     def _form_basis(self):
@@ -221,19 +227,17 @@ class Lemke:
         """
         # if it's the zero step (or p not in basis) - just take existing values from table
         if not self._p_in_basis():
-            if self._leading_column == self._rows_table * 2:  # if now we are solving constant load part
-                self.react_vector = self.table[:, -1]
-            else:  # if solving for variable load (react_vec - leading_col_rf*p)
-                self.react_vector = self.table[:, -1] - self.table[:, self._rows_table * 2 + self.force_inc_step]
+            # solving for variable load (react_vec - leading_col_rf*p)
+            self.react_vector = self.table[:, -1] - self.table[:, self._rows_table * 2 + self.force_inc_step]
             return
         # on other steps make additional step to get the table which is needed and then get the results
         table_state = self.table.copy()  # remember the table condition
         row_state = self._leading_row  # remember leading row
         # make one step of algorithm to remove 'p' from basis and form results
         p_row_index = np.where(self._basis == self._rows_table * 2 + self.force_inc_step)[0]
-        if not p_row_index:
+        if p_row_index.size == 0:
             p_row_index = self._leading_row
-        self._leading_row = p_row_index
+        self._leading_row = p_row_index[0]
         self._form_table()
         self.react_vector = self.table[:, -1] - self.table[:, self._rows_table * 2 + self.force_inc_step]
         # take variables back
@@ -305,6 +309,21 @@ class Lemke:
         self.zt_anim.append(self.zt)
         self.p_anim.append(self.p_value)
         self.steps += 1
+        self.add_results_to_excel()
+
+    def add_results_to_excel(self):
+        move = self.steps * (self.table.shape[0] + 2)
+        for i in range(self.table.shape[0]):                     # write table
+            for j in range(self.table.shape[1]):
+                self.worksheet.write(i + move + 2, j + 1, self.table[i][j])
+        for i in range(self._basis.size):                        # write basis (right column) and min ratio
+            self.worksheet.write(2 + move + i, 0, self._basis[i])
+            if not np.isinf(self._min_ratio[i]):
+                self.worksheet.write(2 + move + i, 1 + self.table.shape[1], self._min_ratio[i])
+        for j in range(self.table.shape[1]-2):                     # write range (top row)
+            self.worksheet.write(1 + move, 1 + j, j)
+        self.worksheet.write(move + 2, self.table.shape[1] + 2, self._leading_row)
+        self.worksheet.write(move + 3, self.table.shape[1] + 2, self._leading_column)
 
     def _lemke_step(self):
         """
@@ -335,6 +354,7 @@ class Lemke:
             self._leading_row = self._leading_row_next
             # Do checks
             if self._ray_solution():
+                self._results_anim()
                 # if incrementation force algorithm than:
                 if self.force_inc:
                     # if number of leading column was chosen last time penultimate (предпоследняя) column
@@ -343,24 +363,23 @@ class Lemke:
                         self.next_load_vector()  # continue to solve force increment algorithm
                         continue
                     else:  # form results and end
-                        p_row_index = np.where(self._basis == (self._rows_table * 2 + self.force_inc_step))[0]
-                        self._leading_row = p_row_index
-                        self._results_anim()
-                if not self._rough_solution():
+                        print('Ray solution of force increment algorithm, OK!')
+                        self.workbook.close()
+                        return
+                elif not self._rough_solution():
                     print('Ray solution in LCP, you got the results for "almost broken" system,'
                           ' its {} step of Lemke, p={}'
                           .format(step, self._get_p()))
-                    self._results_anim()
                 else:
                     print('Rough solution is occurred, you got rough results '
                           'as there in each contact pair the p (tightening weight) still exists\n'
                           'p={} is lesser than value ACCURACY_OF_LCP={} settled by user'
                           .format(self._get_p(), ACCURACY_OF_LCP))
-                    self._results_anim()
                 return  # end
 
             elif not self._p_in_basis():
                 print("Normal solution of LCP in {} steps".format(step+1))
+                self._results_anim()
                 if self.force_inc:  # if it is force incrementation algorithm
                     if not self.const_load:
                         print('ERROR! p  must not be kicked from basis if force increment algorithm!!!!!!!!!!!!!!!!!!')
@@ -368,7 +387,7 @@ class Lemke:
                     if not self._rows_table * 2 + self.force_inc_step == self.table.shape[1] - 2:
                         self.next_load_vector(p_in_basis=False)  # continue to solve force increment algorithm
                         continue
-                self._results_anim()
+                self.workbook.close()
                 return  # end
 
         print(f"LCP solver got maximum number of steps, no objective results, p={self._get_p()}")

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Adding force increment algorithm v5">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/beam_with_force_incrementation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/beam_with_force_incrementation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/beam_with_force_incrementation2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/beam_with_force_incrementation2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/frame_and_4_node.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/frame_and_4_node.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/initial_table.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/initial_table.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GUI/PyQt/contactFEM.py" beforeDir="false" afterPath="$PROJECT_DIR$/GUI/PyQt/contactFEM.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LCP/initial_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/LCP/initial_table.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LCP/lemke.py" beforeDir="false" afterPath="$PROJECT_DIR$/LCP/lemke.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/calculation.py" beforeDir="false" afterPath="$PROJECT_DIR$/calculation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -158,9 +158,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.beam_with_force_incrementation2" />
+        <item itemvalue="Python.frame_and_4_node" />
         <item itemvalue="Python.plates_triangle_gap" />
         <item itemvalue="Python.Symmetric_detach" />
-        <item itemvalue="Python.frame_and_4_node" />
         <item itemvalue="Python.beam_with_force_incrementation" />
       </list>
     </recent_temporary>
@@ -174,30 +174,63 @@
       <option name="presentableId" value="Default" />
       <updated>1651226311503</updated>
     </task>
+    <task id="LOCAL-00001" summary="Adding force increment algorithm v5">
+      <created>1652253901970</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1652253901970</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Adding force increment algorithm v5" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding force increment algorithm v5" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
-          <line>401</line>
+          <line>420</line>
           <option name="timeStamp" value="37" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
-          <line>384</line>
+          <line>403</line>
           <option name="timeStamp" value="41" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
-          <line>329</line>
+          <line>348</line>
           <option name="timeStamp" value="42" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
-          <line>140</line>
-          <option name="timeStamp" value="48" />
+          <line>147</line>
+          <option name="timeStamp" value="55" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
+          <line>146</line>
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
+          <line>311</line>
+          <option name="timeStamp" value="66" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -211,6 +244,7 @@
     <watches-manager>
       <configuration name="PythonConfigurationType">
         <watch expression="self.table" language="Python" />
+        <watch expression="self._min_ratio" />
       </configuration>
     </watches-manager>
   </component>

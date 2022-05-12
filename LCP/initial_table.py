@@ -1,7 +1,7 @@
 # This .py we need to form Contact Stiffness Matrix and Contact Load Vector
 from FEM.scheme import LoadVector  # to create lv for csm
 import numpy as np
-from input_data import FRICTION_COEFFICIENT, INITIALIZE_GAP
+from input_data import FRICTION_COEFFICIENT
 
 
 class InitialTable:

@@ -103,7 +103,7 @@ last = end - start
 print("Time: ", last)
 
 for i in range(len(graph.lemke.zn_anim)):
-    print(f'zn:{graph.lemke.zn_anim[i]} xn:{graph.lemke.zt_anim[i]}')
+    print(f'{i} zn:{graph.lemke.zn_anim[i]} xn:{graph.lemke.zt_anim[i]}')
 
 if __name__ == "__main__":
     graph.fill_arrays_scheme()  # form info for plot at UI

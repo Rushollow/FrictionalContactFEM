@@ -17,61 +17,56 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 # add nodes # for 4 node element
 nodes = NodeContainer()
 length = 1  # meter
-gap_len = 0.2  # meter (eta)
+gap_len = 0  # meter (eta)
 # nodes for frame
 nodes.add_node(0, 0)  # 0
 nodes.add_node(length, 0)  # 1
 nodes.add_node(length*2, 0)  # 2
 nodes.add_node(length*3, 0)  # 3
+nodes.add_node(length*4, 0)  # 4
 
 # node for support
-nodes.add_node(length*2, -gap_len)  # 4
-nodes.add_node(length*3, -gap_len)  # 5
+nodes.add_node(length*0, -gap_len)  # 5
+nodes.add_node(length*2, -gap_len)  # 6
+nodes.add_node(length*4, -gap_len)  # 7
 
 # set inputs
 Ar = 1
 Er = 1
-Ix = 1
+Ix = 0.5
 E = 1
-F = 10  # Newtons
+F = 1  # Newtons
 
 # add elements
 element_4node = None
 # add frame elements
 element_frame = ElementFrameContainer(nodes_scheme=nodes)
-for i in range(3):
+for i in range(4):
     element_frame.add_element(EN=[i, i+1], E=Er, A=Ar, I=Ix)
 # n null elements and adding t null elements silently
 element_null = ElementNullContainer(nodes_scheme=nodes)
-element_null.add_element(EN=[4, 2], cke=1, alpha=math.pi/2, add_t_el=False)
-element_null.add_element(EN=[5, 3], cke=1, alpha=math.pi/2, add_t_el=False)
+element_null.add_element(EN=[5, 0], cke=1, alpha=math.pi/2, add_t_el=True)
+element_null.add_element(EN=[6, 2], cke=1, alpha=math.pi/2, add_t_el=True)
+element_null.add_element(EN=[7, 4], cke=1, alpha=math.pi/2, add_t_el=True)
 
 # form R, RF and solve SLAE
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
-sm.support_nodes(list_of_nodes=[0], direction='hvr')  # rigid sup
-sm.support_nodes(list_of_nodes=[4, 5], direction='hv')  # sup for unilateral
-situation = 2
+sm.support_nodes(list_of_nodes=[5, 6, 7], direction='hv')  # sup for unilateral
+# HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+SITUATION = 3
 lv_const = LoadVector()
 lv_variable = None
-if situation == 1:  # just 1 const force
+if SITUATION == 1:  # just 2 const force
     lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
-elif situation == 2:
+    lv_const.add_concentrated_force(force=-F/5, degree_of_freedom=8)
+elif SITUATION == 2:  # one variable load
+    lv_variable = LoadVector()
+    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=7)
+elif SITUATION == 3:  # one variable load upward and 2 const forces
     lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
+    lv_const.add_concentrated_force(force=-F/5, degree_of_freedom=8)
     lv_variable = LoadVector()
-    lv_variable.add_concentrated_force(force=F, degree_of_freedom=3)
-elif situation == 3:  # one variable load
-    lv_variable = LoadVector()
-    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=3)
-elif situation == 4:  # two variable loads
-    lv_variable = LoadVector(vectors_amount=2)
-    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=3, vector_num=0)
-    lv_variable.add_concentrated_force(force=F, degree_of_freedom=3, vector_num=1)
-
-# get initial table to Excel file
-# from calculation import Calculate
-# calc = Calculate(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
-#                  element_frame=element_frame, element_null=element_null)
-# calc.table_to_excel('initial_table.xlsx')
+    lv_variable.add_concentrated_force(force=F, degree_of_freedom=7)
 
 
 # plot --------------------------------------------------------------------------
@@ -81,7 +76,8 @@ graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variabl
                    partition=10, scale_def=1, autorun=True)
 
 for i in range(len(graph.lemke.zn_anim)):
-    print(f'{i}: p:{graph.lemke.p_anim[i]} zn:{graph.lemke.zn_anim[i]} xn:{graph.lemke.xn_anim[i]}')
+    print(f'{i}: p:{graph.lemke.p_anim[i]} zn:{graph.lemke.zn_anim[i]} xn:{graph.lemke.xn_anim[i]}'
+          f'zt:{graph.lemke.zt_anim[i]} xt:{graph.lemke.xt_anim[i]}')
 # calculate time
 end = time.time()
 last = end - start
