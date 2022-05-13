@@ -177,7 +177,7 @@ class MainWindow(QMainWindow):
         """
         Show contact forces xn, xt and displacements zn, zt
         Data showed in graphicsView (QT)
-        :param i_step: step if Lemke's algorithm to show
+        :param i_step: step if Lemke's algorithm to show. -1 is the last one
         :return: nothing
         """
         # clear all previous data
@@ -189,19 +189,22 @@ class MainWindow(QMainWindow):
         xn, xt = self.graph.lemke.xn_anim[i_step], self.graph.lemke.xt_anim[i_step]  # contact forces
         # scale up mutual displacements, so they could be seen on the same chart with contact forces
         scale_lcp = 1
-        if np.max(zn) > 1e-8:  # some smaller value will make plots unreadable
+        if zn.any() and np.max(zn) > 1e-8:  # some smaller value will make plots unreadable
             scale_lcp = int(np.max(xn) / np.max(zn))
         elif zt.any() and np.max(zt) > 1e-8:
             scale_lcp = int(np.max(xt) / np.max(zt))
+        else: self.ui.statusbar.showMessage(f'Scale of LCP is {scale_lcp}')
         # normal
-        zn_item = pg.BarGraphItem(x=n_range, height=zn*scale_lcp, width=bar_width, brush='b',
-                                  data=zn,
-                                  tip='x: {x:.3g}\ny: {y:.3g}\nvalue={data}'.format,
-                                  hoverable=True)
-        zn_item.setToolTip(str(zn))  # TODO here, adding tooltip to bar graph
-        self.ui.graphicsView_contact_info_normal.addItem(zn_item)
-        xn_item = pg.BarGraphItem(x=n_range, height=xn, width=bar_width, brush='r')
-        self.ui.graphicsView_contact_info_normal.addItem(xn_item)
+        if zn.any():
+            zn_item = pg.BarGraphItem(x=n_range, height=zn * scale_lcp, width=bar_width, brush='b',
+                                      data=zn,
+                                      tip='x: {x:.3g}\ny: {y:.3g}\nvalue={data}'.format,
+                                      hoverable=True)
+            zn_item.setToolTip(str(zn))  # TODO here, adding tooltip to bar graph
+            self.ui.graphicsView_contact_info_normal.addItem(zn_item)
+        if xt.any():
+            xn_item = pg.BarGraphItem(x=n_range, height=xn, width=bar_width, brush='r')
+            self.ui.graphicsView_contact_info_normal.addItem(xn_item)
         # tangent
         if zt.any():
             zt_item = pg.BarGraphItem(x=n_range, height=zt * scale_lcp, width=bar_width, brush='b')
@@ -215,6 +218,7 @@ class MainWindow(QMainWindow):
         self.ui.graphicsView_contact_info_tangent.addItem(ultimate_forces_item2)
 
         if text is True:  # TODO this
+            return
             n = 1
             x, y = self.graph.arr_nodes_pos[n]
             text_item = pg.TextItem(

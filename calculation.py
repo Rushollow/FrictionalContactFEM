@@ -31,6 +31,8 @@ class Calculate:
         self.nodes = nodes
         self.sm = sm
         self.lv_const = lv_const
+        if lv_const is None:
+            self.lv_const = FEM.scheme.LoadVector()
         self.element_frame = element_frame
         if isinstance(element_container_obj, Element4NodeLinearContainer):
             self.element_4node = element_container_obj

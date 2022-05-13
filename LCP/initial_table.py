@@ -206,10 +206,10 @@ class InitialTable:
         r_nn, rf_n = args
         n_amount = self.n_amount
         r = -r_nn  # get modified CSM
-        self.rf = rf_n
+        self.rf_const = rf_n
         e = np.identity(n_amount, dtype=float)
         p = np.ones(shape=(n_amount, 1), dtype=float)
-        self.table = np.concatenate((e, r, -p, self.rf), axis=1)
+        self.table = np.concatenate((e, r, -p, self.rf_const), axis=1)
 
     def _concatenate_table_nt(self, *args):
         """
@@ -235,10 +235,10 @@ class InitialTable:
         rf_row3 = np.add(-rf_t,
                          np.add(f * (np.subtract(rf_n[:t_amount], r_nn.dot(self.eta)[:t_amount])),
                                 r_tn.dot(self.eta)))
-        self.rf = np.concatenate((rf_row1, rf_row2, rf_row3))
+        self.rf_const = np.concatenate((rf_row1, rf_row2, rf_row3))
         e = np.identity(n_amount + t_amount * 2, dtype=float)
         p = np.ones(shape=(n_amount + t_amount * 2, 1), dtype=float)
-        self.table = np.concatenate((e, r, -p, self.rf), axis=1)
+        self.table = np.concatenate((e, r, -p, self.rf_const), axis=1)
 
     def _concatenate_table_n_force_inc(self, *args):
         """
