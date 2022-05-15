@@ -67,6 +67,12 @@ elif SITUATION == 3:  # one variable load upward and 2 const forces
     lv_const.add_concentrated_force(force=-F/5, degree_of_freedom=8)
     lv_variable = LoadVector()
     lv_variable.add_concentrated_force(force=F, degree_of_freedom=7)
+elif SITUATION == 4:
+    lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
+    lv_const.add_concentrated_force(force=-F / 5, degree_of_freedom=8)
+    lv_variable = LoadVector(vectors_amount=2)
+    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=7, vector_num=0)
+    lv_variable.add_concentrated_force(force=F, degree_of_freedom=7, vector_num=1)
 
 
 # plot --------------------------------------------------------------------------

@@ -295,7 +295,7 @@ class InitialTable:
         # rf_var_row3 = np.add(-rf_t_v, f * rf_n_v[:t_amount])
         rf_n_v = np.array(rf_n_v).T
         rf_t_v = np.array(rf_t_v).T
-        rf_var_row1 = rf_n_v  # np.expand_dims(arr2, 1)
+        rf_var_row1 = rf_n_v
         rf_var_row2 = np.add(f * rf_n_v[:t_amount], rf_t_v)
         rf_var_row3 = np.subtract(f * rf_n_v[:t_amount], rf_t_v)
         rf_variable = np.concatenate((rf_var_row1, rf_var_row2, rf_var_row3))

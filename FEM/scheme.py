@@ -372,6 +372,7 @@ class LoadVector:
         :param force: the value of the external force F, [N]
         :param degree_of_freedom: number of degree of freedom where we should put on the force
         :param vector_num: number of the load vector if we have multiple rf in LoadVector
+        In force increment algorithm determines order in witch loads will apply
         :return: None
         """
         assert isinstance(degree_of_freedom, int), 'degree of freedom must be integer'

@@ -90,10 +90,16 @@ class Calculate:
         """
         zn = self.lemke.zn_anim
         zt = self.lemke.zt_anim
+        if self.lv_variable.rf.ndim == 1:
+            self.lv_variable.rf = np.expand_dims(self.lv_variable.rf, 1)
         # create object of LoadVector class with amount of lemke steps width (vectors_amount = lemke step amount)
         lv_contact = FEM.scheme.LoadVector(vectors_amount=len(zn))
-        for column in range(lv_contact.rf.shape[1]):
-            lv_contact.rf[:, column] = self.lv_const.rf.copy()  # copy existing values of external load
+        for step_num in range(lv_contact.rf.shape[1]):
+            lv_contact.rf[:, step_num] = self.lv_const.rf.copy()  # copy existing values of external
+            if step_num in self.lemke.p_anim_variable:  # if this step_num is for variable load (checking keys)
+                lv_num = self.lemke.p_anim_variable[step_num][0] - 1
+                p_value = self.lemke.p_anim_variable[step_num][1]
+                lv_contact.rf[:, step_num] += self.lv_variable.rf[:, lv_num] * p_value  # add values from lv_variable
         lv_contact.supports = self.lv_const.supports.copy()  # copy supports
         for i in range(len(zn)):
             zn_temp_i = zn[i].copy()  # copy, we need initial values to visualize mutual displacements
@@ -108,8 +114,8 @@ class Calculate:
         lv_contact.support()
         solution = np.linalg.solve(self.sm.r, lv_contact.rf)
         result = []
-        for column in range(solution.shape[1]):  # make it look like list of lists
-            result.append(solution[:, column])
+        for step_num in range(solution.shape[1]):  # make it look like list of lists
+            result.append(solution[:, step_num])
         self.u_contact_anim = result
 
     def _add_displacement_data_to_nodes(self):
