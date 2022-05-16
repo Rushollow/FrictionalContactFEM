@@ -202,7 +202,7 @@ class Lemke:
                 break
     # endregion
 
-    def _results(self, ray=False):
+    def _results(self, ray=False, current=False):
         """
         Form and write (remember):
         interaction forces normal: xn
@@ -215,7 +215,7 @@ class Lemke:
         """
         # take react vector from table
         if self.force_inc and not self.const_load:  # if we are not solving for constant load
-            self._results_force_inc(ray=ray)
+            self._results_force_inc(ray=ray, current=current)
             if not ray:
                 self.p_value = abs(self._get_p())  # because if it is ray solution 'p' value is taken from previous step
         else:
@@ -227,7 +227,7 @@ class Lemke:
         self._form_zn()
         self._form_zt()
 
-    def _results_force_inc(self, ray=False):
+    def _results_force_inc(self, ray=False, current=False):
         """
         Form results for force increment algorithm
         :param ray: bool, if it is ray solution and force inc. alg. then use another logic for results
@@ -240,22 +240,30 @@ class Lemke:
             return
         # self.react_vector = self.table[:, -1] - self.table[:, self._rows_table * 2 + self.force_inc_step]
         self.react_vector = self.table[:, -1]
+        if current:
+            self.p_value *= 1.1
+            self.react_vector = self.table[:, -1] - \
+                                self.table[:, self._rows_table * 2 + self.force_inc_step] * self.p_value
+            return
         if ray:
             # make additional step to get the table which is needed and then get the results
-            table_state = self.table.copy()  # remember the table condition
-            row_state = self._leading_row  # remember leading row
+            # table_state = self.table.copy()  # remember the table condition
+            # row_state = self._leading_row  # remember leading row
             # make one step of algorithm to remove 'p' from basis and form results
             p_row_index = np.where(self._basis == self._rows_table * 2 + self.force_inc_step)[0]
             self._leading_row = p_row_index[0]
+            self.p_value = abs(self._get_p())
             self._form_table()
             if self.force_inc_without_const:
-                self.react_vector = - self.table[:, self._rows_table * 2 + self.force_inc_step]
+                self.react_vector = - self.table[:, self._rows_table * 2 + self.force_inc_step] * self.p_value
             else:
                 self.react_vector = self.table[:, -1] - \
                                     self.table[:, self._rows_table * 2 + self.force_inc_step] * self.p_value
+            self._form_basis()
+            self._basis = self._basis_next
             # take variables back
-            self.table = table_state
-            self._leading_row = row_state
+            # self.table = table_state
+            # self._leading_row = row_state
 
     def _form_xn(self):
         # set previous results to zero
@@ -309,13 +317,13 @@ class Lemke:
         for i in range(self.t_amount):
             self.zt[i] = ztp[i] - ztm[i]
 
-    def _results_anim(self, ray=False):
+    def _results_anim(self, ray=False, current=False):
         """
         Append the results of the LCP solution on each(one) step
         :param ray: bool, if it is ray solution and force inc. alg. then use another logic for results
         :return: None
         """
-        self._results(ray=ray)  # get results
+        self._results(ray=ray, current=current)  # get results
         # write (remember) data in lists
         self.xn_anim.append(self.xn)
         self.xt_anim.append(self.xt)
@@ -371,15 +379,17 @@ class Lemke:
             self._leading_row = self._leading_row_next
             # Do checks
             if self._ray_solution():
-                # check if can be determined (leading element should not be zero)
-                p_row_index = np.where(self._basis == self._rows_table * 2 + self.force_inc_step)[0]
-                self._leading_row = p_row_index[0]
-                if self.table[self._leading_row, self._leading_column] != 0:
-                    self._results_anim(ray=True)
-                else:
-                    print(f'Ray solution in force increment algorithm, indeterminate variables on step: {self.steps}')
                 # if incrementation force algorithm than:
                 if self.force_inc:
+                    # check if variables could be determined (leading element should not be zero or really close to it)
+                    p_row_index = np.where(self._basis == self._rows_table * 2 + self.force_inc_step)[0]
+                    self._leading_row = p_row_index[0]
+                    if not np.isclose(self.table[self._leading_row, self._leading_column], 0, atol=ACCURACY_OF_LCP):
+                        self._results_anim(ray=True)  # find values
+                    else:
+                        self._results_anim(ray=True, current=True)
+                        print(
+                            f'Ray solution in force increment algorithm, indeterminate variables on step: {self.steps}')
                     # if number of leading column was chosen last time penultimate (предпоследняя) column
                     # if there are still unsolved load vectors
                     if not self._rows_table * 2 + self.force_inc_step == self.table.shape[1] - 2:
@@ -387,7 +397,7 @@ class Lemke:
                         self.next_load_vector()  # continue to solve force increment
                         continue
                     else:  # form results and end
-                        print('Ray solution of force increment algorithm, OK!')
+                        print(f'Ray solution of force increment algorithm on step: {self.steps}, OK!')
                         self.workbook.close()
                         return
                 elif not self._rough_solution():
@@ -435,7 +445,7 @@ class Lemke:
         # if there is more than 1 step with variable load, than use previous "react_vec - p column" as react vector
         if self.force_inc_step > 1:
             # new react_vec---previous react_vec-------------previous p column (active load vector)--------
-            self.table[:, -1] = self.table[:, -1] - self.table[:, (self._rows_table * 2 + self.force_inc_step - 1)]
+            self.table[:, -1] = self.table[:, -1] - self.table[:, (self._rows_table * 2 + self.force_inc_step)]
         # next we set table like it's first step
         self._leading_column = self._rows_table * 2 + self.force_inc_step  # choose new leading column
         self._leading_column_next = self._leading_column

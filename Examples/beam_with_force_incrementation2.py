@@ -46,7 +46,7 @@ for i in range(4):
 # n null elements and adding t null elements silently
 element_null = ElementNullContainer(nodes_scheme=nodes)
 element_null.add_element(EN=[5, 0], cke=1, alpha=math.pi/2, add_t_el=True)
-element_null.add_element(EN=[6, 2], cke=1, alpha=math.pi/2, add_t_el=True)
+element_null.add_element(EN=[6, 2], cke=1, alpha=math.pi/2, add_t_el=True, gap_length=0)
 element_null.add_element(EN=[7, 4], cke=1, alpha=math.pi/2, add_t_el=True)
 
 # form R, RF and solve SLAE
@@ -66,7 +66,7 @@ elif SITUATION == 3:  # one variable load upward and 2 const forces
     lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
     lv_const.add_concentrated_force(force=-F/5, degree_of_freedom=8)
     lv_variable = LoadVector()
-    lv_variable.add_concentrated_force(force=F, degree_of_freedom=7)
+    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=7)
 elif SITUATION == 4:
     lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
     lv_const.add_concentrated_force(force=-F / 5, degree_of_freedom=8)

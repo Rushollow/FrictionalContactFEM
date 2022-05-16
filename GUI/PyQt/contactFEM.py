@@ -202,13 +202,14 @@ class MainWindow(QMainWindow):
                                       hoverable=True)
             zn_item.setToolTip(str(zn))  # TODO here, adding tooltip to bar graph
             self.ui.graphicsView_contact_info_normal.addItem(zn_item)
-        if xt.any():
+        if xn.any():
             xn_item = pg.BarGraphItem(x=n_range, height=xn, width=bar_width, brush='r')
             self.ui.graphicsView_contact_info_normal.addItem(xn_item)
         # tangent
         if zt.any():
             zt_item = pg.BarGraphItem(x=n_range, height=zt * scale_lcp, width=bar_width, brush='b')
             self.ui.graphicsView_contact_info_tangent.addItem(zt_item)
+        if xt.any():
             xt_item = pg.BarGraphItem(x=n_range, height=xt, width=bar_width, brush='r')
             self.ui.graphicsView_contact_info_tangent.addItem(xt_item)
         # adding ultimate forces line (to tangent contact forces, friction)
