@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Adding force increment algorithm v7">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Adding force increment algorithm v8">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/beam_with_force_incrementation2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/beam_with_force_incrementation2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/initial_table.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/initial_table.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GUI/PyQt/contactFEM.py" beforeDir="false" afterPath="$PROJECT_DIR$/GUI/PyQt/contactFEM.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LCP/lemke.py" beforeDir="false" afterPath="$PROJECT_DIR$/LCP/lemke.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Visualize/plot_data_qt.py" beforeDir="false" afterPath="$PROJECT_DIR$/Visualize/plot_data_qt.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -158,9 +156,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.beam_with_force_incrementation2" />
+        <item itemvalue="Python.contactFEM" />
         <item itemvalue="Python.plates_triangle_gap" />
         <item itemvalue="Python.frame_and_4_node" />
-        <item itemvalue="Python.contactFEM" />
         <item itemvalue="Python.beam_with_force_incrementation" />
       </list>
     </recent_temporary>
@@ -195,7 +193,14 @@
       <option name="project" value="LOCAL" />
       <updated>1652430084596</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Adding force increment algorithm v8">
+      <created>1652689798624</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1652689798624</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -213,7 +218,8 @@
     <MESSAGE value="Adding force increment algorithm v5" />
     <MESSAGE value="Adding force increment algorithm v6" />
     <MESSAGE value="Adding force increment algorithm v7" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding force increment algorithm v7" />
+    <MESSAGE value="Adding force increment algorithm v8" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding force increment algorithm v8" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -235,7 +241,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/GUI/PyQt/contactFEM.py</url>
-          <line>191</line>
+          <line>194</line>
           <option name="timeStamp" value="71" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

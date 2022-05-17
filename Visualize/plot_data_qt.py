@@ -90,7 +90,7 @@ class PlotScheme(Calculate):
         self.arr_nodes_pos_deformed = None
         self.arr_nodes_pos_deformed_frame = None
         self.arr_nodes_pos_contact = None
-        self.arr_null_el_1st_nodes = None
+        self.arr_null_el_1st_nodes_pos = None
         self.arr_frame_en = None
         self.arr_frame_en_deformed = None
         self.arr_nodes_pos_contact_frame = None
@@ -114,7 +114,7 @@ class PlotScheme(Calculate):
         # unilateral contact deformed
         self.arr_nodes_pos_contact = np.zeros((len(self.nodes), 2))  # for all nodes in scheme positions deformed
 
-        self.arr_null_el_1st_nodes = np.zeros((len(self.element_null), 2))  # for all first nodes of null_elements
+        self.arr_null_el_1st_nodes_pos = np.zeros((len(self.element_null), 2))  # for all first nodes of null_elements
 
         if self.element_frame is not None:  # for frame
             self.arr_frame_en = np.zeros((len(self.element_frame), 2), dtype=int)  # for all ElementNodes (EN)
@@ -140,7 +140,7 @@ class PlotScheme(Calculate):
         if self.element_null is not None:
             for i, el in enumerate(self.element_null):
                 x, y = el.nodes_coordinates(self.nodes)
-                self.arr_null_el_1st_nodes[i] = np.array([x[0], y[0]])
+                self.arr_null_el_1st_nodes_pos[i] = np.array([x[0], y[0]])
         # add frame ElementNodes info to the array
         if self.element_frame is not None:
             self.arr_frame_en = np.array(self.element_frame.EN, dtype=int)

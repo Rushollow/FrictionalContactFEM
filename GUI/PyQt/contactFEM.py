@@ -73,6 +73,9 @@ class MainWindow(QMainWindow):
                                         # hoverPen=pg.mkPen('g'),
                                         hoverSize=1e-2
                                         )
+        # supports
+        item_sup = pg.ScatterPlotItem(pos=self.graph.arr_null_el_1st_nodes_pos, size=10, symbol='t', brush='r')
+        self.ui.graphicsView_Scheme.addItem(item_sup)  # TODO: THIS
         # frame
         if self.graph.arr_frame_en is not None:
             frame_pen = pg.mkPen(color='b', width=5)
