@@ -74,8 +74,9 @@ class MainWindow(QMainWindow):
                                         hoverSize=1e-2
                                         )
         # supports
-        item_sup = pg.ScatterPlotItem(pos=self.graph.arr_null_el_1st_nodes_pos, size=10, symbol='t', brush='r')
-        self.ui.graphicsView_Scheme.addItem(item_sup)  # TODO: THIS
+        for pos_tuple in self.graph.arr_null_el_1st_nodes_pos:
+            arrow = pg.ArrowItem(pos=pos_tuple, angle=90, brush='y')
+            self.ui.graphicsView_Scheme.addItem(arrow)
         # frame
         if self.graph.arr_frame_en is not None:
             frame_pen = pg.mkPen(color='b', width=5)
@@ -216,10 +217,15 @@ class MainWindow(QMainWindow):
             xt_item = pg.BarGraphItem(x=n_range, height=xt, width=bar_width, brush='r')
             self.ui.graphicsView_contact_info_tangent.addItem(xt_item)
         # adding ultimate forces line (to tangent contact forces, friction)
-        ultimate_forces_item1 = pg.PlotCurveItem(n_range, xn*FRICTION_COEFFICIENT,  pen=pg.mkPen(color=(255,170,100), width=2))
-        ultimate_forces_item2 = pg.PlotCurveItem(n_range, -xn*FRICTION_COEFFICIENT, pen=pg.mkPen(color=(255,170,100), width=2))
-        self.ui.graphicsView_contact_info_tangent.addItem(ultimate_forces_item1)
-        self.ui.graphicsView_contact_info_tangent.addItem(ultimate_forces_item2)
+        # ultimate_forces_item1 = pg.PlotCurveItem(n_range, xn*FRICTION_COEFFICIENT,  pen=pg.mkPen(color=(255,170,100), width=2))
+        # ultimate_forces_item2 = pg.PlotCurveItem(n_range, -xn*FRICTION_COEFFICIENT, pen=pg.mkPen(color=(255,170,100), width=2))
+        # self.ui.graphicsView_contact_info_tangent.addItem(ultimate_forces_item1)
+        # self.ui.graphicsView_contact_info_tangent.addItem(ultimate_forces_item2)
+
+        bg1 = pg.BarGraphItem(x=n_range, y=xn*FRICTION_COEFFICIENT, height=0.01, width=0.9, color='orange')
+        bg2 = pg.BarGraphItem(x=n_range, y=-xn*FRICTION_COEFFICIENT, height=0.01, width=0.9, color='orange')
+        self.ui.graphicsView_contact_info_tangent.addItem(bg1)
+        self.ui.graphicsView_contact_info_tangent.addItem(bg2)
 
         if text is True:  # TODO this
             return

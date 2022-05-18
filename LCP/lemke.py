@@ -202,7 +202,7 @@ class Lemke:
                 break
     # endregion
 
-    def _results(self, ray=False, current=False):
+    def _results(self, ray=False):
         """
         Form and write (remember):
         interaction forces normal: xn
@@ -215,7 +215,7 @@ class Lemke:
         """
         # take react vector from table
         if self.force_inc and not self.const_load:  # if we are not solving for constant load
-            self._results_force_inc(ray=ray, current=current)
+            self._results_force_inc(ray=ray)
             if not ray:
                 self.p_value = abs(self._get_p())  # because if it is ray solution 'p' value is taken from previous step
         else:
@@ -227,7 +227,7 @@ class Lemke:
         self._form_zn()
         self._form_zt()
 
-    def _results_force_inc(self, ray=False, current=False):
+    def _results_force_inc(self, ray=False):
         """
         Form results for force increment algorithm
         :param ray: bool, if it is ray solution and force inc. alg. then use another logic for results
@@ -240,11 +240,6 @@ class Lemke:
             return
         # self.react_vector = self.table[:, -1] - self.table[:, self._rows_table * 2 + self.force_inc_step]
         self.react_vector = self.table[:, -1]
-        if current:
-            self.p_value *= 1.1
-            self.react_vector = self.table[:, -1] - \
-                                self.table[:, self._rows_table * 2 + self.force_inc_step] * self.p_value
-            return
         if ray:
             # make additional step to get the table which is needed and then get the results
             # table_state = self.table.copy()  # remember the table condition
@@ -317,13 +312,13 @@ class Lemke:
         for i in range(self.t_amount):
             self.zt[i] = ztp[i] - ztm[i]
 
-    def _results_anim(self, ray=False, current=False):
+    def _results_anim(self, ray=False):
         """
         Append the results of the LCP solution on each(one) step
         :param ray: bool, if it is ray solution and force inc. alg. then use another logic for results
         :return: None
         """
-        self._results(ray=ray, current=current)  # get results
+        self._results(ray=ray)  # get results
         # write (remember) data in lists
         self.xn_anim.append(self.xn)
         self.xt_anim.append(self.xt)
@@ -387,7 +382,6 @@ class Lemke:
                     if not np.isclose(self.table[self._leading_row, self._leading_column], 0, atol=ACCURACY_OF_LCP):
                         self._results_anim(ray=True)  # find values
                     else:
-                        self._results_anim(ray=True, current=True)
                         print(
                             f'Ray solution in force increment algorithm, indeterminate variables on step: {self.steps}')
                     # if number of leading column was chosen last time penultimate (предпоследняя) column
