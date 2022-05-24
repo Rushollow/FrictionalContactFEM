@@ -16,7 +16,7 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
 # add nodes # for 4 node element
 nodes = NodeContainer()
-length = 1  # meter
+length = 5.0011351  # 1  # meter
 gap_len = 0  # meter (eta)
 # nodes for frame
 nodes.add_node(0, 0)  # 0
@@ -31,11 +31,11 @@ nodes.add_node(length*2, -gap_len)  # 6
 nodes.add_node(length*4, -gap_len)  # 7
 
 # set inputs
-Ar = 1
-Er = 1
-Ix = 0.5
-E = 1
-F = 1  # Newtons
+Ar = 4*7e-4  # 1
+Er = 2.04e11  # 1
+Ix = (4*(7**3))/12  # 0.5
+# E = 1
+F = 20e3  # 1  # Newtons
 
 # add elements
 element_4node = None
@@ -53,7 +53,7 @@ element_null.add_element(EN=[7, 4], cke=1, alpha=math.pi/2, add_t_el=True)
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
 sm.support_nodes(list_of_nodes=[5, 6, 7], direction='hv')  # sup for unilateral
 # HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-SITUATION = 3  # TODO 4th state
+SITUATION = 4  # TODO 4th state
 lv_const = LoadVector()
 lv_variable = None
 if SITUATION == 1:  # just 2 const force
@@ -73,13 +73,14 @@ elif SITUATION == 4:
     lv_variable = LoadVector(vectors_amount=2)
     lv_variable.add_concentrated_force(force=-F, degree_of_freedom=7, vector_num=0)
     lv_variable.add_concentrated_force(force=F, degree_of_freedom=7, vector_num=1)
+    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=9, vector_num=1)
 
 
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=1, autorun=True)
+                   partition=10, scale_def=50, autorun=True)
 
 for i in range(len(graph.lemke.zn_anim)):
     print(f'{i}: p:{graph.lemke.p_anim[i]} zn:{graph.lemke.zn_anim[i]} xn:{graph.lemke.xn_anim[i]}'

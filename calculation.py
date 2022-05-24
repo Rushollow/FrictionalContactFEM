@@ -94,12 +94,19 @@ class Calculate:
             self.lv_variable.rf = np.expand_dims(self.lv_variable.rf, 1)
         # create object of LoadVector class with amount of lemke steps width (vectors_amount = lemke step amount)
         lv_contact = FEM.scheme.LoadVector(vectors_amount=len(zn))
+        rf_addition = np.zeros(shape=(lv_contact.rf.shape[0],))  # create zeros empty list
+        p_value = 0
+        stage_num = 0  # to remember if it is next lv_var is going
         for step_num in range(lv_contact.rf.shape[1]):
             lv_contact.rf[:, step_num] = self.lv_const.rf.copy()  # copy existing values of external
             if step_num in self.lemke.p_anim_variable:  # if this step_num is for variable load (checking keys)
-                lv_num = self.lemke.p_anim_variable[step_num][0] - 1
+                lv_num = self.lemke.p_anim_variable[step_num][0] - 1  # number of stage in multiple load vectors
+                if stage_num < lv_num:  # if it is next lv_var is going
+                    rf_addition += self.lv_variable.rf[:, stage_num] * p_value
+                    stage_num = lv_num
                 p_value = self.lemke.p_anim_variable[step_num][1]
-                lv_contact.rf[:, step_num] += self.lv_variable.rf[:, lv_num] * p_value  # add values from lv_variable
+                lv_contact.rf[:, step_num] += (self.lv_variable.rf[:, lv_num] * p_value)  # add values from lv_variable
+                lv_contact.rf[:, step_num] += rf_addition  # add previous solved variable load vector
         lv_contact.supports = self.lv_const.supports.copy()  # copy supports
         for i in range(len(zn)):
             zn_temp_i = zn[i].copy()  # copy, we need initial values to visualize mutual displacements
