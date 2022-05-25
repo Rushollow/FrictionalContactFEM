@@ -16,7 +16,7 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
 # add nodes # for 4 node element
 nodes = NodeContainer()
-length = 5.0011351  # 1  # meter
+length = 1  # 1  # meter     5.0011351
 gap_len = 0  # meter (eta)
 # nodes for frame
 nodes.add_node(0, 0)  # 0
@@ -31,11 +31,10 @@ nodes.add_node(length*2, -gap_len)  # 6
 nodes.add_node(length*4, -gap_len)  # 7
 
 # set inputs
-Ar = 4*7e-4  # 1
-Er = 2.04e11  # 1
-Ix = (4*(7**3))/12  # 0.5
-# E = 1
-F = 20e3  # 1  # Newtons
+Ar = 1  # 1              4*7e-4
+Er = 1  # 1         2.04e11
+Ix = 0.5  # 0.5          (4e-8*(7**3))/12
+F = 1  # 1  # Newtons        10e3
 
 # add elements
 element_4node = None
@@ -80,7 +79,7 @@ elif SITUATION == 4:
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=50, autorun=True)
+                   partition=10, scale_def=1, autorun=True)
 
 for i in range(len(graph.lemke.zn_anim)):
     print(f'{i}: p:{graph.lemke.p_anim[i]} zn:{graph.lemke.zn_anim[i]} xn:{graph.lemke.xn_anim[i]}'

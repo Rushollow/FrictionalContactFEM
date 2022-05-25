@@ -71,7 +71,7 @@ class MainWindow(QMainWindow):
                                         hoverable=True,
                                         #pxMode=False,  # Set pxMode=False to allow spots to transform with the view
                                         # hoverPen=pg.mkPen('g'),
-                                        hoverSize=1e-2
+                                        hoverSize=1e-1
                                         )
         # supports
         for pos_tuple in self.graph.arr_null_el_1st_nodes_pos:
@@ -268,25 +268,25 @@ class MainWindow(QMainWindow):
             self.new_window.ui.verticalLayout.addWidget(self.new_window.ui.graphicsView)
             self.new_window.show()  # show window
 
-
-
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Left:
-            step_to_show = self.lemke_step_shown - 1
-            if step_to_show >= 0:
-                self._show_scheme_deformed_contact(step_to_show)
-                self._show_contact_forces_and_displacements(step_to_show)
+            if self.lemke_step_shown - 1 >= 0:
                 self.lemke_step_shown -= 1
-                p = self.graph.lemke.p_anim[self.lemke_step_shown]  # parameter 'p' value
-                self.ui.statusbar.showMessage(f'Shown {self.lemke_step_shown} step. p={p}')
+                self.redraw_graphs(self.lemke_step_shown)
         elif event.key() == QtCore.Qt.Key_Right:
-            step_to_show = self.lemke_step_shown + 1
-            if step_to_show < len(self.graph.u_contact_anim):
-                self._show_scheme_deformed_contact(step_to_show)
-                self._show_contact_forces_and_displacements(step_to_show)
+            if self.lemke_step_shown + 1 < len(self.graph.u_contact_anim):
                 self.lemke_step_shown += 1
-                p = self.graph.lemke.p_anim[self.lemke_step_shown]  # parameter 'p' value
-                self.ui.statusbar.showMessage(f'Shown {self.lemke_step_shown} step. p={p}')
+                self.redraw_graphs(self.lemke_step_shown)
+
+    def redraw_graphs(self, step_to_show):
+        self._show_scheme_deformed_contact(step_to_show)
+        self._show_contact_forces_and_displacements(step_to_show)
+        p = self.graph.lemke.p_anim[self.lemke_step_shown]  # parameter 'p' value
+        if step_to_show not in self.graph.lemke.p_anim_variable:
+            stage = 0
+        else:
+            stage = self.graph.lemke.p_anim_variable[step_to_show][0]
+        self.ui.statusbar.showMessage(f'Shown {self.lemke_step_shown} step. p={p}. stage={stage}')
 
 
 class ShowPlotWindow(QMainWindow):

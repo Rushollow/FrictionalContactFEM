@@ -110,7 +110,7 @@ class Lemke:
         if self._ray_solution():
             # p - tightening weight in each contact pair on directions where null_elements were added
             p_value = self._get_p()
-            if p_value < ACCURACY_OF_LCP:
+            if ACCURACY_OF_LCP > p_value > 0:
                 return True
         else:
             return False
@@ -251,7 +251,6 @@ class Lemke:
             # at this moment nothing changed (using results from previous step)
             self.react_vector = self.table[:, -1]
             return
-        # self.react_vector = self.table[:, -1] - self.table[:, self._rows_table * 2 + self.force_inc_step]
         self.react_vector = self.table[:, -1]
         if ray:
             # make additional step to get the table which is needed and then get the results
@@ -259,6 +258,8 @@ class Lemke:
             self._leading_row = self._get_p_row()
             self.p_value = abs(self._get_p())
             self._form_table()
+            self._form_basis()
+            self._basis = self._basis_next
             if self.force_inc_without_const:
                 self.react_vector = - self.table[:, self._rows_table * 2 + self.force_inc_step] * self.p_value
             else:
@@ -383,6 +384,7 @@ class Lemke:
             self._leading_row = self._leading_row_next
             # Do checks
             if self._ray_solution():
+                self._results_anim()
                 if not self.force_inc:  # if we are solving only for const load
                     if not self._rough_solution():
                         print('Ray solution in LCP, you got the results for "almost broken" system,'
@@ -394,7 +396,6 @@ class Lemke:
                               'p={} is lesser than value ACCURACY_OF_LCP={} settled by user'
                               .format(self._get_p(), ACCURACY_OF_LCP))
                     break
-
                 # if incrementation force algorithm than:
                 # check if variables could be determined (leading element should not be zero or really close to it)
                 self._leading_row = self._get_p_row()
