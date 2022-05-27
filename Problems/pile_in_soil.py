@@ -116,7 +116,7 @@ print(len(sm.r), np.linalg.matrix_rank(sm.r))
 autorun = True
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=None,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=25, autorun=autorun)
+                   partition=10, scale_def=40, autorun=autorun)
 
 # calculate time
 end = time.time()

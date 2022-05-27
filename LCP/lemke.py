@@ -218,49 +218,6 @@ class Lemke:
                 break
     # endregion
 
-    def _results(self, ray=False):
-        """
-        Form and write (remember):
-        interaction forces normal: xn
-        interaction forces tangent: xt
-        mutual displacements normal: zn
-        mutual displacements tangent: zt
-        by using react vector from Lemke algorithm table
-        :param ray: bool, if it is ray solution and force inc. alg. then use another logic for results
-        :return: None
-        """
-        # take react vector from table
-        if ray:
-            self._results_force_inc()
-        else:
-            self.react_vector = self.table[:, -1]
-            self.p_value = abs(self._get_p())
-        # form results
-        self._form_xn()
-        self._form_xt()
-        self._form_zn()
-        self._form_zt()
-
-    def _results_force_inc(self):
-        """
-        Form results for force increment algorithm ray solution
-        :return:
-        """
-        # make additional step to get the table which is needed and then get the results
-        # make one step of algorithm to remove 'p' from basis and form results
-        if self.write_excel:
-            self.add_results_to_excel()
-        self._leading_row = self._get_p_row()
-        self.p_value = abs(self._get_p())
-        self._form_table()
-        self._form_basis()
-        self._basis = self._basis_next
-        if self.force_inc_without_const:
-            self.react_vector = - self.table[:, self._rows_table * 2 + self.force_inc_step] * self.p_value
-        else:
-            self.react_vector = self.table[:, -1] - \
-                                self.table[:, self._rows_table * 2 + self.force_inc_step] * self.p_value
-
     def _form_xn(self):
         # set previous results to zero
         self.xn = np.zeros(self.n_amount, dtype=float)
@@ -313,6 +270,44 @@ class Lemke:
         for i in range(self.t_amount):
             self.zt[i] = ztp[i] - ztm[i]
 
+    def _results(self, ray=False):
+        """
+        Form and write (remember):
+        interaction forces normal: xn
+        interaction forces tangent: xt
+        mutual displacements normal: zn
+        mutual displacements tangent: zt
+        by using react vector from Lemke algorithm table
+        :param ray: bool, if it is ray solution and force inc. alg. then use another logic for results
+        :return: None
+        """
+        # take react vector from table
+        if ray:
+            self._results_force_inc()
+        else:
+            self.react_vector = self.table[:, -1]
+            self.p_value = abs(self._get_p())
+        # form results
+        self._form_xn()
+        self._form_xt()
+        self._form_zn()
+        self._form_zt()
+
+    def _results_force_inc(self):
+        """
+        Form results for force increment algorithm ray solution
+        :return:
+        """
+
+        self._leading_row = self._get_p_row()
+        self.p_value = abs(self._get_p())
+        self._lemke_step()
+        if self.force_inc_without_const:
+            self.react_vector = - self.table[:, self._rows_table * 2 + self.force_inc_step] * self.p_value
+        else:
+            self.react_vector = self.table[:, -1] - \
+                                self.table[:, self._rows_table * 2 + self.force_inc_step] * self.p_value
+
     def _results_anim(self, ray=False):
         """
         Append the results of the LCP solution on each(one) step
@@ -356,12 +351,17 @@ class Lemke:
         # remember variables from this step
         self.table_previous = self.table.copy()
         self._basis_previous = self._basis.copy()
+        self._leading_column_previous = self._leading_column
         # do step
         self._form_table()
         self._form_basis()
         self._form_leading_column()
         self._form_min_ratio()
         self._form_leading_row()
+        # values from previous steps update
+        self._basis = self._basis_next.copy()
+        self._leading_column = self._leading_column_next
+        self._leading_row = self._leading_row_next
 
     def lcp_solve(self):
         """
@@ -375,10 +375,6 @@ class Lemke:
         for step in range(LEMKE_LIMIT_STEPS):
             self._results_anim()
             self._lemke_step()  # do the step
-            # remember data from previous steps
-            self._basis = self._basis_next.copy()
-            self._leading_column = self._leading_column_next
-            self._leading_row = self._leading_row_next
             # Do checks
             if self._ray_solution():
                 self._results_anim()
@@ -396,23 +392,25 @@ class Lemke:
                 # if incrementation force algorithm than:
                 # check if variables could be determined (leading element should not be zero or really close to it)
                 self._leading_row = self._get_p_row()
-                normal_solution = not np.isclose(self.table[self._leading_row, self._leading_column], 0,
+                normal_ray_solution = not np.isclose(self.table[self._leading_row, self._leading_column], 0,
                                                  atol=ACCURACY_OF_LCP)
                 # normal solution for force inc. is ray solution, but we can kick 'p' from basis and get zn,zn ect.
-                if normal_solution:
+                if normal_ray_solution:
+                    print(f'Ray solution of force increment algorithm'
+                          f' on step: {self.steps}, OK!  with p:{self.p_value}')
                     self._results_anim(ray=True)  # find values and kick 'p' from basis
                 else:
                     print(f'Ray solution in force increment algorithm, indeterminate variables'
-                          f' on step: {self.steps} with p:{self.p_value}')
+                          f' on step: {self.steps} with p >:{self.p_value}')
                 # if there are still unsolved load vectors
                 if not self._rows_table * 2 + self.force_inc_step == self.table.shape[1] - 2:
-                    print(f'Ray solution of force increment algorithm'
-                          f' on step: {self.steps}, OK!  with p:{self.p_value}')
-                    self._next_load_vector(normal_solution)  # continue to solve force increment
+                    self._next_load_vector(normal_ray_solution)  # continue to solve force increment
                     continue
                 # if number of leading column was chosen last time penultimate (предпоследняя) column
                 else:  # form results and end
-                    print(f'Ray solution of force increment algorithm on step: {self.steps}, OK! with p:{self.p_value}')
+                    if normal_ray_solution:
+                        print(f'Ray solution of force increment algorithm on step: {self.steps}, OK! '
+                              f'with p:{self.p_value}')
                     break
 
             elif not self._p_in_basis():
@@ -420,16 +418,21 @@ class Lemke:
                     print("Normal solution of LCP const load in {} steps".format(step + 1))
                     self._results_anim()
                     break
+
                 if self.const_load:  # if stage was for const load
                     print("Normal solution of LCP const load in {} steps".format(step + 1))
                     self._next_load_vector()  # start force inc part (for variable load)
                     continue
-                if not self.const_load:  # if stape was about solving variable load
+                else:  # if stape was about solving variable load
                     print('Rough solution is occurred in force increment, you got rough results '
                           'as there in each contact pair the p (tightening weight) still exists\n'
                           'ultimate load parameter p={} has been found with ACCURACY_OF_LCP={} accuracy'
                           .format(self._get_p(), ACCURACY_OF_LCP))
-                    self._results_anim()
+                    if not self._rows_table * 2 + self.force_inc_step == self.table.shape[1] - 2:
+                        # rollback = True because if p not in basis in force inc alg
+                        # then it means there are all min_ration < 0
+                        self._next_load_vector()  # continue to solve force increment
+                        continue
                     break
         if self.write_excel:
             self.workbook.close()
@@ -438,15 +441,16 @@ class Lemke:
         #self._results_anim()
         return  # end
 
-    def _next_load_vector(self, normal_solution=True):
+    def _next_load_vector(self, normal_ray_solution=True):
         """
         Modifying table to prepare it for using as usual table for increment force algorithm
-        :param normal_solution:
+        :param normal_ray_solution:
         :return:
         """
-        if not normal_solution:  # roll back to the previous version of the table, case it is impossible to kick 'p'
+        if not normal_ray_solution:  # roll back to the previous version of the table, case it is impossible to kick 'p'
             self.table = self.table_previous.copy()
             self._basis = self._basis_previous.copy()
+            self._leading_column = self._leading_column_previous
             self._results_anim(ray=True)  # find values and kick 'p' from basis
         # if there is more than 1 step with variable load, than use previous "react_vec - p column" as react vector
         if self.force_inc_step > 0:
