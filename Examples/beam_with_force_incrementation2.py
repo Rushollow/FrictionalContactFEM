@@ -52,7 +52,7 @@ element_null.add_element(EN=[7, 4], cke=1, alpha=math.pi/2, add_t_el=True)
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
 sm.support_nodes(list_of_nodes=[5, 6, 7], direction='hv')  # sup for unilateral
 # HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-SITUATION = 4
+SITUATION = 2
 lv_const = LoadVector()
 lv_variable = None
 if SITUATION == 1:  # just 2 const force

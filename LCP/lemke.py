@@ -189,8 +189,8 @@ class Lemke:
     def _form_min_ratio(self):
         for i in range(self._rows_table):
             element = self.table[i, self._leading_column_next]  # element in table in leading column
-            # if element != 0:
-            if element > 0:
+            # if element > 0:
+            if not np.isclose(element, 0, atol=ACCURACY_OF_LCP) and element > 0:
                 self._min_ratio[i] = self.table[i, -1] / element
             else:
                 self._min_ratio[i] = np.Infinity
