@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Adding force increment algorithm v14">
+    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Adding force increment algorithm v15">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/Problems solutions.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Problems solutions.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/beam_with_force_incrementation2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/beam_with_force_incrementation2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/initial_table.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/initial_table.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LCP/lemke.py" beforeDir="false" afterPath="$PROJECT_DIR$/LCP/lemke.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Problems/pile_in_soil.py" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/pile_in_soil.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -250,7 +248,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653640014069</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Adding force increment algorithm v15">
+      <created>1653975739695</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1653975739700</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -275,7 +280,8 @@
     <MESSAGE value="Adding force increment algorithm v12" />
     <MESSAGE value="Adding force increment algorithm v13" />
     <MESSAGE value="Adding force increment algorithm v14" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding force increment algorithm v14" />
+    <MESSAGE value="Adding force increment algorithm v15" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding force increment algorithm v15" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -287,8 +293,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
-          <line>16</line>
-          <option name="timeStamp" value="96" />
+          <line>375</line>
+          <option name="timeStamp" value="98" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

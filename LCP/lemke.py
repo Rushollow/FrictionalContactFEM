@@ -407,10 +407,7 @@ class Lemke:
                     self._next_load_vector(normal_ray_solution)  # continue to solve force increment
                     continue
                 # if number of leading column was chosen last time penultimate (предпоследняя) column
-                else:  # form results and end
-                    if normal_ray_solution:
-                        print(f'Ray solution of force increment algorithm on step: {self.steps}, OK! '
-                              f'with p:{self.p_value}')
+                else:  # end
                     break
 
             elif not self._p_in_basis():

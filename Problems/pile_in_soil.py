@@ -134,6 +134,7 @@ if autorun:
         print(i)
     print(mytable)
 
+
 if __name__ == "__main__":
     graph.fill_arrays_scheme()  # form info for plot at UI
     application(graph)
