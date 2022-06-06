@@ -70,7 +70,7 @@ amount_of_nodes_in_left = (area_len / mesh_size + 1) ** 2
 f_l = amount_of_nodes_in_frame + amount_of_nodes_in_left
 first_node_null_el_left = int(pile_len / mesh_size + (area_len / mesh_size + 1) ** 2)
 first_node_null_el_right = int(pile_len / mesh_size + (area_len / mesh_size + 1) ** 2 * 2 - (area_len / mesh_size))
-for i in range(int(pile_len / mesh_size) + 1):
+for i in range(int(pile_len / mesh_size) + 1):  # -1 to make without last node
     node1 = first_node_null_el_left - i * int(area_len / mesh_size + 1)
     element_null.add_element(EN=[node1, i], cke=E_pile*A_pile, alpha=0)  # adding left soil to pile
     node2 = first_node_null_el_right - i * int(area_len / mesh_size + 1)
@@ -97,6 +97,7 @@ for i in range(int(area_len / mesh_size + 1)):
 
 sm.support_nodes(nodes_to_sup_bot, direction='hv')
 sm.support_nodes(nodes_to_sup_sides, direction='h')
+sm.support_nodes([7], direction='hvr')
 lv_const = LoadVector()
 # lv_const.add_concentrated_force(F/1000, 0)
 lv_const.add_concentrated_force(-F, 1)

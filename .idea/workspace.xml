@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Adding force increment algorithm v15">
+    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Adding force increment algorithm v16">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/beam_with_force_incrementation2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/beam_with_force_incrementation2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/beam_with_force_incrementation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/beam_with_force_incrementation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/beam_with_force_incrementation2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FEM/scheme.py" beforeDir="false" afterPath="$PROJECT_DIR$/FEM/scheme.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GUI/PyQt/contactFEM.py" beforeDir="false" afterPath="$PROJECT_DIR$/GUI/PyQt/contactFEM.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LCP/lemke.py" beforeDir="false" afterPath="$PROJECT_DIR$/LCP/lemke.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Problems/pile_in_soil.py" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/pile_in_soil.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Visualize/plot_data_qt.py" beforeDir="false" afterPath="$PROJECT_DIR$/Visualize/plot_data_qt.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,8 +51,8 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.beam_with_force_incrementation2">
-    <configuration name="beam_with_force_incrementation2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.pile_in_soil">
+    <configuration name="beam_with_force_incrementation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ContactFEM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -59,7 +64,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples/beam_with_force_incrementation2.py" />
+      <option name="SCRIPT_NAME" value="C:\!MyFiles\PhD\FrictionalContactFEM\Examples\beam_with_force_incrementation.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -154,8 +159,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.beam_with_force_incrementation2" />
         <item itemvalue="Python.pile_in_soil" />
+        <item itemvalue="Python.beam_with_force_incrementation2" />
         <item itemvalue="Python.frame_and_4_node" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.contactFEM" />
@@ -255,7 +260,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653975739700</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Adding force increment algorithm v16">
+      <created>1654154932482</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1654154932482</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -281,20 +293,26 @@
     <MESSAGE value="Adding force increment algorithm v13" />
     <MESSAGE value="Adding force increment algorithm v14" />
     <MESSAGE value="Adding force increment algorithm v15" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding force increment algorithm v15" />
+    <MESSAGE value="Adding force increment algorithm v16" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding force increment algorithm v16" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
-          <line>167</line>
+          <line>168</line>
           <option name="timeStamp" value="65" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/GUI/PyQt/contactFEM.py</url>
+          <line>67</line>
+          <option name="timeStamp" value="99" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
-          <line>375</line>
-          <option name="timeStamp" value="98" />
+          <line>36</line>
+          <option name="timeStamp" value="101" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -309,7 +327,6 @@
       <configuration name="PythonConfigurationType">
         <watch expression="self.table" language="Python" />
         <watch expression="self._min_ratio" />
-        <watch expression="self.table" language="Python" />
       </configuration>
     </watches-manager>
   </component>

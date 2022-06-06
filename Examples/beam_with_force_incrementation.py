@@ -16,76 +16,77 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
 # add nodes # for 4 node element
 nodes = NodeContainer()
-length = 1  # meter
-nodes_amount = 7
-for i in range(nodes_amount):  # add nodes for frame
-    nodes.add_node(i, 0)
-# add nodes for one-way supports
-nodes.add_node(2*length, 0)
-nodes.add_node(3*length, 0)
-nodes.add_node(4*length, 0)
-nodes.add_node(6*length, 0)
+length = 1  # 1  # meter     5.0011351
+gap_len = 0  # meter (eta)
+# nodes for frame
+nodes.add_node(0, 0)  # 0
+nodes.add_node(length, 0)  # 1
+nodes.add_node(length*2, 0)  # 2
+nodes.add_node(length*3, 0)  # 3
+nodes.add_node(length*4, 0)  # 4
+
+# node for support
+nodes.add_node(length*0, -gap_len)  # 5
+nodes.add_node(length*2, -gap_len)  # 6
+nodes.add_node(length*4, -gap_len)  # 7
 
 # set inputs
-Ar = 1
-Er = 1
-Ix = 1
-E = 1
-F = 0.1  # Newtons 0.1,
+Ar = 1  # 1              4*7e-4
+Er = 1  # 1         2.04e11
+Ix = 0.5  # 0.5          (4e-8*(7**3))/12
+F = 1  # 1  # Newtons        10e3
 
 # add elements
 element_4node = None
 # add frame elements
 element_frame = ElementFrameContainer(nodes_scheme=nodes)
-for i in range(nodes_amount-1):
+for i in range(4):
     element_frame.add_element(EN=[i, i+1], E=Er, A=Ar, I=Ix)
-    print(i, i+1)
 # n null elements and adding t null elements silently
 element_null = ElementNullContainer(nodes_scheme=nodes)
-element_null.add_element(EN=[7, 2], cke=123, alpha=math.pi/2, gap_length=0.1)
-element_null.add_element(EN=[8, 3], cke=123, alpha=math.pi/2, gap_length=-0.1)
-element_null.add_element(EN=[9, 4], cke=123, alpha=math.pi/2, gap_length=-0.1)
-element_null.add_element(EN=[10, 6], cke=123, alpha=math.pi/2, gap_length=0)
+element_null.add_element(EN=[5, 0], cke=1, alpha=math.pi/2, add_t_el=True)
+element_null.add_element(EN=[6, 2], cke=1, alpha=math.pi/2, add_t_el=True, gap_length=0)
+element_null.add_element(EN=[7, 4], cke=1, alpha=math.pi/2, add_t_el=True)
 
 # form R, RF and solve SLAE
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
-nodes_to_support = [0, 7, 8, 9, 10]
-sm.support_nodes(nodes_to_support, direction='hv')
-sm.support_nodes(list_of_nodes=[5], direction='v')
-# add constant load
+sm.support_nodes(list_of_nodes=[5, 6, 7], direction='hv')  # sup for unilateral
+# HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+SITUATION = 5
 lv_const = LoadVector()
-lv_const.add_concentrated_force(force=0, degree_of_freedom=3)
-# add variable load, for 'force increment' algorithm, if lv_variable = None it means normal Lemke's algorithm
-lv_variable = LoadVector(vectors_amount=2)
-lv_variable.add_concentrated_force(force=-F, degree_of_freedom=3, vector_num=0)
-lv_variable.add_concentrated_force(force=F, degree_of_freedom=3, vector_num=1)
-
-
+lv_variable = None
+if SITUATION == 1:  # just 2 const force
+    lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
+    lv_const.add_concentrated_force(force=-F/5, degree_of_freedom=8)
+elif SITUATION == 2:  # one variable load
+    lv_variable = LoadVector()
+    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=7)
+elif SITUATION == 3:  # one variable load upward and 2 const forces
+    lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
+    lv_const.add_concentrated_force(force=-F/5, degree_of_freedom=8)
+    lv_variable = LoadVector()
+    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=7)
+elif SITUATION == 4:
+    lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
+    lv_const.add_concentrated_force(force=-F / 5, degree_of_freedom=8)
+    lv_variable = LoadVector(vectors_amount=2)
+    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=7, vector_num=0)
+    lv_variable.add_concentrated_force(force=F, degree_of_freedom=7, vector_num=1)
+    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=9, vector_num=1)
+elif SITUATION == 5:  #
+    lv_variable = LoadVector(vectors_amount=2)
+    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=3, vector_num=0)
+    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=7, vector_num=1)
 
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=7, autorun=False)
+                   partition=10, scale_def=1, autorun=True)
 
-# debug
-if False:
-    from LCP.lemke import Lemke
-    from LCP.initial_table import InitialTable
-    graph.intl_table = InitialTable(element_null=element_null, stiffness_matrix=sm, lv_const=lv_const, u_linear_const=None,
-                 u_linear_variable=None, lv_variable=lv_variable)
-    graph.intl_table.table = np.array([
-        [1, 0, 0, -4548.5,  3979.9,  1137.1, -1, 0.375,  -1.125,   3.98],
-        [0, 1, 0,  3979.9, -4548.5, -1705.7, -1,  -1.813, 5.438,  -4.549],
-        [0, 0, 1,  1137.1, -1705.7, -758.08, -1, 1.0001, -3.0004, -1.70588],
-    ], dtype=float)
-    graph.intl_table.force_inc = True
-    graph.intl_table.n_amount = 3
-    graph.intl_table.t_amount = 0
-    graph.intl_table.rf_const = np.array([1, 1])
-    graph.lemke = Lemke(graph.intl_table)
-    graph.lemke.lcp_solve()
-
+for i in range(len(graph.lemke.zn_anim)):
+    print(f'{i}: p:{graph.lemke.p_anim[i]} zn:{graph.lemke.zn_anim[i]} xn:{graph.lemke.xn_anim[i]}'
+          f'zt:{graph.lemke.zt_anim[i]} xt:{graph.lemke.xt_anim[i]}')
 # calculate time
 end = time.time()
 last = end - start

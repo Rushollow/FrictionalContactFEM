@@ -271,6 +271,10 @@ class StiffnessMatrix:
         'r' - rotation support in node
         :return: None, adding supports to stiffness matrix 'supports' array
         """
+        assert isinstance(direction, str), 'direction must be string'
+        assert len(direction) <= 3 and len(direction) > 0, 'direction must not be longer than 3 chars. EX: "hv" or "vh" + "r". And must be not empty'
+        assert isinstance(list_of_nodes, list), 'list of nodes must be list'
+
         sup_amount = len(direction)*len(list_of_nodes)
         supports = np.zeros(sup_amount, dtype=int)
         i = 0
@@ -287,10 +291,6 @@ class StiffnessMatrix:
                     supports[i] = self.nodes[node_number].indices[2]
                 i += 1
         self.supports = np.concatenate((self.supports, supports), axis=0)  # add information to the object
-
-        assert isinstance(direction, str), 'direction must be string'
-        assert len(direction) <= 3 and len(direction) > 0, 'direction must not be longer than 3 chars. EX: "hv" or "vh" + "r". And must be not empty'
-        assert isinstance(list_of_nodes, list), 'list of nodes must be list'
 
     def add_spring(self, degree_of_freedom, stiffness):
         """

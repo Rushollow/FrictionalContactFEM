@@ -73,10 +73,6 @@ class MainWindow(QMainWindow):
                                         # hoverPen=pg.mkPen('g'),
                                         hoverSize=1e-1
                                         )
-        # supports
-        for pos_tuple in self.graph.arr_null_el_1st_nodes_pos:
-            arrow = pg.ArrowItem(pos=pos_tuple, angle=90, brush='y')
-            self.ui.graphicsView_Scheme.addItem(arrow)
         # frame
         if self.graph.arr_frame_en is not None:
             frame_pen = pg.mkPen(color='b', width=5)
@@ -89,7 +85,14 @@ class MainWindow(QMainWindow):
             item_4node_elements = pg.GraphItem(pos=self.graph.arr_nodes_pos, adj=self.graph.arr_4node_en,
                                                symbolBrush=None, symbolPen=None)
             self.ui.graphicsView_Scheme.addItem(item_4node_elements)
-
+        # null-elements
+        for pos_angle in self.graph.arr_null_el_1st_nodes_pos_angle:
+            arrow = pg.ArrowItem(pos=pos_angle[:2], angle=pos_angle[2], brush='white', headWidth=1, headLen=15)
+            self.ui.graphicsView_Scheme.addItem(arrow)
+        # supports
+        for pos_angle in self.graph.arr_supp_pos_angle:
+            arrow = pg.ArrowItem(pos=pos_angle[:2], angle=pos_angle[2], brush='red', headWidth=5, headLen=10)
+            self.ui.graphicsView_Scheme.addItem(arrow)
         # add nodes in the end
         self.ui.graphicsView_Scheme.addItem(item_nodes)
         # set parameters

@@ -35,6 +35,7 @@ class Lemke:
         self._leading_column_next = self._leading_column
         self._min_ratio = np.zeros(self._rows_table, dtype=float)
         if self.force_inc and not self.const_load:  # if there is no const load and force increment
+            self._leading_row_next = 0
             self._form_min_ratio()
             self._form_leading_row()
         else:

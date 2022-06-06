@@ -90,7 +90,8 @@ class PlotScheme(Calculate):
         self.arr_nodes_pos_deformed = None
         self.arr_nodes_pos_deformed_frame = None
         self.arr_nodes_pos_contact = None
-        self.arr_null_el_1st_nodes_pos = None
+        self.arr_null_el_1st_nodes_pos_angle = None
+        self.arr_supp_pos_angle = None
         self.arr_frame_en = None
         self.arr_frame_en_deformed = None
         self.arr_nodes_pos_contact_frame = None
@@ -113,8 +114,10 @@ class PlotScheme(Calculate):
         self.arr_nodes_pos_deformed = np.zeros((len(self.nodes), 2))  # for all nodes in scheme positions deformed
         # unilateral contact deformed
         self.arr_nodes_pos_contact = np.zeros((len(self.nodes), 2))  # for all nodes in scheme positions deformed
+        # for all first nodes of null_elements
+        self.arr_null_el_1st_nodes_pos_angle = np.zeros((len(self.element_null), 3))
+        self.arr_supp_pos_angle = np.zeros((len(self.sm.supports), 3))  # for all supports
 
-        self.arr_null_el_1st_nodes_pos = np.zeros((len(self.element_null), 2))  # for all first nodes of null_elements
 
         if self.element_frame is not None:  # for frame
             self.arr_frame_en = np.zeros((len(self.element_frame), 2), dtype=int)  # for all ElementNodes (EN)
@@ -136,11 +139,21 @@ class PlotScheme(Calculate):
         # add nodes coordinates to single arr
         for i, node in enumerate(self.nodes):
             self.arr_nodes_pos[i] = np.array([node.x, node.y])
-        # if there are null elements in scheme - add info about their first nodes positions to arr (x, y)
+        # add pos and angle info about supports
+        for i, dof in enumerate(self.sm.supports):
+            for node in self.nodes:
+                if dof in node.indices:
+                    indx = node.indices.index(dof)
+                    if indx == 0: angle = 180
+                    elif indx == 1: angle = 90
+                    else: angle = -45
+                    self.arr_supp_pos_angle[i] = np.array([node.x, node.y, angle])
+        # if there are null elements in scheme - add info about their first nodes positions and angle
+        # to arr (x, y, angle)
         if self.element_null is not None:
-            for i, el in enumerate(self.element_null):
-                x, y = el.nodes_coordinates(self.nodes)
-                self.arr_null_el_1st_nodes_pos[i] = np.array([x[0], y[0]])
+            for i, el_null in enumerate(self.element_null):
+                x, y = el_null.nodes_coordinates(self.nodes)
+                self.arr_null_el_1st_nodes_pos_angle[i] = np.array([x[0], y[0], np.degrees(el_null.alpha)])
         # add frame ElementNodes info to the array
         if self.element_frame is not None:
             self.arr_frame_en = np.array(self.element_frame.EN, dtype=int)
@@ -251,134 +264,3 @@ class PlotScheme(Calculate):
         y_modified = one_frame_el.sina * xi + one_frame_el.cosa * yi + y1_init + w1 * one_frame_el.sina
         return x_modified, y_modified
 
-    def plot_lcp_nt_i_step_lemke(self, plt_n, plt_t, i, text=True):
-        """
-        Plots interaction forces and mutual displacements along the normal and tangent to the contact zone
-        :param plt_n: matplotlib.pyplot object or axis for plotting contact along the normal to the contact zone
-        :param plt_t: matplotlib.pyplot object or axis for plotting contact along the tangent to the contact zone
-        :param i: step number of Lemke algorithm
-        :return: None
-        """
-        zn, zt, xn, xt = self.lemke.zn_anim[i], self.lemke.zt_anim[i], self.lemke.xn_anim[i], self.lemke.xt_anim[i]
-        null_el_n = [element for element in self.element_null if element.orientation == 'n']
-        null_el_t = [element for element in self.element_null if element.orientation == 't']
-        x_range = range(len(null_el_n))
-        # operations below are needed for that case if we have tangential null elements not in all contact pairs
-        # so we make zt = 0, xt = 0, for frictionless contact pairs (without tangent null element)
-        zt_tmp, xt_tmp = np.zeros(len(null_el_n)), np.zeros(len(null_el_n))
-        for i, element in zip(range(len(null_el_t)), null_el_t):
-            zt_tmp[element.contact_pair] = zt[i]
-            xt_tmp[element.contact_pair] = xt[i]
-        zt, xt = zt_tmp, xt_tmp
-
-        if self.scale_lcp is None:
-            if np.max(zn) > 1e-8:  # some smaller value will make plots unreadable
-                self.scale_lcp = int(np.max(xn) / np.max(zn))
-            elif np.max(zt) > 1e-8:
-                self.scale_lcp = int(np.max(xt) / np.max(zt))
-            else:
-                self.scale_lcp = 1
-        # plot for normal
-        plt_n.bar(x_range, xn, color='red', width=0.2)  # plot bars
-        plt_n.bar(x_range, zn * self.scale_lcp, color='blue', width=0.2)
-        # plot for tangent
-        plt_t.bar(x_range, xt, color='red', width=0.2)
-        plt_t.bar(x_range, zt * self.scale_lcp, color='blue', width=0.2)
-        plt_t.plot(x_range, xn * FRICTION_COEFFICIENT, color='orange')
-        plt_t.plot(x_range, -xn * FRICTION_COEFFICIENT, color='orange')
-        if self.text is True:
-            # plot for normal
-            for x, y in zip(x_range, xn):  # plot values
-                plt_n.text(x, y, str("%.2f" % y), color='lightcoral')
-            for x, y in zip(x_range, zn):
-                plt_n.text(x, y * self.scale_lcp, str("%.4f" % y), color='cornflowerblue')
-            # for tangent
-            for x, y in zip(x_range, xt):  # plot values
-                plt_t.text(x, y, str("%.2f" % y), color='lightcoral')
-            for x, y in zip(x_range, zt):
-                plt_t.text(x, y * self.scale_lcp, str("%.4f" % y), color='cornflowerblue')
-
-    def plot_def_i_step_lemke(self, plt_def_contact, i):
-        """
-        Plot deformed scheme of Lemke algorithm
-        :param plt_def_contact: matplotlib.pyplot object or axis for plotting def scheme
-        :param i: step number
-        :return: None
-        """
-        if self.element_frame is not None:
-            self._get_frame_deformed(plt_def_contact, self.u_contact_anim[i])
-        if self.element_container_obj is not None:
-            self.plot_list_of_elements(plt_def_contact, deformed=True, u=self.u_contact_anim[i])
-
-    def plot_nodes_i_step_lemke(self, plt_def_contact, i):
-        """
-        Function for plotting all nodes in scheme
-        :param plt_def_contact: where to plot element. Must be Matplotlib.pyplot obj, or matplotlib.axes obj
-        :param i: number of Lemke's algorithm step
-        """
-        nodes = self.__create_new_deformed_nodes(self.u_contact_anim[i])
-        for node in nodes:
-            plt_def_contact.scatter(node.x, node.y, s=self.size_nodes, color='lime', marker='s')
-
-    def plot_scheme_i_step_lemke(self, plt_def_contact, plt_n, plt_t, i):
-        """
-        Plot all that we need for each step of Lemke's algorithm
-        All plt_ variables must me instances of matplotlib.axes object (or maybe pyplot)
-        :param plt_def_contact: axes for plotting deformed scheme
-        :param plt_n: axes for plotting normal contact interaction forces and mutual displacements
-        :param plt_t: axes for plotting tangent contact interaction forces and mutual displacements
-        :param i: step of Lemke's algorithm to plot
-        :return:
-        """
-        self.plot_def_i_step_lemke(plt_def_contact, i)
-        self.plot_lcp_nt_i_step_lemke(plt_n, plt_t, i)
-        self.plot_nodes_i_step_lemke(plt_def_contact, i)
-
-
-    def plot_supports(self, plt, supports):
-        """
-        Function for plotting supports (boundary conditions)
-        :param plt: where to plot element. Must be Matplotlib.pyplot obj, or matplotlib.axes obj
-        :param supports: support matrix
-        :return:
-        """
-        for node in self.nodes:
-            arr_index = np.intersect1d(node.indices, supports[:, 0])  # find all intersection of 2 arrays
-            for i in arr_index:
-                order_of_index = node.indices.index(i)  # find 0-horizontal, 1-vertical or 2-rotation degree of freedom
-                if order_of_index == 0:
-                    angle_deg = 0
-                    t = mpl.markers.MarkerStyle(marker=0)  # make marker
-                    t._transform = t.get_transform().rotate_deg(angle_deg)  # rotate it
-                    plt.scatter(node.x, node.y, s=self.size_supports, color='red', marker=t, zorder=3)  # plot
-                elif order_of_index == 1:
-                    angle_deg = 90
-                    t = mpl.markers.MarkerStyle(marker=0)  # make marker
-                    t._transform = t.get_transform().rotate_deg(angle_deg)  # rotate it
-                    plt.scatter(node.x, node.y, s=self.size_supports, color='red', marker=t, zorder=3)  # plot
-                elif order_of_index == 2:
-                    plt.scatter(node.x, node.y, s=self.size_supports, facecolors='none', edgecolors='red', zorder=3)
-
-    def plot_external_forces(self, plt):
-        """
-        Plotting external forces on matplotlib.pyplot of axis
-        :param plt: where to plot element. Must be Matplotlib.pyplot obj, or matplotlib.axes obj
-        :return: None
-        """
-        for force, dof in zip(self.lv_const.rf, range(len(self.lv_const.rf))):  # dof - degree of freedom
-            if force != 0:  # if we have load on some i dof
-                for node in self.nodes:  # iterate over all nodes (nodes have coordinates)
-                    if dof in node.indices:  # check which node have this dof
-                        if node.indices[0] == dof:  # check the direction in which to put the marker
-                            if force > 0:
-                                angle_deg = 0
-                            else:
-                                angle_deg = 180
-                        else:
-                            if force > 0:
-                                angle_deg = 90
-                            else:
-                                angle_deg = 270
-                        t = mpl.markers.MarkerStyle(marker=1)  # make marker
-                        t._transform = t.get_transform().rotate_deg(angle_deg)  # rotate it
-                        plt.scatter(node.x, node.y, s=self.size_force, color='green', marker=t, zorder=3, alpha=0.7)
