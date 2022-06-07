@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Adding force increment algorithm v16">
+    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Testing force inc alg v1">
+      <change afterPath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/beam_with_force_incrementation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/beam_with_force_incrementation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/beam_with_force_incrementation2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FEM/scheme.py" beforeDir="false" afterPath="$PROJECT_DIR$/FEM/scheme.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GUI/PyQt/contactFEM.py" beforeDir="false" afterPath="$PROJECT_DIR$/GUI/PyQt/contactFEM.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LCP/lemke.py" beforeDir="false" afterPath="$PROJECT_DIR$/LCP/lemke.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/macro_element_create.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/macro_element_create.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/plates_triangle_gap.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/plates_triangle_gap.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/seismic_crush_plane.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/seismic_crush_plane.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/seismic_crush_plane_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/seismic_crush_plane_2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Problems/pile_in_soil.py" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/pile_in_soil.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Visualize/plot_data_qt.py" beforeDir="false" afterPath="$PROJECT_DIR$/Visualize/plot_data_qt.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,11 +47,16 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Examples" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\!MyFiles\PhD\FrictionalContactFEM\Examples" />
+    </key>
+  </component>
   <component name="RunManager" selected="Python.pile_in_soil">
-    <configuration name="beam_with_force_incrementation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="macro_element_create" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ContactFEM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -64,49 +68,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="C:\!MyFiles\PhD\FrictionalContactFEM\Examples\beam_with_force_incrementation.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="contactFEM" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="ContactFEM" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/GUI/PyQt" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/GUI/PyQt/contactFEM.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="frame_and_4_node" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="ContactFEM" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Examples" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples/frame_and_4_node.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples/macro_element_create.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -136,7 +98,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="plates_triangle_gap" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ContactFEM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -144,11 +106,53 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Examples" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples/plates_triangle_gap.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="seismic_crush_plane" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ContactFEM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Examples" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples/seismic_crush_plane.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="seismic_crush_plane_2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ContactFEM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Examples" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples/seismic_crush_plane_2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -160,10 +164,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.pile_in_soil" />
-        <item itemvalue="Python.beam_with_force_incrementation2" />
-        <item itemvalue="Python.frame_and_4_node" />
-        <item itemvalue="Python.test" />
-        <item itemvalue="Python.contactFEM" />
+        <item itemvalue="Python.plates_triangle_gap" />
+        <item itemvalue="Python.seismic_crush_plane_2" />
+        <item itemvalue="Python.seismic_crush_plane" />
+        <item itemvalue="Python.macro_element_create" />
       </list>
     </recent_temporary>
   </component>
@@ -267,7 +271,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654154932482</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Testing force inc alg v1">
+      <created>1654500167022</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1654500167022</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -294,7 +305,8 @@
     <MESSAGE value="Adding force increment algorithm v14" />
     <MESSAGE value="Adding force increment algorithm v15" />
     <MESSAGE value="Adding force increment algorithm v16" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding force increment algorithm v16" />
+    <MESSAGE value="Testing force inc alg v1" />
+    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

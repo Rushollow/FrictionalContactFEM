@@ -6,11 +6,11 @@ from input_data import SCALE_DEF
 from FEM.element_frame import ElementFrameContainer
 from FEM.element_4node import Element4NodeLinearContainer
 from FEM.element_null import ElementNullContainer
-from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector, solve_slae
+from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector
 from LCP.initial_table import InitialTable
 from LCP.lemke import Lemke
-from Visualize.plot_data_scheme import PlotScheme
-from GUI.tkinter_gui import ContactFEM
+from Visualize.plot_data_qt import PlotScheme  # for visualizing
+from GUI.PyQt.contactFEM import application
 
 start = time.time()  # to calculate time
 
@@ -78,30 +78,24 @@ lv = LoadVector()
 lv.add_concentrated_force(force=-F, degree_of_freedom=32)
 lv.add_concentrated_force(force=F*0.95, degree_of_freedom=33)
 
-u_linear = solve_slae(sm, lv)
-
-np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
-for i, k in zip(u_linear, range(len(u_linear))):
-    print(k, i)
-
-intl_table = InitialTable(element_null, sm, lv, u_linear)
-intl_table.form_initial_table()
-# do lemke or solve LCP
-lemke = Lemke(intl_table)
-lemke.lcp_solve()
-
-print('zn={}\nxn={}\nF={}'.format(lemke.zn_anim[-1], lemke.xn_anim[-1]/F, F/F))
 
 # plot --------------------------------------------------------------------------
-# calculate data to plot
-graph = PlotScheme(nodes, element_null, sm, lv, u_linear, lemke,
-                   element_container_obj=element_4node, element_frame=element_frame, partition=10, scale_def=1)
+# Calculation and plotting object
+graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=None,
+                   element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
+                   partition=10, scale_def=1, autorun=True, force_incrementation=False)
+
+
+print(f'xn sum: {sum(graph.lemke.xn)}, force sum = {2*F}'
+      f'xt sum: {sum(graph.lemke.xt)}')
+
+
 
 # calculate time
 end = time.time()
 last = end - start
 print("Time: ", last)
 
-app = ContactFEM(graph=graph)
-#app.geometry('1280x720')
-app.mainloop()
+if __name__ == "__main__":
+    graph.fill_arrays_scheme()  # form info for plot at UI
+    application(graph)

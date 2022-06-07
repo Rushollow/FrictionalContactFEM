@@ -102,6 +102,9 @@ first_node_top = int(nodes_top_contact[0]+(plate_length/(2*mesh_size)+1)*(plate_
 lv = LoadVector()
 lv.add_concentrated_force(-F, first_node_top * 2 + 1)
 lv.add_concentrated_force(-F, (first_node_top + 1) * 2 + 1)
+# Variable load
+lv_var = LoadVector(vectors_amount=1)
+lv_var.add_concentrated_force(force=-F, degree_of_freedom=305*2+1)
 
 # calculate time
 end = time.time()
@@ -110,8 +113,9 @@ print("Time: ", last)
 
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
-graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, element_frame=element_frame, element_container_obj=element_4node,
-                   element_null=element_null, partition=10, scale_def=1, autorun=True, force_incrementation=False)
+graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_var,
+                   element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
+                   partition=10, scale_def=1, autorun=True, force_incrementation=False)
 
 
 print(f'xn sum: {sum(graph.lemke.xn)}, force sum = {2*F}'

@@ -3,15 +3,9 @@ from FEM.element_4node import Element4NodeLinearContainer
 from FEM.element_frame import ElementFrameContainer
 from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector
 from SchemeForm.macro_element import ElementMacroContainer
-from LCP.initial_table import InitialTable
-from LCP.lemke import Lemke
-from GUI.tkinter_gui import ContactFEM
-from Visualize.plot_data_scheme import PlotScheme
 
-
-from matplotlib import pyplot as plt
-import math
-import numpy as np
+from Visualize.plot_data_qt import PlotScheme  # for visualizing
+from GUI.PyQt.contactFEM import application
 import time
 
 # TIME
@@ -66,34 +60,18 @@ end = time.time()
 print(f'Time spend: {end - start} seconds')
 # _--------------------------------------------------------------------
 
-for i, node in enumerate(nodes.nodes_list):
-    plt.scatter(node.x, node.y)
-    plt.text(node.x, node.y, str("%.0f" % i), color='black')
+sm = StiffnessMatrix(nodes, el_frame=None, el_4node=element_4node, el_null=None)
+# plot --------------------------------------------------------------------------
+# Calculation and plotting object
+graph = PlotScheme(nodes=nodes, sm=sm, lv_const=None, lv_variable=None,
+                   element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
+                   partition=10, scale_def=25, autorun=False)
 
-def _modify_coordinates_for_plotting_4node(x, y):
-    """
-    Moving lines of sides of the element to the center for good looking
-    :param x: vector of horizontal x coordinates
-    :param y: vector of vertical y coordinates
-    :return: x, y new vectors
-    """
-    avg_x = np.mean(x)
-    avg_y = np.mean(y)
-    x = [i + (avg_x - i) / 50 for i in x]
-    y = [i + (avg_y - i) / 50 for i in y]
-    return x, y
+# calculate time
+end = time.time()
+last = end - start
+print("Time: ", last)
 
-for element in element_4node.elements_list:
-    x, y = element.nodes_coordinates(nodes)
-    x, y = _modify_coordinates_for_plotting_4node(x, y)
-    x.append(x[0])  # to encircle the element
-    y.append(y[0])  # to encircle the element
-    plt.plot(x, y, color='grey', zorder=1)
-
-for element in element_frame:
-    x, y = element.nodes_coordinates(nodes)
-    plt.plot(x, y, color='blue', zorder=1)
-
-
-
-plt.show()
+if __name__ == "__main__":
+    graph.fill_arrays_scheme()  # form info for plot at UI
+    application(graph)

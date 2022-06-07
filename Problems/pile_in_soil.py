@@ -24,7 +24,7 @@ area_len = 10
 pile_len = 7
 mesh_size = 1
 # force
-F = 100000  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! проверить
+F = 1e6  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! проверить
 # F = 1000000
 # PLANE_STRAIN = True
 # FRICTION_COEFFICIENT = 0.19
@@ -101,6 +101,7 @@ sm.support_nodes([7], direction='hvr')
 lv_const = LoadVector()
 # lv_const.add_concentrated_force(F/1000, 0)
 lv_const.add_concentrated_force(-F, 1)
+lv_const.add_concentrated_force(-F, 0)
 lv_const.add_own_weight_to_rf(nodes_scheme=nodes, element_container_list=[element_4node])
 
 # set to show only first 5 numbers when printing numpy values
