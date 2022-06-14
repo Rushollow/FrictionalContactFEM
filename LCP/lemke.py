@@ -90,7 +90,7 @@ class Lemke:
         Checks if it is trivial solution. If so, we do not need to solve LCP
         :return: True or False. Bool value
         """
-        if np.min(self.react_vector) > 0 and not self.force_inc:
+        if np.min(self.react_vector) > 0:
             return True
         else:
             return False
@@ -371,8 +371,10 @@ class Lemke:
         """
         if self._trivial_solution():
             print('LCP trivial solution')
-            self._results_anim()  # end
-            return
+            if not self.force_inc:
+                self._results_anim()
+                return
+            self._next_load_vector()
         for step in range(LEMKE_LIMIT_STEPS):
             self._results_anim()
             self._lemke_step()  # do the step
