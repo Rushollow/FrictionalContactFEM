@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Testing force inc alg v2">
+    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Testing force inc alg v3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LCP/lemke.py" beforeDir="false" afterPath="$PROJECT_DIR$/LCP/lemke.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/initial_table.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/initial_table.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -280,7 +281,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654586023845</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Testing force inc alg v3">
+      <created>1655191073381</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1655191073381</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -309,7 +317,8 @@
     <MESSAGE value="Adding force increment algorithm v16" />
     <MESSAGE value="Testing force inc alg v1" />
     <MESSAGE value="Testing force inc alg v2" />
-    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v2" />
+    <MESSAGE value="Testing force inc alg v3" />
+    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v3" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -318,6 +327,11 @@
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
           <line>168</line>
           <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
+          <line>378</line>
+          <option name="timeStamp" value="110" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

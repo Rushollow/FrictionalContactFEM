@@ -11,25 +11,23 @@ from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
 start = time.time()
-
 np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
 # set inputs
-
-q = 10  # N/m Uniformly Distributed Load
-length = 1  # meter
-n = 4  # amount of nodes of frame
-Ar = 1  # 1
-Er = 1  # 1
-Ix = 0.5  #
-F = q * length  # concentrated force in each node
+q = 3975  # N/m Uniformly Distributed Load
+general_length = 260  # meter
+n = 6  # amount of nodes of frame MINIMUM 2
+Ar = math.pi / 2 * (1.5**2 - (1.5 - 0.02)**2)
+Er = 1.95e9  # N/m
+Ix = math.pi * 1.5**2 * 0.02 / 8  #
+F = q * general_length / (n - 1)  # concentrated force in each node
 
 nodes = NodeContainer()
 for i in range(n):  # add nodes for frame
-    nodes.add_node(i*length, 0)
+    nodes.add_node(i*general_length/(n-1), 0)
 nodes_to_sup = []
 for i in range(n-1):  # add nodes for supports
-    nodes.add_node((i+1)*length, 0)
+    nodes.add_node((i+1)*general_length/(n-1), 0)
     nodes_to_sup.append(n+i)
 
 # add elements
@@ -47,7 +45,6 @@ for i, j in enumerate(range(n, len(nodes))):
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
 sm.support_nodes(list_of_nodes=nodes_to_sup, direction='hv')  # sup for unilateral
 sm.support_nodes(list_of_nodes=[0], direction='hvr')  # sup for zero left node
-# HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 lv_const = LoadVector()
 for node_num in range(1, n-1):
