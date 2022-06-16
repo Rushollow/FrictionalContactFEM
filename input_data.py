@@ -1,5 +1,5 @@
 # Plane deformation state. Boolean variable. If False - the plane stress is used. If True - Plane strain is used
-PLANE_STRAIN = False
+PLANE_STRAIN = True
 
 # Soil type. We can choose soil type or set soil characteristics
 SOIL_TYPE = 0
@@ -26,7 +26,7 @@ LEMKE_LIMIT_STEPS = 100
 
 # Set the value of accuracy for LCP Lemke solver.
 # This value means that how many tightening weight (p parameter) we can left to end the solution
-ACCURACY_OF_LCP = 10**(-14)
+ACCURACY_OF_LCP = 10**(-10)
 
 # accuracy of stitching of nodes
 ACCURACY_OF_STITCHING = 1e-4

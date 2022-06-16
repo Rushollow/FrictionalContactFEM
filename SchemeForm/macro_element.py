@@ -94,7 +94,7 @@ class ElementMacroContainer(ElementContainer):
         self._renumber_existing_elements_nodes_numbers(element_4node, element_frame, element_null)
         for me in self.elements_list:
             me.fragment()
-        self.delete_coincident_nodes(self.elements_list, element_4node, element_frame, element_null)
+        self._delete_coincident_nodes(self.elements_list, element_4node, element_frame, element_null)
         self._correct_nodes_indices()
         # adding fragmented 4node elements to scheme
         self.element_4node_scheme = element_4node
@@ -125,7 +125,7 @@ class ElementMacroContainer(ElementContainer):
                             element.EN[i] = future_me_element_nodes_numbers[index]
             self.future_nodes_in_scheme = n3
 
-    def delete_coincident_nodes(self, me_list, element_4node, element_frame, element_null):
+    def _delete_coincident_nodes(self, me_list, element_4node, element_frame, element_null):
         """
         Delete coincident nodes (nodes with same coodinates / overlapped)
         :param me_list: list of macro elements
@@ -170,21 +170,21 @@ class ElementMacroContainer(ElementContainer):
         where deleted[i] equals the number of nodes that were deleted before i node
         :return:
         """
-        me_checked = 1
+        me_checked = 0
         checked_nodes = []
         for me1_num in range(len(me_list)):  # iterate over one ME
+            me_checked += 1
             for me2_num in range(me_checked, len(me_list)):  # iterate over another ME
                 # next value is int 0 or 1 or 2. It is 2 if both True to stitch and 0 if both is False to stitch
                 # and 1 if at least 1 is True to stitch
                 to_stitch = me_list[me1_num].stitch + me_list[me2_num].stitch
-                if to_stitch < 2:  # if at least 1 is false - check additional conditions
-                    if to_stitch == 0:  # if both False
-                        break  # do not do the stitch
-                    else:  # if only 1 of them is True to stitch
-                        # if macro element number is not in stitch list
-                        if me1_num not in me_list[me2_num].stitch_list:
-                            break  # do not do the stitch
-                for i in me_list[me1_num].nodes_numbers_me:  # iterate over nodes of one ME
+                if to_stitch == 0:  # if both False
+                    continue  # do not do the stitch
+                if to_stitch == 1:  # if only 1 of them is True to stitch
+                    stitch_list = me_list[me2_num].stitch_list + me_list[me1_num].stitch_list
+                    if me1_num not in stitch_list:  # if macro element number is not in stitch list
+                        continue  # do not do the stitch
+                for i in me_list[me1_num].nodes_numbers_me:  # iterate over nodes of one ME  # TODO: HERE! STICHING
                     node_me1 = self.nodes_scheme[i - deleted[i]]
                     for j in me_list[me2_num].nodes_numbers_me:  # iterate over nodes of another ME
                         node_me2 = self.nodes_scheme[j - deleted[j]]
@@ -199,7 +199,7 @@ class ElementMacroContainer(ElementContainer):
                                 deleted[j] = j - (i - deleted[i])  # take the node number from first ME
                                 checked_nodes.append(j)
                                 break
-            me_checked += 1
+
 
     # def _node_have_null_element(self, node):
     #     """

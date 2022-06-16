@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Testing force inc alg v3">
+    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Testing force inc alg v4">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/initial_table.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/initial_table.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Problems/pile_in_soil.py" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/pile_in_soil.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SchemeForm/macro_element.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchemeForm/macro_element.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,7 +51,7 @@
       <recent name="C:\!MyFiles\PhD\FrictionalContactFEM\Examples" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.analytical_beam_friction">
+  <component name="RunManager" selected="Python.pile_in_soil">
     <configuration name="analytical_beam_friction" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ContactFEM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -159,9 +159,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.analytical_beam_friction" />
         <item itemvalue="Python.pile_in_soil" />
         <item itemvalue="Python.plates_triangle_gap" />
+        <item itemvalue="Python.analytical_beam_friction" />
         <item itemvalue="Python.seismic_crush_plane_2" />
         <item itemvalue="Python.seismic_crush_plane" />
       </list>
@@ -288,7 +288,14 @@
       <option name="project" value="LOCAL" />
       <updated>1655191073381</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Testing force inc alg v4">
+      <created>1655274698374</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1655274698374</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -318,7 +325,8 @@
     <MESSAGE value="Testing force inc alg v1" />
     <MESSAGE value="Testing force inc alg v2" />
     <MESSAGE value="Testing force inc alg v3" />
-    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v3" />
+    <MESSAGE value="Testing force inc alg v4" />
+    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v4" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -332,6 +340,11 @@
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
           <line>378</line>
           <option name="timeStamp" value="110" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/SchemeForm/macro_element.py</url>
+          <line>180</line>
+          <option name="timeStamp" value="114" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
