@@ -41,8 +41,6 @@ class ElementMacroContainer(ElementContainer):
         self.initial_nodes_numbers_of_macro_elements = []
         # used to calculate renumbering nodes for elements
         self.nodes_amount_in_scheme_before_fragmentation = len(nodes_scheme)
-        # used to calculate future nodes' numbers for elements that are not fragmented
-        self.future_nodes_in_scheme = 0
         # need this to add 4node elements fragment to scheme 4node elements
         self.element_4node_scheme = None
 
@@ -110,9 +108,10 @@ class ElementMacroContainer(ElementContainer):
         :return:
         """
         list_of_element_containers = [i for i in [element_4node, element_frame, element_null] if i is not None]
-        self.future_nodes_in_scheme = len(self.nodes_scheme) - 1
+        # used to calculate future nodes' numbers for elements that are not fragmented
+        future_nodes_in_scheme = len(self.nodes_scheme) - 1
         for me in self:
-            n1 = self.future_nodes_in_scheme + 1
+            n1 = future_nodes_in_scheme + 1
             n2 = n1 + me.elements_amount_h
             n4 = n1 + (me.elements_amount_h + 1) * me.elements_amount_v
             n3 = n4 + me.elements_amount_h
@@ -123,7 +122,7 @@ class ElementMacroContainer(ElementContainer):
                         if node_number in me.EN:
                             index = me.EN.index(node_number)
                             element.EN[i] = future_me_element_nodes_numbers[index]
-            self.future_nodes_in_scheme = n3
+            future_nodes_in_scheme = n3
 
     def _delete_coincident_nodes(self, me_list, element_4node, element_frame, element_null):
         """
@@ -140,7 +139,7 @@ class ElementMacroContainer(ElementContainer):
         self._del_coincident_nodes_between_me_and_fragmented(me_list, deleted)
         # delete coincident nodes comparing nodes from 2 different ME
         self._del_coincident_nodes_between_two_me(me_list, deleted)
-        #
+        # change numbers in the EN arrays in elements in scheme according to the 'deleted' ndarray
         self._renumber_element_nodes_numbers(element_4node, element_frame, element_null, deleted)
 
     def _del_coincident_nodes_between_me_and_fragmented(self, me_list, deleted):
@@ -189,9 +188,9 @@ class ElementMacroContainer(ElementContainer):
                     for j in me_list[me2_num].nodes_numbers_me:  # iterate over nodes of another ME
                         node_me2 = self.nodes_scheme[j - deleted[j]]
                         if node_me1 is not node_me2:
+                            delta = np.absolute(node_me1.x - node_me2.x) + np.absolute(node_me1.y - node_me2.y)
                             # if nodes coincident
-                            if np.absolute(node_me1.x - node_me2.x) < ACCURACY_OF_STITCHING and \
-                                    np.absolute(node_me1.y - node_me2.y) < ACCURACY_OF_STITCHING:
+                            if delta < ACCURACY_OF_STITCHING:
                                 self.nodes_scheme.delete(j - deleted[j])  # delete node in 2nd ME
                                 for k in range(j, len(deleted)):
                                     if k not in checked_nodes:

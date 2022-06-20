@@ -21,7 +21,7 @@ A_pile = 0.09  # m^2 a = 0.3м, b = 0.3м
 I_pile = 0.3*(0.3**3)/12  # m^4
 # scheme data
 area_width = 20
-h_pile = 10
+h_pile = 5
 h_bot = 5
 mesh_size = 1
 rock_support = False

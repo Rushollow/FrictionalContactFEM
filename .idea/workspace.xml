@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Testing force inc alg v4">
+    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Testing force inc alg v5">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Problems/pile_in_soil.py" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/pile_in_soil.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/SchemeForm/macro_element.py" beforeDir="false" afterPath="$PROJECT_DIR$/SchemeForm/macro_element.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -295,7 +294,14 @@
       <option name="project" value="LOCAL" />
       <updated>1655274698374</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Testing force inc alg v5">
+      <created>1655362079987</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1655362079987</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -326,7 +332,8 @@
     <MESSAGE value="Testing force inc alg v2" />
     <MESSAGE value="Testing force inc alg v3" />
     <MESSAGE value="Testing force inc alg v4" />
-    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v4" />
+    <MESSAGE value="Testing force inc alg v5" />
+    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v5" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -343,8 +350,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/SchemeForm/macro_element.py</url>
-          <line>180</line>
-          <option name="timeStamp" value="114" />
+          <line>140</line>
+          <option name="timeStamp" value="120" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
