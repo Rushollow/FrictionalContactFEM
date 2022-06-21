@@ -63,7 +63,7 @@ class Lemke:
         self.table_previous = np.zeros(self.table.shape, dtype=float)
         self._basis_previous = self._basis.copy()
 
-        self.write_excel = False
+        self.write_excel = True
         if self.write_excel:
             self.workbook = xlsxwriter.Workbook('initial_table.xlsx')
             self.worksheet = self.workbook.add_worksheet(name='Sheet1')
@@ -369,7 +369,7 @@ class Lemke:
         Linear Complementary Problem solver
         :return: None
         """
-        if self._trivial_solution():
+        if self._trivial_solution() and self.const_load:
             print('LCP trivial solution')
             if not self.force_inc:
                 self._results_anim()
@@ -419,7 +419,7 @@ class Lemke:
                     self._results_anim()
                     break
 
-                if self.const_load:  # if stage was for const load
+                elif self.const_load:  # if stage was for const load
                     print("Normal solution of LCP const load in {} steps".format(step + 1))
                     self._next_load_vector()  # start force inc part (for variable load)
                     continue
@@ -463,5 +463,6 @@ class Lemke:
         # choose new leading row using min ratio
         self._form_min_ratio()
         self._form_leading_row()
+        # self._leading_row_next = np.argmax(self.table[:, self._leading_column])
         self._leading_row = self._leading_row_next
         self.const_load = False  # start/continue to solve for variable load

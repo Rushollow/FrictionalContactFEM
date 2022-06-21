@@ -25,7 +25,7 @@ class ElementNullContainer(ElementContainer):
         Adds an element to the system.
         :param EN: [1st node number, 2nd node number] list of 2 nodes numbers (contact pair) for null element
         :param cke: stiffness of the null-element (it must be average over Global Stiffness Matrix elements or near)
-        :param alpha: angle from the horizontal axis counter-clockwise to the direction of null-element
+        :param alpha: angle (RADIANS) from the horizontal axis counter-clockwise to the direction of null-element
         Assumed that horizontal axis directed to the right
         :param cosa: cosine of alpha
         :param sina: sinus of alpha
@@ -160,10 +160,10 @@ class ElementNull(ElementMethods):
         self.contact_pair = contact_pair
         # If we set alpha, calc cos and sin
         if alpha is not None:
-            if alpha == math.pi/2:
+            if np.isclose(alpha, math.pi/2):
                 self.cosa = 0
                 self.sina = 1
-            elif alpha == 0:
+            elif np.isclose(alpha, 0):
                 self.cosa = 1
                 self.sina = 0
             else:
