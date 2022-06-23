@@ -12,6 +12,8 @@ from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 from prettytable import PrettyTable
 
+
+
 # elements variables
 E_soil = 4.5e7  # Pa
 mu_soil = 0.27  #
@@ -24,7 +26,7 @@ I_pile = 0.3*(0.3**3)/12  # m^4
 # scheme data
 area_width = 20
 area_height = 5
-mesh_size = 1
+mesh_size = 0.1
 
 # force
 F = 1e6  # Н
@@ -82,9 +84,9 @@ for i, node_num in enumerate(nodes_along_pile[3:]):
 
 # adding null elements
 for pile_node, soil_left_node in zip(list_nodes_pile, list_nodes_left_soil):
-    element_null.add_element(EN=[pile_node, soil_left_node], cke=E_pile * A_pile, alpha=math.pi)
+    element_null.add_element(EN=[pile_node, soil_left_node], cke=E_pile * A_pile, alpha=math.pi, gap_length=0)
 for pile_node, soil_right_node in zip(list_nodes_pile, list_nodes_right_soil):
-    element_null.add_element(EN=[pile_node, soil_right_node], cke=1, alpha=0)
+    element_null.add_element(EN=[pile_node, soil_right_node], cke=1, alpha=0, gap_length=0)
 #element_null.add_element(EN=[1, 2], cke=1, alpha=0)
 
 # form R, RF and solve SLAE
@@ -98,8 +100,8 @@ sm.support_nodes(nodes_to_sup_sides, direction='h')
 
 tip_pile_node = int(area_height / mesh_size)  # int(h_pile / mesh_size)+1 - its top node of the pile
 lv_const = LoadVector()
-lv_const.add_own_weight_to_rf(nodes_scheme=nodes, element_container_list=[element_4node])
-lv_const.add_concentrated_force(-F, tip_pile_node * 2 + 1)
+# lv_const.add_own_weight_to_rf(nodes_scheme=nodes, element_container_list=[element_4node])
+# lv_const.add_concentrated_force(-F, tip_pile_node * 2 + 1)
 lv_variable = LoadVector()
 lv_variable.add_concentrated_force(F, tip_pile_node * 2)
 # lv_variable.add_concentrated_force(-F, 130*2+1, vector_num=1)
@@ -114,15 +116,10 @@ print("Time: ", last)
 
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
-autorun = True
+autorun = False
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=80, autorun=autorun)
-
-# calculate time
-end = time.time()
-last = end - start
-print("Time: ", last)
+                   partition=10, scale_def=1e4, autorun=autorun)
 
 if autorun:
     mytable = PrettyTable()

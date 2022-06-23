@@ -3,9 +3,6 @@ import numpy as np
 from numba import jit
 
 import pyqtgraph as pg
-import pyqtgraph.examples
-pyqtgraph.examples.run()
-
-
-from LCP.lemke import Lemke
+# import pyqtgraph.examples
+# pyqtgraph.examples.run()
 
