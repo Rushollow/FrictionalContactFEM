@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Testing force inc alg v7">
+    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Testing force inc alg v9">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/initial_table.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/LCP/lemke.py" beforeDir="false" afterPath="$PROJECT_DIR$/LCP/lemke.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Problems/initial_table.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/initial_table.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Problems/pile_in_soil.py" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/pile_in_soil.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test2.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,7 +51,7 @@
       <recent name="C:\!MyFiles\PhD\FrictionalContactFEM\Examples" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.pile_in_soil">
+  <component name="RunManager" selected="Python.analytical_beam_friction">
     <configuration name="analytical_beam_friction" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ContactFEM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -77,7 +73,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="frame_and_4_node" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="beam_with_force_incrementation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ContactFEM" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -89,7 +85,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples/frame_and_4_node.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples/beam_with_force_incrementation.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -163,11 +159,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.analytical_beam_friction" />
+        <item itemvalue="Python.beam_with_force_incrementation" />
         <item itemvalue="Python.pile_in_soil" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.plates_triangle_gap" />
-        <item itemvalue="Python.frame_and_4_node" />
-        <item itemvalue="Python.analytical_beam_friction" />
       </list>
     </recent_temporary>
   </component>
@@ -320,7 +316,21 @@
       <option name="project" value="LOCAL" />
       <updated>1655792938093</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="Testing force inc alg v8">
+      <created>1655969065369</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1655969065369</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Testing force inc alg v9">
+      <created>1655969252299</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1655969252299</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -354,7 +364,9 @@
     <MESSAGE value="Testing force inc alg v5" />
     <MESSAGE value="Testing force inc alg v6" />
     <MESSAGE value="Testing force inc alg v7" />
-    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v7" />
+    <MESSAGE value="Testing force inc alg v8" />
+    <MESSAGE value="Testing force inc alg v9" />
+    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v9" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

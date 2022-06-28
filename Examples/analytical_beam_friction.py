@@ -16,7 +16,7 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 # set inputs
 q = 3975  # N/m Uniformly Distributed Load
 general_length = 260  # meter
-n = 6  # amount of nodes of frame MINIMUM 2
+n = 50  # amount of nodes of frame MINIMUM 2
 Ar = math.pi / 2 * (1.5**2 - (1.5 - 0.02)**2)
 Er = 1.95e9  # N/m
 Ix = math.pi * 1.5**2 * 0.02 / 8  #
@@ -58,7 +58,7 @@ autorun = True
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=1, autorun=autorun)
+                   partition=10, scale_def=200, autorun=autorun)
 
 if autorun:
     mytable = PrettyTable()
