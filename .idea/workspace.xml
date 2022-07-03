@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Testing force inc alg v9">
+    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Adding force increment algorithm v14">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-05-11_12_07_p_m___Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-05-11_12_07_p_m___Changes_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/beam_with_force_incrementation.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/beam_with_force_incrementation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Problems/pile_in_soil.py" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/pile_in_soil.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +24,7 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitSEFilterConfiguration">
     <file-type-list>
@@ -43,15 +46,31 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Examples" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\!MyFiles\PhD\FrictionalContactFEM\Examples" />
-    </key>
-  </component>
   <component name="RunManager" selected="Python.analytical_beam_friction">
+    <configuration name="Symmetric_detach" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ContactFEM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Examples" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples/Symmetric_detach.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="analytical_beam_friction" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ContactFEM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -94,6 +113,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="frame_and_4_node" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="ContactFEM" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Examples" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples/frame_and_4_node.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="pile_in_soil" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ContactFEM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -115,55 +155,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plates_triangle_gap" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="ContactFEM" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Examples" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Examples/plates_triangle_gap.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="ContactFEM" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.analytical_beam_friction" />
         <item itemvalue="Python.beam_with_force_incrementation" />
         <item itemvalue="Python.pile_in_soil" />
-        <item itemvalue="Python.test" />
-        <item itemvalue="Python.plates_triangle_gap" />
+        <item itemvalue="Python.Symmetric_detach" />
+        <item itemvalue="Python.frame_and_4_node" />
       </list>
     </recent_temporary>
   </component>
@@ -253,84 +251,7 @@
       <option name="project" value="LOCAL" />
       <updated>1653640014069</updated>
     </task>
-    <task id="LOCAL-00012" summary="Adding force increment algorithm v15">
-      <created>1653975739695</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1653975739700</updated>
-    </task>
-    <task id="LOCAL-00013" summary="Adding force increment algorithm v16">
-      <created>1654154932482</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1654154932482</updated>
-    </task>
-    <task id="LOCAL-00014" summary="Testing force inc alg v1">
-      <created>1654500167022</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1654500167022</updated>
-    </task>
-    <task id="LOCAL-00015" summary="Testing force inc alg v2">
-      <created>1654586023845</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1654586023845</updated>
-    </task>
-    <task id="LOCAL-00016" summary="Testing force inc alg v3">
-      <created>1655191073381</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1655191073381</updated>
-    </task>
-    <task id="LOCAL-00017" summary="Testing force inc alg v4">
-      <created>1655274698374</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1655274698374</updated>
-    </task>
-    <task id="LOCAL-00018" summary="Testing force inc alg v5">
-      <created>1655362079987</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1655362079987</updated>
-    </task>
-    <task id="LOCAL-00019" summary="Testing force inc alg v6">
-      <created>1655713880073</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1655713880073</updated>
-    </task>
-    <task id="LOCAL-00020" summary="Testing force inc alg v7">
-      <created>1655792938093</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1655792938093</updated>
-    </task>
-    <task id="LOCAL-00021" summary="Testing force inc alg v8">
-      <created>1655969065369</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1655969065369</updated>
-    </task>
-    <task id="LOCAL-00022" summary="Testing force inc alg v9">
-      <created>1655969252299</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1655969252299</updated>
-    </task>
-    <option name="localTasksCounter" value="23" />
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -355,18 +276,7 @@
     <MESSAGE value="Adding force increment algorithm v12" />
     <MESSAGE value="Adding force increment algorithm v13" />
     <MESSAGE value="Adding force increment algorithm v14" />
-    <MESSAGE value="Adding force increment algorithm v15" />
-    <MESSAGE value="Adding force increment algorithm v16" />
-    <MESSAGE value="Testing force inc alg v1" />
-    <MESSAGE value="Testing force inc alg v2" />
-    <MESSAGE value="Testing force inc alg v3" />
-    <MESSAGE value="Testing force inc alg v4" />
-    <MESSAGE value="Testing force inc alg v5" />
-    <MESSAGE value="Testing force inc alg v6" />
-    <MESSAGE value="Testing force inc alg v7" />
-    <MESSAGE value="Testing force inc alg v8" />
-    <MESSAGE value="Testing force inc alg v9" />
-    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v9" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding force increment algorithm v14" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -378,13 +288,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
-          <line>378</line>
-          <option name="timeStamp" value="131" />
+          <line>16</line>
+          <option name="timeStamp" value="96" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
-          <line>23</line>
-          <option name="timeStamp" value="133" />
+          <url>file://$PROJECT_DIR$/Examples/analytical_beam_friction.py</url>
+          <line>81</line>
+          <option name="timeStamp" value="100" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -399,6 +309,7 @@
       <configuration name="PythonConfigurationType">
         <watch expression="self.table" language="Python" />
         <watch expression="self._min_ratio" />
+        <watch expression="self.table" language="Python" />
       </configuration>
     </watches-manager>
   </component>

@@ -33,7 +33,7 @@ nodes.add_node(length*4, -gap_len)  # 7
 # set inputs
 Ar = 1  # 1              4*7e-4
 Er = 1  # 1         2.04e11
-Ix = 0.5  # 0.5          (4e-8*(7**3))/12
+Ix = 1  # 0.5          (4e-8*(7**3))/12
 F = 1  # 1  # Newtons        10e3
 
 # add elements
@@ -52,7 +52,7 @@ element_null.add_element(EN=[7, 4], cke=1, alpha=math.pi/2, add_t_el=True)
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
 sm.support_nodes(list_of_nodes=[5, 6, 7], direction='hv')  # sup for unilateral
 # HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-SITUATION = 5
+SITUATION = 2
 lv_const = LoadVector()
 lv_variable = None
 if SITUATION == 1:  # just 2 const force
@@ -82,7 +82,7 @@ elif SITUATION == 5:  #
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=1, autorun=True)
+                   partition=10, scale_def=0.5, autorun=True)
 
 for i in range(len(graph.lemke.zn_anim)):
     print(f'{i}: p:{graph.lemke.p_anim[i]} zn:{graph.lemke.zn_anim[i]} xn:{graph.lemke.xn_anim[i]}'

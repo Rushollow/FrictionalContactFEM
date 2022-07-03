@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import time
+import pyqtgraph as pg
 from prettytable import PrettyTable
 
 from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector
@@ -14,32 +15,33 @@ start = time.time()
 np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
 # set inputs
+
 q = 3975  # N/m Uniformly Distributed Load
-general_length = 260  # meter
-n = 50  # amount of nodes of frame MINIMUM 2
-Ar = math.pi / 2 * (1.5**2 - (1.5 - 0.02)**2)
+general_length = 10  # meter
+n = 10  # amount of nodes of frame MINIMUM 2
+Ar = math.pi / 2 * (1.5 ** 2 - (1.5 - 0.02) ** 2)
 Er = 1.95e9  # N/m
-Ix = math.pi * 1.5**2 * 0.02 / 8  #
+Ix = math.pi * 1.5 ** 2 * 0.02 / 8  #
 F = q * general_length / (n - 1)  # concentrated force in each node
 
 nodes = NodeContainer()
 for i in range(n):  # add nodes for frame
-    nodes.add_node(i*general_length/(n-1), 0)
+    nodes.add_node(i * general_length / (n - 1), 0)
 nodes_to_sup = []
-for i in range(n-1):  # add nodes for supports
-    nodes.add_node((i+1)*general_length/(n-1), 0)
-    nodes_to_sup.append(n+i)
+for i in range(n - 1):  # add nodes for supports
+    nodes.add_node((i + 1) * general_length / (n - 1), 0)
+    nodes_to_sup.append(n + i)
 
 # add elements
 element_4node = None
 # add frame elements
 element_frame = ElementFrameContainer(nodes_scheme=nodes)
-for i in range(n-1):
-    element_frame.add_element(EN=[i, i+1], E=Er, A=Ar, I=Ix)
+for i in range(n - 1):
+    element_frame.add_element(EN=[i, i + 1], E=Er, A=Ar, I=Ix)
 # n null elements and adding t null elements silently
 element_null = ElementNullContainer(nodes_scheme=nodes)
 for i, j in enumerate(range(n, len(nodes))):
-    element_null.add_element(EN=[j, i+1], cke=1, alpha=math.pi / 2, add_t_el=True)
+    element_null.add_element(EN=[j, i + 1], cke=1, alpha=math.pi / 2, add_t_el=True)
 
 # form R, RF and solve SLAE
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
@@ -47,11 +49,39 @@ sm.support_nodes(list_of_nodes=nodes_to_sup, direction='hv')  # sup for unilater
 sm.support_nodes(list_of_nodes=[0], direction='hvr')  # sup for zero left node
 
 lv_const = LoadVector()
-for node_num in range(1, n-1):
-    lv_const.add_concentrated_force(force=-F, degree_of_freedom=node_num*2+1)
-lv_const.add_concentrated_force(force=-F/2, degree_of_freedom=(n-1)*2+1)  # last right node (half-length q)
+for node_num in range(1, n - 1):
+    lv_const.add_concentrated_force(force=-F, degree_of_freedom=node_num * 2 + 1)
+lv_const.add_concentrated_force(force=-F / 2, degree_of_freedom=(n - 1) * 2 + 1)  # last right node (half-length q)
 lv_variable = LoadVector()
-lv_variable.add_concentrated_force(force=F, degree_of_freedom=(n-1)*2)
+lv_variable.add_concentrated_force(force=F, degree_of_freedom=(n - 1) * 2)
+
+# create data for analytical solution
+from input_data import FRICTION_COEFFICIENT
+Fn = F * FRICTION_COEFFICIENT
+def u_func(z_list, lc):
+    res = []
+    for z in z_list:
+        if z > lc:
+            res.append(FRICTION_COEFFICIENT * Fn * (z-lc)**2 / (2 * Er))
+        else:
+            res.append(0)
+    return res
+def N_func(z_list, lc):
+    res = []
+    for z in z_list:
+        if z > lc:
+            res.append(FRICTION_COEFFICIENT * Fn * (z-lc))
+        else:
+            res.append(0)
+    return res
+lf = F / (FRICTION_COEFFICIENT * Fn)  # slippage distance length
+lc = general_length - lf
+
+z_list = list(np.linspace(0, general_length, n, endpoint=True))
+y_analytical = u_func(z_list, lc)[1:]
+y_numerical = []
+
+
 
 autorun = True
 # plot --------------------------------------------------------------------------
@@ -66,7 +96,11 @@ if autorun:
     for i in range(len(graph.lemke.zn_anim)):
         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
+        if graph.lemke.p_anim[i] > 0.9:
+            y_numerical.append(list(graph.lemke.zt_anim[i]))
     print(mytable)
+    print(y_analytical)
+    print(y_numerical)
 # calculate time
 end = time.time()
 last = end - start

@@ -26,7 +26,7 @@ I_pile = 0.3*(0.3**3)/12  # m^4
 # scheme data
 area_width = 20
 area_height = 5
-mesh_size = 0.5
+mesh_size = 0.25
 
 # force
 F = 1e6  # Н
@@ -112,14 +112,14 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 # calculate time
 end = time.time()
 last = end - start
-print("Time: ", last)
+print("Time scheme form: ", last)
 
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
 autorun = True
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=1e1, autorun=autorun)
+                   partition=10, scale_def=3e3, autorun=autorun)
 
 if autorun:
     mytable = PrettyTable()
@@ -135,3 +135,6 @@ if autorun:
 if __name__ == "__main__":
     graph.fill_arrays_scheme()  # form info for plot at UI
     application(graph)
+
+
+# 0.22448
