@@ -16,13 +16,15 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
 # set inputs
 
-q = 3975  # N/m Uniformly Distributed Load
+q = 1000  # N/m Uniformly Distributed Load
 general_length = 10  # meter
-n = 10  # amount of nodes of frame MINIMUM 2
+n = 11  # amount of nodes of frame MINIMUM 2
 Ar = math.pi / 2 * (1.5 ** 2 - (1.5 - 0.02) ** 2)
 Er = 1.95e9  # N/m
 Ix = math.pi * 1.5 ** 2 * 0.02 / 8  #
 F = q * general_length / (n - 1)  # concentrated force in each node
+
+
 
 nodes = NodeContainer()
 for i in range(n):  # add nodes for frame
@@ -52,17 +54,18 @@ lv_const = LoadVector()
 for node_num in range(1, n - 1):
     lv_const.add_concentrated_force(force=-F, degree_of_freedom=node_num * 2 + 1)
 lv_const.add_concentrated_force(force=-F / 2, degree_of_freedom=(n - 1) * 2 + 1)  # last right node (half-length q)
+#lv_const.add_concentrated_force(force=F, degree_of_freedom=(n - 1) * 2)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 lv_variable = LoadVector()
 lv_variable.add_concentrated_force(force=F, degree_of_freedom=(n - 1) * 2)
 
 # create data for analytical solution
 from input_data import FRICTION_COEFFICIENT
-Fn = F * FRICTION_COEFFICIENT
+Fn = q
 def u_func(z_list, lc):
     res = []
     for z in z_list:
         if z > lc:
-            res.append(FRICTION_COEFFICIENT * Fn * (z-lc)**2 / (2 * Er))
+            res.append(FRICTION_COEFFICIENT * Fn * (z-lc)**2 / (2 * Er*Ar))
         else:
             res.append(0)
     return res
@@ -96,11 +99,13 @@ if autorun:
     for i in range(len(graph.lemke.zn_anim)):
         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
-        if graph.lemke.p_anim[i] > 0.9:
-            y_numerical.append(list(graph.lemke.zt_anim[i]))
     print(mytable)
+    for i in range(len(graph.lemke.zn_anim)):
+        print(list(graph.lemke.zt_anim[i]))
     print(y_analytical)
-    print(y_numerical)
+    print(F**2 / (2*Er*Ar*FRICTION_COEFFICIENT*Fn))
+    print(f'lf={lf}, lc={lc}')
+    #print(list(graph.lemke.zt_anim[3]))
 # calculate time
 end = time.time()
 last = end - start
