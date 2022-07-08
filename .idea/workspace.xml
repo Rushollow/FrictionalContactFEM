@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/Problems solutions.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Problems solutions.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LCP/lemke.py" beforeDir="false" afterPath="$PROJECT_DIR$/LCP/lemke.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Problems/pile_in_soil.py" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/pile_in_soil.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -258,7 +255,14 @@
       <option name="project" value="LOCAL" />
       <updated>1656844142014</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Testing force inc alg v2">
+      <created>1657242205315</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1657242205315</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -284,7 +288,8 @@
     <MESSAGE value="Adding force increment algorithm v13" />
     <MESSAGE value="Adding force increment algorithm v14" />
     <MESSAGE value="Testing force inc alg v1" />
-    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v1" />
+    <MESSAGE value="Testing force inc alg v2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v2" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

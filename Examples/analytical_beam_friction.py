@@ -18,7 +18,7 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
 q = 1000  # N/m Uniformly Distributed Load
 general_length = 10  # meter
-n = 11  # amount of nodes of frame MINIMUM 2
+n = 160  # amount of nodes of frame MINIMUM 2
 Ar = math.pi / 2 * (1.5 ** 2 - (1.5 - 0.02) ** 2)
 Er = 1.95e9  # N/m
 Ix = math.pi * 1.5 ** 2 * 0.02 / 8  #
@@ -54,7 +54,7 @@ lv_const = LoadVector()
 for node_num in range(1, n - 1):
     lv_const.add_concentrated_force(force=-F, degree_of_freedom=node_num * 2 + 1)
 lv_const.add_concentrated_force(force=-F / 2, degree_of_freedom=(n - 1) * 2 + 1)  # last right node (half-length q)
-#lv_const.add_concentrated_force(force=F, degree_of_freedom=(n - 1) * 2)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+lv_const.add_concentrated_force(force=F, degree_of_freedom=(n - 1) * 2)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 lv_variable = LoadVector()
 lv_variable.add_concentrated_force(force=F, degree_of_freedom=(n - 1) * 2)
 
@@ -67,7 +67,7 @@ def u_func(z_list, lc):
         if z > lc:
             res.append(FRICTION_COEFFICIENT * Fn * (z-lc)**2 / (2 * Er*Ar))
         else:
-            res.append(0)
+            res.append(0.0)
     return res
 def N_func(z_list, lc):
     res = []
@@ -75,7 +75,7 @@ def N_func(z_list, lc):
         if z > lc:
             res.append(FRICTION_COEFFICIENT * Fn * (z-lc))
         else:
-            res.append(0)
+            res.append(0.0)
     return res
 lf = F / (FRICTION_COEFFICIENT * Fn)  # slippage distance length
 lc = general_length - lf
@@ -89,7 +89,7 @@ y_numerical = []
 autorun = True
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
-graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
+graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=None,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
                    partition=10, scale_def=200, autorun=autorun)
 
@@ -102,10 +102,14 @@ if autorun:
     print(mytable)
     for i in range(len(graph.lemke.zn_anim)):
         print(list(graph.lemke.zt_anim[i]))
-    print(y_analytical)
-    print(F**2 / (2*Er*Ar*FRICTION_COEFFICIENT*Fn))
-    print(f'lf={lf}, lc={lc}')
-    #print(list(graph.lemke.zt_anim[3]))
+    y_numerical = list(graph.lemke.zt_anim[-1])
+    print("A:", y_analytical)
+    print("N:", y_numerical)
+    err = 0
+    for i, j in zip(y_analytical, y_numerical):
+        if min(i, j) != 0:
+            err += abs(i - j) / min(i, j)
+    print("Err:", err/len(y_analytical)*100, "%")
 # calculate time
 end = time.time()
 last = end - start
