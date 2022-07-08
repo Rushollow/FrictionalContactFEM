@@ -23,6 +23,7 @@ own_weight_soil = 22661.1  # N/m^3
 E_pile = 2e10  # Pa
 A_pile = 0.09  # m^2 a = 0.3м, b = 0.3м
 I_pile = 0.3*(0.3**3)/12  # m^4
+print(I_pile)
 # scheme data
 area_width = 20
 area_height = 5
@@ -119,7 +120,7 @@ print("Time scheme form: ", last)
 autorun = True
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=3e3, autorun=autorun)
+                   partition=10, scale_def=1e3, autorun=autorun)
 
 if autorun:
     mytable = PrettyTable()
@@ -129,12 +130,10 @@ if autorun:
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
     print(mytable)
 
-    print(tip_pile_node)
-
 
 if __name__ == "__main__":
     graph.fill_arrays_scheme()  # form info for plot at UI
     application(graph)
 
 
-# 0.22448
+# коэф трения 0.6 плоская деформация есть зона слипания, проскальзывания

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="Adding force increment algorithm v14">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Examples/Problems solutions.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Problems solutions.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LCP/lemke.py" beforeDir="false" afterPath="$PROJECT_DIR$/LCP/lemke.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Problems/pile_in_soil.py" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/pile_in_soil.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/input_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/input_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -48,7 +49,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.beam_with_force_incrementation">
+  <component name="RunManager" selected="Python.analytical_beam_friction">
     <configuration name="Symmetric_detach" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="ContactFEM" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -156,8 +157,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.beam_with_force_incrementation" />
         <item itemvalue="Python.analytical_beam_friction" />
+        <item itemvalue="Python.beam_with_force_incrementation" />
         <item itemvalue="Python.pile_in_soil" />
         <item itemvalue="Python.Symmetric_detach" />
         <item itemvalue="Python.frame_and_4_node" />
@@ -250,7 +251,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653640014069</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Testing force inc alg v1">
+      <created>1656844142014</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1656844142014</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -275,7 +283,8 @@
     <MESSAGE value="Adding force increment algorithm v12" />
     <MESSAGE value="Adding force increment algorithm v13" />
     <MESSAGE value="Adding force increment algorithm v14" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding force increment algorithm v14" />
+    <MESSAGE value="Testing force inc alg v1" />
+    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -289,6 +298,11 @@
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
           <line>16</line>
           <option name="timeStamp" value="96" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Problems/pile_in_soil.py</url>
+          <line>27</line>
+          <option name="timeStamp" value="101" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
