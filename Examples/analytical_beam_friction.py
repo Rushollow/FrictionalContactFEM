@@ -16,13 +16,14 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
 # set inputs
 
-q = 1000  # N/m Uniformly Distributed Load
-general_length = 10  # meter
+q = 3975  # N/m Uniformly Distributed Load
+general_length = 260  # meter
 n = 160  # amount of nodes of frame MINIMUM 2
 Ar = math.pi / 2 * (1.5 ** 2 - (1.5 - 0.02) ** 2)
 Er = 1.95e9  # N/m
 Ix = math.pi * 1.5 ** 2 * 0.02 / 8  #
 F = q * general_length / (n - 1)  # concentrated force in each node
+Fv = 243.75e3  # N (force pulling to the right)
 
 
 
@@ -54,9 +55,9 @@ lv_const = LoadVector()
 for node_num in range(1, n - 1):
     lv_const.add_concentrated_force(force=-F, degree_of_freedom=node_num * 2 + 1)
 lv_const.add_concentrated_force(force=-F / 2, degree_of_freedom=(n - 1) * 2 + 1)  # last right node (half-length q)
-lv_const.add_concentrated_force(force=F, degree_of_freedom=(n - 1) * 2)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+lv_const.add_concentrated_force(force=Fv, degree_of_freedom=(n - 1) * 2)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 lv_variable = LoadVector()
-lv_variable.add_concentrated_force(force=F, degree_of_freedom=(n - 1) * 2)
+lv_variable.add_concentrated_force(force=Fv, degree_of_freedom=(n - 1) * 2)
 
 # create data for analytical solution
 from input_data import FRICTION_COEFFICIENT
@@ -77,7 +78,7 @@ def N_func(z_list, lc):
         else:
             res.append(0.0)
     return res
-lf = F / (FRICTION_COEFFICIENT * Fn)  # slippage distance length
+lf = Fv / (FRICTION_COEFFICIENT * Fn)  # slippage distance length
 lc = general_length - lf
 
 z_list = list(np.linspace(0, general_length, n, endpoint=True))
@@ -100,15 +101,15 @@ if autorun:
         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
     print(mytable)
-    for i in range(len(graph.lemke.zn_anim)):
-        print(list(graph.lemke.zt_anim[i]))
+    # for i in range(len(graph.lemke.zn_anim)):
+    #     print(list(graph.lemke.zt_anim[i]))
     y_numerical = list(graph.lemke.zt_anim[-1])
-    print("A:", y_analytical)
-    print("N:", y_numerical)
+    print(f'Analytical: {y_analytical}, lc:{lc}, lf{lf}, L:{general_length}')
+    print("Numerical: ", y_numerical)
     err = 0
     for i, j in zip(y_analytical, y_numerical):
         if min(i, j) != 0:
-            err += abs(i - j) / min(i, j)
+            err += abs(i - j) / i
     print("Err:", err/len(y_analytical)*100, "%")
 # calculate time
 end = time.time()
