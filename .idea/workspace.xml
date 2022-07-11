@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="62fb9697-97e0-4637-af24-51124691d631" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Examples/Problems solutions.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/Problems solutions.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" beforeDir="false" afterPath="$PROJECT_DIR$/Examples/analytical_beam_friction.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Problems/initial_table.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/initial_table.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Problems/pile_in_soil.py" beforeDir="false" afterPath="$PROJECT_DIR$/Problems/pile_in_soil.py" afterDir="false" />
@@ -272,7 +271,14 @@
       <option name="project" value="LOCAL" />
       <updated>1657243804616</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Testing force inc alg v4">
+      <created>1657505424038</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1657505424038</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -300,7 +306,8 @@
     <MESSAGE value="Testing force inc alg v1" />
     <MESSAGE value="Testing force inc alg v2" />
     <MESSAGE value="Testing force inc alg v3" />
-    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v3" />
+    <MESSAGE value="Testing force inc alg v4" />
+    <option name="LAST_COMMIT_MESSAGE" value="Testing force inc alg v4" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -314,6 +321,11 @@
           <url>file://$PROJECT_DIR$/LCP/lemke.py</url>
           <line>16</line>
           <option name="timeStamp" value="96" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Examples/analytical_beam_friction.py</url>
+          <line>30</line>
+          <option name="timeStamp" value="102" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

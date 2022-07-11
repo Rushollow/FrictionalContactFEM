@@ -108,7 +108,7 @@ lv_variable.add_concentrated_force(F, tip_pile_node * 2)
 
 
 # set to show only first 5 numbers when printing numpy values
-np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
+np.set_printoptions(formatter={'float': lambda x: "{0:0.9f}".format(x)})
 # calculate time
 end = time.time()
 last = end - start
