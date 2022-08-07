@@ -29,7 +29,8 @@ area_height = 5
 mesh_size = 0.25
 
 # force
-F = 1e6  # Н
+F = 1e3  # Н
+F_const = 2.135184824469461 * F
 # PLANE_STRAIN = True
 # FRICTION_COEFFICIENT = 0.19
 # ACCURACY_OF_LCP = 10**(-14)
@@ -100,6 +101,7 @@ sm.support_nodes(nodes_to_sup_sides, direction='h')
 
 tip_pile_node = int(area_height / mesh_size)  # int(h_pile / mesh_size)+1 - its top node of the pile
 lv_const = LoadVector()
+# lv_const.add_concentrated_force(F_const, tip_pile_node * 2)
 # lv_const.add_own_weight_to_rf(nodes_scheme=nodes, element_container_list=[element_4node])
 # lv_const.add_concentrated_force(-F, tip_pile_node * 2 + 1)
 lv_variable = LoadVector()
@@ -136,3 +138,8 @@ if __name__ == "__main__":
 
 
 # коэф трения 0.6 плоская деформация есть зона слипания, проскальзывания
+# ACCURACY_OF_LCP = 10**(-4)
+# variable
+# 88.026041068 366.082349865 843.283446894 950.202622545 xn top right
+# const
+# 88.026041068 366.082349865 843.283446893 950.202622545 xn top right
