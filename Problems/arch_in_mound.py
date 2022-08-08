@@ -1,26 +1,24 @@
 import time
 import numpy as np
-from matplotlib import pyplot as plt
-from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector, solve_slae
+from prettytable import PrettyTable
+
+from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector
 from FEM.element_null import ElementNullContainer  # to add null-element
 from FEM.element_4node import Element4NodeLinearContainer  # to add 4node element
 from FEM.element_frame import ElementFrameContainer  # to add frame element
 from SchemeForm.macro_element import ElementMacroContainer
-from LCP.initial_table import InitialTable  # to form initial table for LCP
-from LCP.lemke import Lemke  # to solve LCP
-from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
 
-from Visualize.plot_data_scheme import PlotScheme  # for visualizing
-from GUI.tkinter_gui import ContactFEM
+from Visualize.plot_data_qt import PlotScheme  # for visualizing
+from GUI.PyQt.contactFEM import application
 from constants_data import Arch
 from input_data import ARCH_SPAN, ARCH_HEIGHT
 
 # set variables scheme
-num_me_in_quarter = 10  # 15 on how many parts quarter with ME will be divided. Better be more than frag_amount_v
-frag_amount_v = 10  # 14 how much each quarter section will be fragmented in vertical direction
+num_me_in_quarter = 25  # 15 on how many parts quarter with ME will be divided. Better be more than frag_amount_v
+frag_amount_v = 30  # 14 how much each quarter section will be fragmented in vertical direction
 frag_amount_h = 1  # how much each quarter section will be fragmented in horizontal direction (USE num_me_in_quarter instead!!)
 frag_amount_v_under_arch = frag_amount_v  # better be equal to frag_amount_v
-right_border = ARCH_SPAN + 20
+right_border = ARCH_SPAN + 30
 top_border = ARCH_HEIGHT + 20
 bottom_border = -10
 left_border = -right_border
@@ -123,6 +121,8 @@ alpha_arch_null_el_left = sorted([np.pi - i for i in alpha_arch_null_el])
 alpha_arch_null_el.sort()
 alpha_arch_null_el.append(np.pi/2)
 alpha_arch_null_el += alpha_arch_null_el_left
+
+alpha_deg = np.rad2deg(np.array(alpha_arch_null_el))
 # add central node for arch
 nodes_frame.add_node(0, ARCH_HEIGHT)
 # copy nodes of the arch and pile to the left
@@ -272,7 +272,7 @@ sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node
 sm.support_nodes(nodes_to_support_bottom, direction='v')
 sm.support_nodes(nodes_to_support_side, direction='h')
 # sm.support_nodes([0, len(nodes_frame)-1], direction='hv')  # support both piles
-lv = LoadVector()
+lv_const = LoadVector()
 F = 0
 i = 1
 # for node_num in external_force_nodes:
@@ -282,19 +282,12 @@ i = 1
     # lv.add_concentrated_force(-F, node_num * 2 + 1)
     # print(f'load:{-F} to {node_num}')
     # i += 1
-lv.add_own_weight_to_rf(nodes_scheme=nodes, element_container_list=[element_4node])
-
-u_linear = solve_slae(sm, lv)
+lv_const.add_own_weight_to_rf(nodes_scheme=nodes, element_container_list=[element_4node])
+lv_variable = None
 
 # set to show only first 5 numbers when printing numpy values
 np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
-# do stuff about contact SM and LV
-intl_table = InitialTable(element_null, sm, lv, u_linear)
-intl_table.form_initial_table()
-# do lemke ot solve LCP
-lemke = Lemke(intl_table)
-lemke.lcp_solve()
 
 # # plot info
 # print(f'nodes_right_pile:           {nodes_right_pile}\n'
@@ -314,77 +307,28 @@ lemke.lcp_solve()
 #     print(f'null {i} EN:{el.EN}, MI:{el.MI}, alpha:{el.alpha}')
 
 
+autorun = True
 # plot --------------------------------------------------------------------------
-# calculate data to plot
-graph = PlotScheme(nodes, element_null, sm, lv, u_linear, lemke,
-                   element_container_obj=element_4node, element_frame=element_frame,
-                   partition=10, scale_def=10, text=False)
+# Calculation and plotting object
+graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
+                   element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
+                   partition=10, scale_def=3, autorun=autorun)
 
+if autorun:
+    mytable = PrettyTable()
+    mytable.field_names = ['step', 'p', 'zn', 'xn', 'zt', 'xt']
+    for i in range(len(graph.lemke.zn_anim)):
+        mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
+                         graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
+    print(mytable)
 # calculate time
 end = time.time()
 last = end - start
 print("Time: ", last)
-print(f'Right Border:{right_border}m\n'
-      f'Maximum lemke zn:{max(lemke.xn_anim[-1])},\n'
-      f'Minimum u_linear{min(u_linear)},\n'
-      f'Minimum u_contact:{min(graph.u_contact_anim[-1])}')
-# min_u_frame = 0
-# for el in element_frame:
-#     for node_num in el.EN:
-#         if graph.u_contact_anim[-1][nodes[node_num].indices[1]] < min_u_frame:
-#             min_u_frame = graph.u_contact_anim[-1][nodes[node_num].indices[1]]
-# print(f'Minimum u for frame nodes:{min_u_frame}')
-# for i, node in enumerate(nodes):
-#     print(f'{i} '
-#           f'linear h:{str("%.4f" % u_linear[node.indices[0]])} v:{str("%.4f" % u_linear[node.indices[1]])}'
-#           f'contact h:{str("%.4f" % graph.u_contact_anim[-1][node.indices[0]])}, v:{str("%.4f" % graph.u_contact_anim[-1][node.indices[1]])},'
-#           f' load:{lv.rf[node.indices[1]]}')
-# smt_sub_sm = sm.r.T - sm.r
-# print(f'SM rank:{np.linalg.matrix_rank(sm.r)}, rows:{sm.r.shape[1]}, cond:{np.linalg.cond(sm.r)} smT-sm max:{np.max(smt_sub_sm)}, min:{np.min(smt_sub_sm)}')
 
-# Contact info
-print(f'zn: {lemke.zn}\nzt:{lemke.zt}')
-print(f'xn: {lemke.xn}\nxt:{lemke.xt}')
-print(f'min zn:{min(lemke.zn)}, max zn: {max(lemke.zn)}, min zt:{min(lemke.zt)}, max zt:{max(lemke.zt)}')
-print(f'min xn:{min(lemke.xn)}, max xn: {max(lemke.xn)}, min xt:{min(lemke.xt)}, max xt:{max(lemke.xt)}')
-print(f'sum xn:{sum(lemke.xn)}, sum xt{sum(lemke.xt)}')
-print(f'max_u_linear: {max(u_linear)}, min_u_linear: {min(u_linear)}')
-print(f'FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP:{FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP}')
-
-app = ContactFEM(graph=graph)
-app.mainloop()
-
-ps = PlotScheme(nodes, element_null, sm, lv, u_linear=u_linear, lemke=lemke, element_container_obj=element_4node,
-                element_frame=element_frame, partition=10, scale_def=200)
-
-# Scheme with nodes numbers
-fig1, ax1 = plt.subplots(1, 1)
-plt.gca().set_aspect('equal', adjustable='box')
-for i, node in enumerate(nodes.nodes_list):
-    ax1.scatter(node.x, node.y, color='lightgreen', zorder=3, marker='s')
-ps.plot_list_of_elements(ax1)
-for i, node in enumerate(nodes.nodes_list):
-    ax1.scatter(node.x, node.y, color='lightgreen', zorder=3)
-    dx = 0.2
-    dy = 0.2
-    if node.x < 0:
-        dx *= -1
-    if node.y < 0:
-        dy *= -1
-    if i < nodes_amount_frame:
-        ax1.text(node.x - dx, node.y - dy, str("%.0f" % i), color='blue')
-    elif i > len(nodes) - (frag_amount_v_under_arch + 1) * (frag_amount_v_under_arch + 1) - 1:
-        ax1.text(node.x - dx, node.y + dy, str("%.0f" % i), color='red')
-    else:
-        dx = 0.5
-        dy = 0.5
-        if node.x < 0:
-            dx *= -1
-        if node.y < 0:
-            dy *= -1
-        ax1.text(node.x + dx/5, node.y + dy/5, str("%.0f" % i), color='black')
-
-plt.show()
+if __name__ == "__main__":
+    graph.fill_arrays_scheme()  # form info for plot at UI
+    application(graph)
 
 # 1) symmetry bottom border hv
 # Normal solution of LCP in 57 steps

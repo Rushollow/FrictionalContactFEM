@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
             self.ui.graphicsView_Scheme.addItem(item_4node_elements)
         # null-elements
         for pos_angle in self.graph.arr_null_el_1st_nodes_pos_angle:
-            arrow = pg.ArrowItem(pos=pos_angle[:2], angle=pos_angle[2], brush='white', headWidth=1, headLen=15)
+            arrow = pg.ArrowItem(pos=pos_angle[:2], angle=-pos_angle[2], brush='white', headWidth=1, headLen=15)
             self.ui.graphicsView_Scheme.addItem(arrow)
         # supports
         for pos_angle in self.graph.arr_supp_pos_angle:

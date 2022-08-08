@@ -5,11 +5,10 @@ import time
 from FEM.element_frame import ElementFrameContainer
 from FEM.element_4node import Element4NodeLinearContainer
 from FEM.element_null import ElementNullContainer
-from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector, solve_slae
-from LCP.initial_table import InitialTable
-from LCP.lemke import Lemke
-from Visualize.plot_data_scheme import PlotScheme
-from GUI.tkinter_gui import ContactFEM
+from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector
+
+from Visualize.plot_data_qt import PlotScheme  # for visualizing
+from GUI.PyQt.contactFEM import application
 
 start = time.time()  # to calculate time
 
@@ -62,37 +61,30 @@ sm.add_spring(degree_of_freedom=15, stiffness=spring_stiffness)
 sm.add_spring(degree_of_freedom=16, stiffness=spring_stiffness)
 sm.support_nodes([7, 8], direction='hv')
 print('R rank:{}, R rows:{}'.format(np.linalg.matrix_rank(sm.r), sm.r.shape[0]))  # check if system is construction
-#assert np.linalg.matrix_rank(sm.r) == sm.r.shape[0]
 
-lv = LoadVector()
-lv.add_concentrated_force(force=-F, degree_of_freedom=11)
-lv.add_concentrated_force(force=F, degree_of_freedom=12)
+lv_const = LoadVector()
+lv_const.add_concentrated_force(force=-F, degree_of_freedom=11)
+lv_const.add_concentrated_force(force=F, degree_of_freedom=12)
+lv_variable = None
 
-u_linear = solve_slae(sm, lv)
-
-np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
-for i, k in zip(u_linear, range(len(u_linear))):
-    print(k, i)
-
-intl_table = InitialTable(element_null, sm, lv, u_linear)
-intl_table.form_initial_table()
-# do lemke or solve LCP
-lemke = Lemke(intl_table)
-lemke.lcp_solve()
-
-
-print('zn={}\nxn={} - normalized xn/F\nrF={} - normalized'.format(lemke.zn, lemke.xn/F, F/F))
 
 # plot --------------------------------------------------------------------------
-# calculate data to plot
-graph = PlotScheme(nodes, element_null, sm, lv, u_linear, lemke,
-                   element_container_obj=element_4node, element_frame=element_frame, scale_def=1)
+# Calculation and plotting object
+graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
+                   element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
+                   partition=10, scale_def=0.1, autorun=True)
 
+for i in range(len(graph.lemke.zn_anim)):
+    print(f'{i}: p:{graph.lemke.p_anim[i]} zn:{graph.lemke.zn_anim[i]} xn:{graph.lemke.xn_anim[i]}'
+          f'zt:{graph.lemke.zt_anim[i]} xt:{graph.lemke.xt_anim[i]}')
+    print(f'sums: zn:{sum(graph.lemke.zn_anim[i])} xn:{sum(graph.lemke.xn_anim[i])}'
+          f'zt:{sum(graph.lemke.zt_anim[i])} xt:{sum(graph.lemke.xt_anim[i])}')
 # calculate time
 end = time.time()
 last = end - start
 print("Time: ", last)
 
-app = ContactFEM(graph=graph)
-#app.geometry('1280x720')
-app.mainloop()
+if __name__ == "__main__":
+    graph.fill_arrays_scheme()  # form info for plot at UI
+    application(graph)
+

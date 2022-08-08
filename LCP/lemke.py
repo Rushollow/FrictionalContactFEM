@@ -63,7 +63,7 @@ class Lemke:
         self.table_previous = np.zeros(self.table.shape, dtype=float)
         self._basis_previous = self._basis.copy()
 
-        self.write_excel = True
+        self.write_excel = False
         if self.write_excel:
             self.workbook = xlsxwriter.Workbook('initial_table.xlsx')
             self.worksheet = self.workbook.add_worksheet(name='Sheet1')

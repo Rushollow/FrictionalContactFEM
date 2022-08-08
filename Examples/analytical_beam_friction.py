@@ -18,7 +18,7 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
 q = 3975  # N/m Uniformly Distributed Load
 general_length = 260  # meter
-n = 10  # amount of nodes of frame MINIMUM 2
+n = 320  # amount of nodes of frame MINIMUM 2
 Ar = math.pi / 2 * (1.5 ** 2 - (1.5 - 0.02) ** 2)
 Er = 1.95e9  # N/m
 Ix = math.pi * 1.5 ** 2 * 0.02 / 8  #
@@ -107,10 +107,11 @@ if autorun:
     print(f'Analytical: {y_analytical}, lc:{lc}, lf{lf}, L:{general_length}')
     print("Numerical: ", y_numerical)
     err = 0
+    ut, uc = 0, 0
     for i, j in zip(y_analytical, y_numerical):
-        if min(i, j) != 0:
-            err += abs(i - j) / i
-    print("Err:", err/len(y_analytical)*100, "%")
+        ut += i**2
+        uc += j**2
+    print("Err:", (np.sqrt(ut)-np.sqrt(uc))/np.sqrt(ut)*100, "%")
 # calculate time
 end = time.time()
 last = end - start

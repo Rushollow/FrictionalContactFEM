@@ -61,6 +61,7 @@ if SITUATION == 1:  # just 2 const force
 elif SITUATION == 2:  # one variable load
     lv_variable = LoadVector()
     lv_variable.add_concentrated_force(force=-F, degree_of_freedom=7)
+    lv_variable.add_concentrated_force(force=F/5, degree_of_freedom=6)
 elif SITUATION == 3:  # one variable load upward and 2 const forces
     lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
     lv_const.add_concentrated_force(force=-F/5, degree_of_freedom=8)
@@ -82,11 +83,13 @@ elif SITUATION == 5:  #
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=0.5, autorun=True)
+                   partition=10, scale_def=0.1, autorun=True)
 
 for i in range(len(graph.lemke.zn_anim)):
     print(f'{i}: p:{graph.lemke.p_anim[i]} zn:{graph.lemke.zn_anim[i]} xn:{graph.lemke.xn_anim[i]}'
           f'zt:{graph.lemke.zt_anim[i]} xt:{graph.lemke.xt_anim[i]}')
+    print(f'sums: zn:{sum(graph.lemke.zn_anim[i])} xn:{sum(graph.lemke.xn_anim[i])}'
+          f'zt:{sum(graph.lemke.zt_anim[i])} xt:{sum(graph.lemke.xt_anim[i])}')
 # calculate time
 end = time.time()
 last = end - start

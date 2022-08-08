@@ -22,9 +22,9 @@ E_pile = 2e11  # Pa
 A_pile = 1.831e-2  # m^2
 I_pile = 2.760e-5  # m^4
 # scheme data
-area_width = 20
-area_height = 5
-mesh_size = 0.5
+area_width = 4
+area_height = 2
+mesh_size = 1
 
 # force
 F = 1e3  # Н
@@ -70,9 +70,9 @@ element_macro.add_element(EN=[0*4, 0*4 + 1, 0*4 + 2, 0*4 + 3], frag_size=mesh_si
 element_macro.add_element(EN=[1*4, 1*4 + 1, 1*4 + 2, 1*4 + 3], frag_size=mesh_size, E=E_soil, mu=mu_soil, t=t_soil,
                           own_weight=own_weight_soil, stitch=False)
 element_macro.add_element(EN=[2*4, 2*4 + 1, 2*4 + 2, 2*4 + 3], frag_size=mesh_size, E=E_soil, mu=mu_soil, t=t_soil,
-                          own_weight=own_weight_soil, stitch=True, stitch_list=[0])
+                          own_weight=own_weight_soil, stitch=False, stitch_list=[0])
 element_macro.add_element(EN=[3*4, 3*4 + 1, 3*4 + 2, 3*4 + 3], frag_size=mesh_size, E=E_soil, mu=mu_soil, t=t_soil,
-                          own_weight=own_weight_soil, stitch=True, stitch_list=[1])
+                          own_weight=own_weight_soil, stitch=False, stitch_list=[1])
 element_macro.fragment_all(element_4node, element_frame, element_null)
 
 # nodes alongside pile
@@ -92,10 +92,10 @@ for i, node_num in enumerate(nodes_along_pile[3:]):
             list_nodes_right_soil.append(node_num)
 
 # adding null elements
-for pile_node, soil_left_node in zip(list_nodes_pile, list_nodes_left_soil):
-    element_null.add_element(EN=[pile_node, soil_left_node], cke=E_pile * A_pile, alpha=math.pi, gap_length=0)
-for pile_node, soil_right_node in zip(list_nodes_pile, list_nodes_right_soil):
-    element_null.add_element(EN=[pile_node, soil_right_node], cke=1, alpha=0, gap_length=0)
+# for pile_node, soil_left_node in zip(list_nodes_pile, list_nodes_left_soil):
+#     element_null.add_element(EN=[pile_node, soil_left_node], cke=E_pile * A_pile, alpha=math.pi, gap_length=0)
+# for pile_node, soil_right_node in zip(list_nodes_pile, list_nodes_right_soil):
+#     element_null.add_element(EN=[pile_node, soil_right_node], cke=1, alpha=0, gap_length=0)
 #element_null.add_element(EN=[1, 2], cke=1, alpha=0)
 
 # form R, RF and solve SLAE
