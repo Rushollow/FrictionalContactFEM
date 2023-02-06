@@ -14,8 +14,8 @@ from constants_data import Arch
 from input_data import ARCH_SPAN, ARCH_HEIGHT
 
 # set variables scheme
-num_me_in_quarter = 25  # 15 on how many parts quarter with ME will be divided. Better be more than frag_amount_v
-frag_amount_v = 30  # 14 how much each quarter section will be fragmented in vertical direction
+num_me_in_quarter = 5  # 25 on how many parts quarter with ME will be divided. Better be more than frag_amount_v
+frag_amount_v = 8  # 30 how much each quarter section will be fragmented in vertical direction
 frag_amount_h = 1  # how much each quarter section will be fragmented in horizontal direction (USE num_me_in_quarter instead!!)
 frag_amount_v_under_arch = frag_amount_v  # better be equal to frag_amount_v
 right_border = ARCH_SPAN + 30

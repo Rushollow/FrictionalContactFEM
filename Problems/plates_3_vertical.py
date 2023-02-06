@@ -21,7 +21,7 @@ t_plate = 1  # m
 
 plate_height = 8
 plate_length = 2
-mesh_size = 0.5 #0.25
+mesh_size = 0.25 #0.25
 gap_left = 0.3 #0.01
 gap_right = 0.3 #0.01
 F = 1e9 # 1e8

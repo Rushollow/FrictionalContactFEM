@@ -20,6 +20,12 @@ class Element4NodeLinearContainer(ElementContainer):
         :param own_weight: Own weight of the element. (kilograms/meter^2) [kg/m^2] - Si
         :return: None, just add element
         """
+        assert isinstance(EN, list), 'EN must be list'
+        assert E > 0, 'E (elastic modulus must be positive'
+        assert (mu > 0 and mu <= 0.5), "mu (Poisson's ratio) must be 0<mu<=0.5"
+        assert t > 0, 't (thickness) must be positive'
+        assert own_weight >= 0, 'own weight cannot be negative'
+
         if MI is None:
             MI = []
             # for node_num in EN:
@@ -27,12 +33,6 @@ class Element4NodeLinearContainer(ElementContainer):
         element = Element4NodeLinear(EN, MI, E, mu, t, own_weight)
         # write instance to the list and remember other parameters
         ElementContainer.add_element(self, element)
-
-        assert isinstance(EN, list), 'EN must be list'
-        assert E > 0, 'E (elastic modulus must be positive'
-        assert (mu > 0 and mu <= 0.5), "mu (Poisson's ratio) must be 0<mu<=0.5"
-        assert t > 0, 't (thickness) must be positive'
-        assert own_weight >= 0, 'own weight cannot be negative'
 
     def set_stiffness(self, el_num, E=None, mu=None, t=None, own_weight=0):
         """
@@ -223,99 +223,5 @@ class Element4NodeLinear(ElementMethods):
 
     def __str__(self):
         return f'4 node element: {self.EN}'
-
-
-# Creating class-container for adding 4node elements, count, list them.
-# And for convenient usage of methods
-# class Element4NodeRectangleContainer(ElementContainer, ElementMethods):
-#
-#     def add_element(self, EN, MI, E=None, mu=None, t=None, own_weight=None):
-#         """
-#         Adding element 4NodeRectangle to the scheme
-#         :param EN: element nodes: [node1, node2, node3, node4]. Numbers of the element nodes
-#         :param MI: matrix of indices [index1, index2, index3, index4, index5, index6, index7, index8]
-#         :param E: Elastic modulus (Young's modulus)
-#         :param mu: Poisson's ratio (for plate elements)
-#         :param t: thickness of the element (for plate elements)
-#         :param own_weight: Own weight of the element. (kilograms/meter^2) [kg/m^2] - Si
-#         :return: None, just add element to the list
-#         """
-#         element = Element4NodeRectangle(EN, MI, E, mu, t, own_weight)
-#         self.elements_amount += 1
-#         self.elements_list.append(element)
-#
-#     def gradient_matrix(self, el_num, nodes, k, n):
-#         """
-#         Gradient matrix B4. It is for local coordinates ksi = k , and nu = n
-#         :param nodes: The object of Scheme.Node class with nodes in nodes_list
-#         :param k: Local horizontal coordinates on element
-#         :param n: Local vertical coordinates on element
-#         :return: Gradient matrix. float numpy 2D array
-#         """
-#
-#         el_nodes_coordinates = self.elements_list[el_num].nodes_coordinates(nodes)
-#         x, y = el_nodes_coordinates[0], el_nodes_coordinates[1]
-#         a = x[1] - x[0]
-#         b = y[2] - y[1]
-#
-#         yab = n / (a * b)
-#         xab = k / (a * b)
-#         return np.array([[yab - 1 / a, 0          , 1 / a - yab, 0          , yab, 0  , -yab       , 0          ],
-#                          [0          , xab - 1 / b, 0          , -xab       , 0  , xab, 0          , 1 / b - xab],
-#                          [xab - 1 / b, yab - 1 / a, -xab       , 1 / a - yab, xab, yab, 1 / b - xab, -yab       ]])
-#
-#     def form_ke(self, el_num, a, b):
-#         '''
-#         Form local stiffness matrix for rectangle 4node element
-#         :param el_num: number of the element from elements_list - field of class container
-#         :param a: x coordinate (horizontal) of the center of element
-#         :param b: y coordinate (vertical) of the center of element
-#         :return:
-#         '''
-#         E = self.elements_list[el_num].E
-#         mu = self.elements_list[el_num].mu
-#         t = self.elements_list[el_num].t
-#         d11 = E / (1 - mu * mu)
-#         d12 = mu * d11
-#         d22 = d11
-#         d33 = E / (2 * (1 + mu))
-#         # REALLY MASSIVE ARRAY OMG
-#         array = np.array([[b*d11/3*a + a*d33/3*b, (d12+d33)/4, b*d11/3*a]
-#                 []
-#                 []
-#                 []
-#                 []
-#                 []
-#                 []
-#                 []])
-#         return t*array
-#
-#
-#
-#
-# class Element4NodeRectangle():
-#     """
-#     Class of 4node linear rectangle element with 2 degrees of freedom in each node
-#     param EN: element nodes: [node1, node2, node3, node4]. Numbers of the element nodes
-#     param MI: matrix of indices [index1, index2, index3, index4, index5, index6, index7, index8]
-#     """
-#
-#     def __init__(self, EN, MI, E=None, mu=None, t=None, own_weight=None):
-#         """
-#         Creates an element
-#         :param EN: element nodes: [node1, node2, node3, node4]. Numbers of the element nodes
-#         :param MI: matrix of indices [index1, index2, index3, index4, index5, index6, index7, index8]
-#         :param E: Elastic modulus (Young's modulus)
-#         :param mu: Poisson's ratio (for plate elements)
-#         :param t: thickness of the element (for plate elements)
-#         :param own_weight: Own weight of the element. (kilograms/meter^2) [kg/m^2] - Si
-#         """
-#         self.MI = MI
-#         self.EN = EN
-#         self.E = E
-#         self.mu = mu
-#         self.t = t
-#         self.own_weight = own_weight
-
 
 

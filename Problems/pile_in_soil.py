@@ -26,7 +26,7 @@ I_pile = 2.760e-5  # m^4
 # scheme data
 area_width = 20
 area_height = 5
-mesh_size = 0.25
+mesh_size = 0.5
 
 # force
 F = 1e3  # Н

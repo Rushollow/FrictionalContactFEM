@@ -90,7 +90,7 @@ class ElementMethods:
         Finds the coordinates of the nodes of the element
         And then change them all to positive values with keeping ratios between them:
         |x2 - x1|, |y2 - y1| ect. are the same.
-        It's like mooving all element to first quarter of Cartesian Coordinates system where x>0 and y>0
+        It's like moving all element to first quarter of Cartesian Coordinates system where x>0 and y>0
         :param nodes: Object of class Node from FEM/Scheme. Object 4nodeElement must have added nodes
         :return: [[x1,x2...,xn],[y1,y2...,yn]] n - nodes amount of the element
         """
