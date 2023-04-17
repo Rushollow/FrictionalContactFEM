@@ -312,8 +312,9 @@ class LoadVector:
         """
         Initialize load vector
         :param element_null: null_elements in scheme. Use if we making load vector for forming Contact Stiffness Matrix
-        :param vectors_amount: need number of steps if we forming deformed scheme on every step
         FEM.element_null.ElementNullContainer() class object
+        :param vectors_amount: need number of steps if we forming deformed scheme on every step
+        use this parameter to form load vector for variable load
         """
         # maximum degree of freedom
         max_dof = find_max_degree_of_freedom()

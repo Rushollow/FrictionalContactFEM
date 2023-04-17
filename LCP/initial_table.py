@@ -155,13 +155,13 @@ class InitialTable:
         ----- -------------------csm---------------------------------- ---- -clv variables(multiple)--------------------clv constant---------------
         |    | -r_nn              -r_nt               r_nt            |    | rf_n_v                | rf_n - r_nn * eta                            |
         | e  | -r_tn - f * r_nn   -r_tt - f * r_nt    r_tt + f * r_nt | -p | rf_t_v + f * rf_n_v   | rf_t + f * (rf_n - r_nn * eta) - r_tn * eta  |
-        |    |  r_tn - f * r_nn    r_tt - f * r_nt   -r_tt + f * r_nt |    | rf_t_v - f * rf_n_v   | -rf_t + f * (rf_n - r_nn * eta) + r_tn * eta |
+        |    |  r_tn - f * r_nn    r_tt - f * r_nt   -r_tt + f * r_nt |    | -rf_t_v + f * rf_n_v  | -rf_t + f * (rf_n - r_nn * eta) + r_tn * eta |
         --------------------------------------------------------------------------------------------------------------------------------------------
                 If we are using force incrementation method and there is no constant load or gaps (no constant clv):
         ----- -------------------csm------------------------------------- ---- clv variables(multiple)- -ones-
         |    | -r_nn                 -r_nt               r_nt            |    | rf_n_v                 |     |
         | e  | -r_tn - f * r_nn      -r_tt - f * r_nt    r_tt + f * r_nt | -p | rf_t_v + f * rf_n_v    |  p  |
-        |    |  r_tn - f * r_nn       r_tt - f * r_nt   -r_tt + f * r_nt |    | rf_t_v - f * rf_n_v    |     |
+        |    |  r_tn - f * r_nn       r_tt - f * r_nt   -r_tt + f * r_nt |    | -rf_t_v + f * rf_n_v   |     |
         -----------------------------------------------------------------------------------------------
 
         where 'eta' - vector of gaps in contact pairs connected by null-elements
@@ -184,7 +184,7 @@ class InitialTable:
         rf_t = np.array([self.clv_const[n_amount:]]).T  # CLV in tangential (t) directions
         if self.force_inc:  # if using force incrementation algorithm
             rf_n_v, rf_t_v = [], []
-            for i, vec in enumerate(self.clv_variable):
+            for vec in self.clv_variable:
                 rf_n_v.append(vec[:n_amount])  # CLV in normal (n) directions for variable load
                 rf_t_v.append(vec[n_amount:])  # CLV in tangential (t) directions for variable load
             if t_amount == 0:  # if there is no tangent null-elements
@@ -290,9 +290,6 @@ class InitialTable:
                                 r_tn.dot(self.eta)))
         self.rf_const = np.concatenate((rf_row1, rf_row2, rf_row3))
         # forming variable react vector for table
-        # rf_var_row1 = rf_n_v  # np.expand_dims(arr2, 1)
-        # rf_var_row2 = np.add(rf_t_v, f * rf_n_v[:t_amount])
-        # rf_var_row3 = np.add(-rf_t_v, f * rf_n_v[:t_amount])
         rf_n_v = np.array(rf_n_v).T
         rf_t_v = np.array(rf_t_v).T
         rf_var_row1 = rf_n_v

@@ -438,7 +438,6 @@ class Lemke:
             self.workbook.close()
         if self.steps == LEMKE_LIMIT_STEPS-1:
             print(f"LCP solver got maximum number of steps, no objective results, p={self._get_p()}")
-        #self._results_anim()
         return  # end
 
     def _next_load_vector(self, normal_ray_solution=True):

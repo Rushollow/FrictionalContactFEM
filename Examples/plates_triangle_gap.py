@@ -104,7 +104,7 @@ lv.add_concentrated_force(-F, first_node_top * 2 + 1)
 lv.add_concentrated_force(-F, (first_node_top + 1) * 2 + 1)
 # Variable load
 lv_var = LoadVector(vectors_amount=1)
-lv_var.add_concentrated_force(force=-F, degree_of_freedom=305*2+1)
+lv_var.add_concentrated_force(force=-F, degree_of_freedom=305*2+1)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # calculate time
 end = time.time()
