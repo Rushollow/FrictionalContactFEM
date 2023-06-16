@@ -44,13 +44,14 @@ for i in range(3):
     element_frame.add_element(EN=[i, i+1], E=Er, A=Ar, I=Ix)
 # n null elements and adding t null elements silently
 element_null = ElementNullContainer(nodes_scheme=nodes)
-element_null.add_element(EN=[4, 0], cke=1, alpha=math.pi/2, add_t_el=True)
-element_null.add_element(EN=[5, 1], cke=1, alpha=math.pi/2, add_t_el=True, gap_length=0)
-element_null.add_element(EN=[6, 3], cke=1, alpha=math.pi/2, add_t_el=True)
+element_null.add_element(EN=[4, 0], cke=1, alpha=math.pi/2, add_t_el=False)
+element_null.add_element(EN=[5, 1], cke=1, alpha=math.pi/2, add_t_el=False, gap_length=0)
+element_null.add_element(EN=[6, 3], cke=1, alpha=math.pi/2, add_t_el=False)
 
 # form R, RF and solve SLAE
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
 sm.support_nodes(list_of_nodes=[4, 5, 6], direction='hv')  # sup for unilateral
+sm.support_nodes(list_of_nodes=[0], direction='h')  # sup for beam
 # HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SITUATION = 1
 lv_const = LoadVector()
