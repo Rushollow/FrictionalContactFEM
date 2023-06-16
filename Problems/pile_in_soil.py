@@ -12,8 +12,6 @@ from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 from prettytable import PrettyTable
 
-
-
 # elements variables
 E_soil = 4.5e7  # Pa
 mu_soil = 0.27  #
@@ -34,7 +32,6 @@ F_const = 2.135184824469461 * F
 # PLANE_STRAIN = True
 # FRICTION_COEFFICIENT = 0.19
 # ACCURACY_OF_LCP = 10**(-14)
-
 
 start = time.time()
 
