@@ -24,11 +24,12 @@ nodes.add_node(0, 0)  # 0
 nodes.add_node(length, 0)  # 1
 nodes.add_node(length*2, 0)  # 2
 nodes.add_node(length*3, 0)  # 3
+nodes.add_node(length*4, 0)  # 4
 
 # node for support
-nodes.add_node(length*0, -gap_len)  # 4
-nodes.add_node(length*2, -gap_len)  # 5
+nodes.add_node(length*1, -gap_len)  # 5
 nodes.add_node(length*3, -gap_len)  # 6
+nodes.add_node(length*4, -gap_len)  # 7
 
 # set inputs
 Ar = 1  # 1              4*7e-4
@@ -40,33 +41,28 @@ F = 1  # 1  # Newtons        10e3
 element_4node = None
 # add frame elements
 element_frame = ElementFrameContainer(nodes_scheme=nodes)
-for i in range(3):
+for i in range(4):
     element_frame.add_element(EN=[i, i+1], E=Er, A=Ar, I=Ix)
 # n null elements and adding t null elements silently
 element_null = ElementNullContainer(nodes_scheme=nodes)
-element_null.add_element(EN=[4, 0], cke=1, alpha=math.pi/2, add_t_el=False)
 element_null.add_element(EN=[5, 1], cke=1, alpha=math.pi/2, add_t_el=False, gap_length=0)
-element_null.add_element(EN=[6, 3], cke=1, alpha=math.pi/2, add_t_el=False)
+element_null.add_element(EN=[6, 3], cke=1, alpha=math.pi/2, add_t_el=False, gap_length=0)
+element_null.add_element(EN=[7, 4], cke=1, alpha=-math.pi/2, add_t_el=False, gap_length=0)
 
 # form R, RF and solve SLAE
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
-sm.support_nodes(list_of_nodes=[4, 5, 6], direction='hv')  # sup for unilateral
+sm.support_nodes(list_of_nodes=[5, 6, 7], direction='hv')  # sup for unilateral
 sm.support_nodes(list_of_nodes=[0], direction='h')  # sup for beam
 # HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 SITUATION = 1
 lv_const = LoadVector()
 lv_variable = None
-if SITUATION == 1:  # just 1 const force
+if SITUATION == 1:  # just 1 const force, trivial solution
     lv_const.add_concentrated_force(force=-F, degree_of_freedom=5)
-elif SITUATION == 2:  # one variable load
-    lv_variable = LoadVector()
-    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=7)
-    lv_variable.add_concentrated_force(force=F/5, degree_of_freedom=6)
-elif SITUATION == 3:  # one variable load upward and 2 const forces
-    lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
-    lv_const.add_concentrated_force(force=-F/5, degree_of_freedom=8)
-    lv_variable = LoadVector()
-    lv_variable.add_concentrated_force(force=-F, degree_of_freedom=7)
+elif SITUATION == 2:  # 1 const force, normal solution
+    lv_const.add_concentrated_force(force=-F, degree_of_freedom=1)
+elif SITUATION == 3:  # 1 const load, ray solution
+    lv_const.add_concentrated_force(force=F, degree_of_freedom=1)
 elif SITUATION == 4:
     lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
     lv_const.add_concentrated_force(force=-F / 5, degree_of_freedom=8)
