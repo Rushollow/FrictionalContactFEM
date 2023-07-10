@@ -19,7 +19,7 @@ SCHEME_THICKNESS = 1
 SCALE_DEF = 50
 
 # friction coefficient
-FRICTION_COEFFICIENT = 0.4
+FRICTION_COEFFICIENT = 0.5
 
 # limit of steps for lcp_solve Lemke
 LEMKE_LIMIT_STEPS = 400
@@ -30,3 +30,4 @@ ACCURACY_OF_LCP = 10**(-10)
 
 # accuracy of stitching of nodes
 ACCURACY_OF_STITCHING = 1e-4
+
