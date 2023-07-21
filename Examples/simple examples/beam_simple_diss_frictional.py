@@ -19,7 +19,7 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 # set inputs
 if input_data.FRICTION_COEFFICIENT != 0.5:
     raise ValueError('КОЭФФИЦИЕНТ ТРЕНИЯ ПОСТАВИТЬ 0.5')
-SITUATION = 4  # SITUATION CHOSE HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+SITUATION = 5  # SITUATION CHOSE HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Ar = 1  # 1
 Er = 1  # 1
 Ix = 1  # 0.5
@@ -35,13 +35,19 @@ elif SITUATION == 2:
     delta_gap = 0.2
 elif SITUATION == 3:
     F1 = 1  # 1  # Newtons
-    F2 = 0.5  # 0.05*0.5  # Newtons
+    F2 = 1  # Newtons
     delta_gap = 0.2
 elif SITUATION == 4:
-    F1 = 1  # 1  # Newtons
+    F1 = 0.1  # 1  # Newtons
     F2 = 0.1  # 0.05*0.5  # Newtons
+    Er = 5  # 1
     delta_gap = 0.2
-    delta_push = -0.2
+    delta_push = -0.25
+elif SITUATION == 5:
+    F2 = 1  # 0.05*0.5  # Newtons
+    Er = 1  # 1
+    delta_gap = 0.2
+    delta_push = -0.25
 
 # add nodes # for 4 node element
 nodes = NodeContainer()
@@ -65,14 +71,17 @@ for i in range(4):
     element_frame.add_element(EN=[i, i+1], E=Er, A=Ar, I=Ix)
 # n null elements and adding t null elements silently
 element_null = ElementNullContainer(nodes_scheme=nodes)
-element_null.add_element(EN=[5, 1], cke=1, alpha=math.pi/2, add_t_el=True, gap_length=0)
+if SITUATION == 5:
+    element_null.add_element(EN=[5, 1], cke=1, alpha=-math.pi / 2, add_t_el=True, gap_length=0)
+else:
+    element_null.add_element(EN=[5, 1], cke=1, alpha=math.pi / 2, add_t_el=True, gap_length=0)
 element_null.add_element(EN=[6, 3], cke=1, alpha=math.pi/2, add_t_el=True, gap_length=delta_push)
 element_null.add_element(EN=[7, 4], cke=1, alpha=-math.pi/2, add_t_el=True)
 
 # form R, RF and solve SLAE
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
 sm.support_nodes(list_of_nodes=[5, 6, 7], direction='hv')  # sup for unilateral
-sm.support_nodes(list_of_nodes=[0], direction='h')  # sup for beam
+# sm.support_nodes(list_of_nodes=[0], direction='h')  # sup for beam
 # HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 lv_const = LoadVector()
@@ -83,13 +92,16 @@ if SITUATION == 1:  # just 1 const force, trivial solution
 elif SITUATION == 2:  # 1 const force, normal solution
     lv_const.add_concentrated_force(force=-F1, degree_of_freedom=1)
     lv_const.add_concentrated_force(force=F2, degree_of_freedom=8)
-elif SITUATION == 3:  # 1 const load, ray solution
-    lv_const.add_concentrated_force(force=F1, degree_of_freedom=1)
+elif SITUATION == 3:  # 2 const load, ray solution
+    lv_const.add_concentrated_force(force=-F1, degree_of_freedom=5)
     lv_const.add_concentrated_force(force=F2, degree_of_freedom=8)
-elif SITUATION == 4:  # 1 const load, 1 var load, normal solution
+elif SITUATION == 4:  # 1 const load, 2 var loads, normal solution # FORCE incrementation
+    lv_const.add_concentrated_force(force=-F1, degree_of_freedom=1)
     lv_variable = LoadVector()
-    lv_variable.add_concentrated_force(force=-F1, degree_of_freedom=1)
-    # lv_variable.add_concentrated_force(force=F2, degree_of_freedom=8)
+    lv_variable.add_concentrated_force(force=F2, degree_of_freedom=8)
+elif SITUATION == 5:  # 0 const load, 1 var load to the right, normal solution # FORCE incrementation
+    lv_variable = LoadVector()
+    lv_variable.add_concentrated_force(force=F2, degree_of_freedom=8)
 
 
 # plot --------------------------------------------------------------------------

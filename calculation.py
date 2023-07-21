@@ -145,27 +145,15 @@ class Calculate:
         start = time.time()
         # calculate
         self.solve_slae()
+        print('Linear problem solved')
         self.form_initial_table()
+        print('Initial table ready')
         self.solve_lcp()
         self.form_u_contact()
         self._add_displacement_data_to_nodes()
+        print('Data to GUI ready')
+        print(f'Linear problem size: {self.sm.r.shape[0]}')
+        print(f'Nonlinear problem size: {self.intl_table.table.shape[0]}')
 
         end = time.time()
         print("Calculation Time: ", end - start)
-
-    def table_to_excel(self, file_name='Initial_table'):
-        '''
-        this function is needed fot sending initial table to the Excel file
-        :return:
-        '''
-        self.solve_slae()
-        self.form_initial_table()
-        self.solve_lcp()
-
-        array = self.intl_table.table
-        workbook = xlsxwriter.Workbook(file_name)
-        worksheet = workbook.add_worksheet()
-        for i in range(array.shape[0]):
-            for j in range(array.shape[1]):
-                worksheet.write(i, j, array[i][j])
-        workbook.close()

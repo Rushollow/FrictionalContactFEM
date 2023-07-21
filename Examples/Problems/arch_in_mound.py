@@ -14,8 +14,8 @@ from constants_data import Arch
 from input_data import ARCH_SPAN, ARCH_HEIGHT
 
 # set variables scheme
-num_me_in_quarter = 5  # 25 on how many parts quarter with ME will be divided. Better be more than frag_amount_v
-frag_amount_v = 8  # 30 how much each quarter section will be fragmented in vertical direction
+num_me_in_quarter = 25  # 25 on how many parts quarter with ME will be divided. Better be more than frag_amount_v
+frag_amount_v = 45  # 30 how much each quarter section will be fragmented in vertical direction
 frag_amount_h = 1  # how much each quarter section will be fragmented in horizontal direction (USE num_me_in_quarter instead!!)
 frag_amount_v_under_arch = frag_amount_v  # better be equal to frag_amount_v
 right_border = ARCH_SPAN + 30
@@ -191,6 +191,7 @@ for i in range(nodes_amount_frame + (frag_amount_v + 1)*(num_me_in_quarter + 1) 
                (num_me_in_quarter - 2) * (frag_amount_v + 1) + 1,
                frag_amount_v + 1):
     nodes_soil_above_arch.append(i)
+print(f'nodes created')
 
 # Set elements
 element_4node = Element4NodeLinearContainer(nodes_scheme=nodes)
@@ -255,6 +256,8 @@ for i in range(len(nodes_right_pile)):
 for i in range(len(nodes_right_pile)):
     # left pile
     element_null.add_element(EN=[nodes_left_pile_right_soil[i], nodes_left_pile[i]], cke=E_arch*A_arch, alpha=np.pi)
+print(f'elements created')
+
 
 nodes_to_support_bottom = []
 nodes_to_support_side = []
@@ -314,13 +317,14 @@ graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variabl
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
                    partition=10, scale_def=3, autorun=autorun)
 
-if autorun:
-    mytable = PrettyTable()
-    mytable.field_names = ['step', 'p', 'zn', 'xn', 'zt', 'xt']
-    for i in range(len(graph.lemke.zn_anim)):
-        mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
-                         graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
-    print(mytable)
+# if autorun:
+#     mytable = PrettyTable()
+#     mytable.field_names = ['step', 'p', 'zn', 'xn', 'zt', 'xt']
+#     for i in range(len(graph.lemke.zn_anim)):
+#         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
+#                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
+#     print(mytable)
+
 # calculate time
 end = time.time()
 last = end - start
