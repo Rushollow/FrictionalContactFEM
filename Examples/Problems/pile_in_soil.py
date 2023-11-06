@@ -118,7 +118,7 @@ print("Time scheme form: ", last)
 autorun = True
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=2e3, autorun=autorun)
+                   partition=10, scale_def=2e5, autorun=autorun)
 
 if autorun:
     mytable = PrettyTable()

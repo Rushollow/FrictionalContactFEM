@@ -66,6 +66,7 @@ class Calculate:
                 tmp_arr.append(self.u_linear_variable[:, i])
             self.u_linear_variable = tmp_arr
 
+
     def form_initial_table(self):
         """
         Forming initial table for Lemke's algorithm

@@ -16,6 +16,7 @@ import numpy as np
 import pyqtgraph as pg
 from Visualize.plot_data_qt import PlotScheme
 from input_data import FRICTION_COEFFICIENT
+from input_data import BACKGROUND_COLOR
 
 
 class MainWindow(QMainWindow):
@@ -48,6 +49,8 @@ class MainWindow(QMainWindow):
                 self.graph = PlotScheme(None, None, None)  # Just empty thing (helps to see PlotScheme methods in IDE)
             except AttributeError: print('graph data was not passed to UI (nodes, sm, elements and etc.')
 
+        if BACKGROUND_COLOR is not None:
+            self.bg_color = BACKGROUND_COLOR  # choose background color
         self._connect_actions_menu_bar()  # connect actions so they could work
         self._show_scheme()
 
@@ -97,6 +100,13 @@ class MainWindow(QMainWindow):
         self.ui.graphicsView_Scheme.addItem(item_nodes)
         # set parameters
         self.ui.graphicsView_Scheme.setAspectLocked()
+        # set background color
+        self.ui.graphicsView_Scheme.setBackground(self.bg_color)
+        self.ui.graphicsView_Scheme_deformed.setBackground(self.bg_color)
+        self.ui.graphicsView_Scheme_unilateral_contact.setBackground(self.bg_color)
+        self.ui.graphicsView_contact_info_tangent.setBackground(self.bg_color)
+        self.ui.graphicsView_contact_info_normal.setBackground(self.bg_color)
+
 
     def run(self):
         """

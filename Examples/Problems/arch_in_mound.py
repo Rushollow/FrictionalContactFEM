@@ -33,11 +33,19 @@ I_pile = 0.005208333333333333  # m^4
 E_arch = 2e11
 A_arch = 0.02366322
 I_arch = 2.110901e-4
+outline_arch = 1  # 1 - circle, 2 - ellipse, 3 - sinus, 4 - parabola
 
 start = time.time()
 arch = Arch()
 def outline(x):
-    return arch.outline_circle(x)
+    if outline_arch == 1:
+        return arch.outline_circle(x)
+    elif outline_arch == 2:
+        return arch.outline_ellipse(x)
+    elif outline_arch == 3:
+        return arch.outline_sinus(x)
+    elif outline_arch == 4:
+        return  arch.outline_parabola(x)
 def linear_fnc(x, alpha):
     return np.tan(alpha) * x
 def top_border_fnc(x):
@@ -309,13 +317,16 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 # for i, el in enumerate(element_null):
 #     print(f'null {i} EN:{el.EN}, MI:{el.MI}, alpha:{el.alpha}')
 
-
+end = time.time()
+last = end - start
+print("Time scheme: ", last)
+start = time.time()
 autorun = True
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=3, autorun=autorun)
+                   partition=10, scale_def=6, autorun=autorun)
 
 # if autorun:
 #     mytable = PrettyTable()
@@ -328,7 +339,7 @@ graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variabl
 # calculate time
 end = time.time()
 last = end - start
-print("Time: ", last)
+print("Time calc: ", last)
 
 if __name__ == "__main__":
     graph.fill_arrays_scheme()  # form info for plot at UI

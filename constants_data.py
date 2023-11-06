@@ -34,7 +34,7 @@ class Arch:
 
     def outline_sinus(self, x):
         f, l, x = self._initial_func_parameters(x)
-        return f * np.sin(np.pi * x / (l * 1))
+        return f * np.sin(np.pi * x / l)
 
     def outline_circle(self, x):
         f, l, x = self._initial_func_parameters(x)
@@ -45,7 +45,7 @@ class Arch:
         r = f / 2 + l*l / (8 * f)
         return (r*r - (l / 2 - x)*(l / 2 - x))**0.5 - r + f
 
-    def ouline_parabola(self, x):
+    def outline_parabola(self, x):
         f, l, x = self._initial_func_parameters(x)
         return 4 * f * x / l * (1 - x / l)
 

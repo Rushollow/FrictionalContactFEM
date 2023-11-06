@@ -19,15 +19,18 @@ SCHEME_THICKNESS = 1
 SCALE_DEF = 50
 
 # friction coefficient
-FRICTION_COEFFICIENT = 0.5
+FRICTION_COEFFICIENT = 0.6
 
 # limit of steps for lcp_solve Lemke
 LEMKE_LIMIT_STEPS = 400
 
 # Set the value of accuracy for LCP Lemke solver.
 # This value means that how many tightening weight (p parameter) we can left to end the solution
-ACCURACY_OF_LCP = 10**(-10)
+ACCURACY_OF_LCP = 10**(-15)
 
 # accuracy of stitching of nodes
 ACCURACY_OF_STITCHING = 1e-4
+
+# background color of GUI graphs
+BACKGROUND_COLOR = 'w'
 

@@ -10,8 +10,10 @@ from SchemeForm.macro_element import ElementMacroContainer
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
+from input_data import FRICTION_COEFFICIENT
+assert FRICTION_COEFFICIENT == 0.6, 'Friction coef need to be 0.6'
 # elements variables
-E_plate = 3.5e10  # Pa
+E_plate = 4.5e7  # Pa
 mu_plate = 0.2  #
 t_plate = 0.1  # m
 
@@ -20,8 +22,9 @@ plate_length = 8
 mesh_size = 0.5
 gap_left = 0.0
 
-F = 2.5e7
-
+F = 2.5e7  # для сравнения с ансис
+F1 = 1e4  # для перемещения как жёсткого целого
+F2 = 2e3  # для перемещения как жёсткого целого
 
 start = time.time()
 
@@ -100,11 +103,16 @@ sm.support_nodes(nodes_to_sup_bot, direction='hv')
 # sm.support_nodes(nodes_to_sup_sides, direction='h')
 first_node_top = int(nodes_top_contact[0]+(plate_length/(2*mesh_size)+1)*(plate_height/mesh_size))  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 lv = LoadVector()
-lv.add_concentrated_force(-F, first_node_top * 2 + 1)
-lv.add_concentrated_force(-F, (first_node_top + 1) * 2 + 1)
+# для перемещения как жёсткого целого
+lv.add_concentrated_force(-F1, first_node_top * 2 + 1)  # вертикальная первый узел слева
+lv.add_concentrated_force(F2, first_node_top * 2)  # горизонтальная первый узел слева
+# нагрузка для сравнения с ANSYS
+# lv.add_concentrated_force(-F, first_node_top * 2 + 1)  # вертикальная первый узел слева
+# lv.add_concentrated_force(-F, (first_node_top + 1) * 2 + 1)  # вертикальная, второй узел слева
 # Variable load
-lv_var = LoadVector(vectors_amount=1)
-lv_var.add_concentrated_force(force=-F, degree_of_freedom=305*2+1)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+lv_var = None
+# lv_var = LoadVector(vectors_amount=1)
+# lv_var.add_concentrated_force(force=-F, degree_of_freedom=305*2+1)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # calculate time
 end = time.time()
@@ -115,7 +123,7 @@ print("Time: ", last)
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_var,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=1, autorun=True, force_incrementation=False)
+                   partition=10, scale_def=40, autorun=True, force_incrementation=False)
 
 
 print(f'xn sum: {sum(graph.lemke.xn)}, force sum = {2*F}'
