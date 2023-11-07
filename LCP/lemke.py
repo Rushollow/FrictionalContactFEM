@@ -373,6 +373,8 @@ class Lemke:
             print('LCP trivial solution')
             if not self.force_inc:
                 self._results_anim()
+                if self.write_excel:
+                    self.workbook.close()
                 return
             self._next_load_vector()
         for step in range(LEMKE_LIMIT_STEPS):

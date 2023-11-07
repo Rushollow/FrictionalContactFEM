@@ -54,7 +54,7 @@ sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node
 sm.support_nodes(list_of_nodes=[5, 6, 7], direction='hv')  # sup for unilateral
 sm.support_nodes(list_of_nodes=[0], direction='h')  # sup for beam
 # HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-SITUATION = 1
+SITUATION = 2
 lv_const = LoadVector()
 lv_variable = None
 if SITUATION == 1:  # just 1 const force, trivial solution
