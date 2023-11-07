@@ -18,7 +18,7 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
 q = 3975  # N/m Uniformly Distributed Load
 general_length = 260  # meter
-n = 320  # amount of nodes of frame MINIMUM 2
+n = 512  # amount of nodes of frame MINIMUM 2
 Ar = math.pi / 2 * (1.5 ** 2 - (1.5 - 0.02) ** 2)
 Er = 1.95e9  # N/m
 Ix = math.pi * 1.5 ** 2 * 0.02 / 8  #
@@ -100,7 +100,8 @@ if autorun:
     for i in range(len(graph.lemke.zn_anim)):
         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
-    print(mytable)
+    # print(mytable)
+
     # for i in range(len(graph.lemke.zn_anim)):
     #     print(list(graph.lemke.zt_anim[i]))
     y_numerical = list(graph.lemke.zt_anim[-1])

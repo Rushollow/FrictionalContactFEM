@@ -18,8 +18,8 @@ class Lemke:
         self.force_inc = intl_table.force_inc
         self.const_load = np.any(intl_table.rf_const)  # bool, if there is const load, first solve lemke for it
         # step number of the force increment algorithm, if = 0, than solving normal Lemke
-        self.force_inc_without_const = False  # if there is const load (change how results form if ray solution)
-        self.force_inc_step = 0
+        self.force_inc_without_const = False  # if there is const load (change how results form in case of ray solution)
+        self.force_inc_step = 0  # there could be multiple load vectors
         if not self.const_load:
             self.force_inc_step = 1
             self.force_inc_without_const = True  # if there is no const load (change how results form if ray solution)
@@ -63,8 +63,9 @@ class Lemke:
         self.table_previous = np.zeros(self.table.shape, dtype=float)
         self._basis_previous = self._basis.copy()
 
-        self.write_excel = True
+        self.write_excel = False
         if self.write_excel:
+            print("Excel is writing all tables!")
             self.workbook = xlsxwriter.Workbook('initial_table.xlsx')
             self.worksheet = self.workbook.add_worksheet(name='Sheet1')
             self.excel_table_count = 0
@@ -204,13 +205,14 @@ class Lemke:
         # take all elements < 0 and make them Infinity
         min_ratio_above_0 = np.where(self._min_ratio >= 0, self._min_ratio, np.inf)
         # get indices of the sorted array
-        indx = np.argsort(min_ratio_above_0)
+        indx: list = np.argsort(min_ratio_above_0)
         # check if in this raw(index) is p (tightening weight)
         for i in range(1, len(indx)):  # iterate over array from min to max values
             # if next value CLOSE to minimum
             if np.isclose(min_ratio_above_0[indx[0]], min_ratio_above_0[indx[i]], atol=ACCURACY_OF_LCP):
                 # check if p in this row
-                if self._basis[indx[i]] == self._rows_table * 2 + self.force_inc_step:
+                # if self._basis[indx[i]] == self._rows_table * 2 + self.force_inc_step:  # TODO: check if i need to use basis next of just basis
+                if self._basis_next[indx[i]] == self._rows_table * 2 + self.force_inc_step:
                     # if so - choose row with p value to end lemke's algorithm
                     self._leading_row_next = indx[i]
                     break
@@ -381,41 +383,7 @@ class Lemke:
             self._results_anim()
             self._lemke_step()  # do the step
             # Do checks
-            if self._ray_solution():
-                self._results_anim()
-                if not self.force_inc:  # if we are solving only for const load
-                    if not self._rough_solution():
-                        print('Ray solution in LCP, you got the results for "almost broken" system,'
-                              ' its {} step of Lemke, p={}'
-                              .format(step, self._get_p()))
-                    else:
-                        print('Rough solution is occurred, you got rough results '
-                              'as there in each contact pair the p (tightening weight) still exists\n'
-                              'p={} is lesser than value ACCURACY_OF_LCP={} settled by user'
-                              .format(self._get_p(), ACCURACY_OF_LCP))
-                    break
-                # if incrementation force algorithm than:
-                # check if variables could be determined (leading element should not be zero or really close to it)
-                self._leading_row = self._get_p_row()
-                normal_ray_solution = not np.isclose(self.table[self._leading_row, self._leading_column], 0,
-                                                 atol=ACCURACY_OF_LCP)
-                # normal solution for force inc. is ray solution, but we can kick 'p' from basis and get zn,zn ect.
-                if normal_ray_solution:
-                    print(f'Ray solution of force increment algorithm'
-                          f' on step: {self.steps}, OK!  with p:{self.p_value}')
-                    self._results_anim(ray=True)  # find values and kick 'p' from basis
-                else:
-                    print(f'Ray solution in force increment algorithm, indeterminate variables'
-                          f' on step: {self.steps} with p >:{self.p_value}')
-                # if there are still unsolved load vectors
-                if not self._rows_table * 2 + self.force_inc_step == self.table.shape[1] - 2:
-                    self._next_load_vector(normal_ray_solution)  # continue to solve force increment
-                    continue
-                # if number of leading column was chosen last time penultimate (предпоследняя) column
-                else:  # end
-                    break
-
-            elif not self._p_in_basis():
+            if not self._p_in_basis():
                 if not self.force_inc:  # if solving only for const load
                     print("Normal solution of LCP const load in {} steps".format(step + 1))
                     self._results_anim()
@@ -436,6 +404,40 @@ class Lemke:
                         self._next_load_vector()  # continue to solve force increment
                         continue
                     break
+            elif self._ray_solution():
+                self._results_anim()
+                if not self.force_inc:  # if we are solving only for const load
+                    if not self._rough_solution():
+                        print('Ray solution in LCP, you got the results for "almost broken" system,'
+                              ' its {} step of Lemke, p={}'
+                              .format(step, self._get_p()))
+                    else:
+                        print('Rough solution is occurred, you got rough results '
+                              'as there in each contact pair the p (tightening weight) still exists\n'
+                              'p={} is lesser than value ACCURACY_OF_LCP={} settled by user'
+                              .format(self._get_p(), ACCURACY_OF_LCP))
+                    break
+                # if incrementation force algorithm than:
+                # check if variables could be determined (leading element should not be zero or really close to it)
+                self._leading_row = self._get_p_row()
+                normal_ray_solution = not np.isclose(self.table[self._leading_row, self._leading_column], 0,
+                                                 atol=ACCURACY_OF_LCP)
+                # normal solution for force inc. is ray solution, but we can kick 'p' from basis and get zn,zn ect.
+                if normal_ray_solution:
+                    print(f'Ray solution of force increment algorithm'
+                          f' on step: {self.steps}, OK!  with p:{self.p_value}'
+                          f'\nFurther incrementation of the load will not change scheme')
+                    self._results_anim(ray=True)  # find values and kick 'p' from basis
+                else:
+                    print(f'Ray solution in force increment algorithm, indeterminate variables / mechanism'
+                          f' on step: {self.steps} with p >:{self.p_value}')
+                # if there are still unsolved load vectors
+                if not self._rows_table * 2 + self.force_inc_step == self.table.shape[1] - 2:
+                    self._next_load_vector(normal_ray_solution)  # continue to solve force increment
+                    continue
+                # if number of leading column was chosen last time penultimate (предпоследняя) column
+                break  # end
+
         if self.write_excel:
             self.workbook.close()
         if self.steps == LEMKE_LIMIT_STEPS-1:
@@ -457,6 +459,7 @@ class Lemke:
         if self.force_inc_step > 0:
             # new react_vec---previous react_vec-------------previous p column (active load vector)--------
             self.table[:, -1] = self.table[:, -1] - self.table[:, (self._rows_table * 2 + self.force_inc_step)] * self.p_value
+        # self.table[:, -1] = self.table[:, -1] + 1  # add small artificial "pc" - "tightening weight"
         self.force_inc_step += 1  # choose next load vector
         # next we set table like it's first step
         self._leading_column = self._rows_table * 2 + self.force_inc_step  # choose new leading column

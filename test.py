@@ -13,51 +13,60 @@ from FEM.element_frame import ElementFrameContainer  # to add frame element
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
-# set inputs
-Ar = 1  # Площадь поперечного сечения рамы
-Er = 1  # Модуль упругости рамы
-Ix = 1  # Момент инерции сечения рамы
-F = 1   # Величина внешней нагрузки
+import numpy as np
 
-nodes = NodeContainer()
-# узлы для рамы
-nodes.add_node(0, 0)  # 0 Узел
-nodes.add_node(1, 0)  # 1 Узел
-nodes.add_node(2, 0)  # 2 Узел
-nodes.add_node(3, 0)  # 3 Узел
 
-# Узлы на которые ставятся опоры
-nodes.add_node(0, 0)  # 4 Узел
-nodes.add_node(2, 0)  # 5 Узел
-nodes.add_node(3, 0)  # 6 Узел
+def simplex_method(c, A, b):
+    # m, n = A.shape
+    # # Добавляем фиктивные переменные
+    # c = np.concatenate((c,np.zeros(m)))
+    # A = np.concatenate((A, np.eye(m)), axis=1)
+    # # Создаем таблицу симплекс-метода
+    # table = np.concatenate((A, b.reshape(-1, 1)), axis=1)
+    # table = np.concatenate((table, np.array(c)), axis=0)
 
-# Добавляются элементы
-element_frame = ElementFrameContainer(nodes_scheme=nodes)
-for i in range(3):
-    element_frame.add_element(EN=[i, i+1], E=Er, A=Ar, I=Ix)
-# Добавляются нуль-элементы для односторонних связей
-element_null = ElementNullContainer(nodes_scheme=nodes)
-element_null.add_element(EN=[4, 0], cke=1, alpha=math.pi/2, add_t_el=True)
-element_null.add_element(EN=[5, 2], cke=1, alpha=math.pi/2, add_t_el=True)
-element_null.add_element(EN=[6, 3], cke=1, alpha=math.pi/2, add_t_el=True)
+    m, n = A.shape
+    c = np.array(c)
+    A = np.array(A)
+    b = np.array(b)
+    # Add slack variables to convert inequality constraints to equality constraints
+    A = np.hstack((A,np.eye(m)))
+    c = np.hstack((c, np.zeros(m)))
 
-# Матрица жёсткости
-sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=None, el_null=element_null)
-sm.support_nodes(list_of_nodes=[4, 5, 6], direction='hv')  # опирание узлов
+    # Create initial tableau
+    table = np.vstack((np.hstack((A,np.expand_dims(b, axis=1)))),np.hstack((c, np.array([0]))))
 
-SITUATION = 2
-lv_const = LoadVector()
-lv_const.add_concentrated_force(force=-F, degree_of_freedom=3)
+    while True:
+        # Находим разрешающий столбец
+        entering_col = np.argmin(table[-1, :-1])
+        if table[-1, entering_col] >= 0:
+            break
 
-# передать все данные для расчёта
-graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=None,
-                   element_frame=element_frame, element_container_obj=None, element_null=element_null,
-                   partition=10, scale_def=1, autorun=True)
+        # Находим разрешающую строку
+        ratios = table[:-1, -1] / table[:-1, entering_col]
+        leaving_row = np.argmin(ratios)
 
-# запуск приложения
-if __name__ == "__main__":
-    graph.fill_arrays_scheme()  # сформировать данные для графики
-    application(graph)
+        # Обновляем таблицу симплекс-метода
+        pivot = table[leaving_row, entering_col]
+        table[leaving_row, :] /= pivot
+        for i in range(m + 1):
+            if i == leaving_row:
+                ratio = table[i, entering_col]
+                table[i, :] -= ratio * table[leaving_row, :]
+
+        # Извлекаем результаты
+    solution = table[:-1, -1]
+    objective_value = -table[-1, -1]
+
+    return solution, objective_value
+
+c = np.array([-2, -3])
+A = np.array([[1, 1], [2, 1], [1, 0]])
+b = np.array([4, 5, 3])
+
+solution, objective_value = simplex_method(c, A, b)
+print("Solution:", solution)
+print("Objective value:", objective_value)
 
 
 
