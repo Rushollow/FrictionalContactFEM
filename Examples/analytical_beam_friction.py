@@ -10,20 +10,22 @@ from FEM.element_4node import Element4NodeLinearContainer  # to add 4node elemen
 from FEM.element_frame import ElementFrameContainer  # to add frame element
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
+from input_data import FRICTION_COEFFICIENT
 
 start = time.time()
 np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
+assert FRICTION_COEFFICIENT == 0.3, 'Friction coef need to be 0.6'
 # set inputs
 
 q = 3975  # N/m Uniformly Distributed Load
 general_length = 260  # meter
-n = 512  # amount of nodes of frame MINIMUM 2
+n = 256  # amount of nodes of frame MINIMUM 2
 Ar = math.pi / 2 * (1.5 ** 2 - (1.5 - 0.02) ** 2)
 Er = 1.95e9  # N/m
 Ix = math.pi * 1.5 ** 2 * 0.02 / 8  #
 F = q * general_length / (n - 1)  # concentrated force in each node
-Fv = 243.75e3  # N (force pulling to the right)
+Fv = 243750  # N (force pulling to the right)
 
 
 
@@ -106,7 +108,9 @@ if autorun:
     #     print(list(graph.lemke.zt_anim[i]))
     y_numerical = list(graph.lemke.zt_anim[-1])
     print(f'Analytical: {y_analytical}, lc:{lc}, lf{lf}, L:{general_length}')
+    print(f'Analytical right: {y_analytical[-1]}')
     print("Numerical: ", y_numerical)
+    print(f'Numerical right: {y_numerical[-1]}')
     err = 0
     ut, uc = 0, 0
     for i, j in zip(y_analytical, y_numerical):

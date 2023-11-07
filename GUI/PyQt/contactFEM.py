@@ -279,6 +279,7 @@ class MainWindow(QMainWindow):
             self.new_window.ui.graphicsView = pg.PlotWidget(parent=self.new_window.ui.verticalLayoutWidget, plotItem=plot_item)
             # add widget to layout
             self.new_window.ui.verticalLayout.addWidget(self.new_window.ui.graphicsView)
+            self.new_window.ui.graphicsView.setBackground(self.bg_color)
             self.new_window.show()  # show window
 
     def keyPressEvent(self, event):

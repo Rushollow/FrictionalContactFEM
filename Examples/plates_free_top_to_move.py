@@ -14,16 +14,16 @@ from GUI.PyQt.contactFEM import application
 from input_data import FRICTION_COEFFICIENT
 assert FRICTION_COEFFICIENT == 0.6, 'Friction coef need to be 0.6'
 # elements variables
-E_plate_top = 2e11/100  # Pa
+E_plate_top = 2e11  # Pa
 E_plate_bot = 2e11  # Pa
-mu_plate = 0.2  #
-t_plate = 0.5  # m
+mu_plate = 0.3  #
+t_plate = 0.01  # m
 
-plate_height = 1
-plate_length = 2
-mesh_size = 0.1
+plate_height = 0.1
+plate_length = 0.2
+mesh_size = 0.01
 
-F = 10e7  # сила в Н
+F = 1e5  # сила в Н
 dead_weight_bot = 75500  # удельный вес в Н/м3
 dead_weight_top = 75500
 
@@ -87,7 +87,7 @@ lv = LoadVector()
 
 node_bot_left = int(plate_length / mesh_size)
 # нагрузка на правый нижний узел
-lv.add_concentrated_force(-F, node_bot_left * 2 + 1)  # нагрузка
+lv.add_concentrated_force(F, node_bot_left * 2 + 1)  # нагрузка
 lv.add_own_weight_to_rf(nodes_scheme=nodes, element_container_list=[element_4node])  # собственный вес
 
 # Variable load
@@ -116,7 +116,7 @@ if autorun:
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
     print(mytable)
 
-print(f'xn sum: {sum(graph.lemke.xn)}, force sum = {2*F} '
+print(f'xn sum: {sum(graph.lemke.xn)}, '
       f'xt sum: {sum(graph.lemke.xt)}')
 
 
