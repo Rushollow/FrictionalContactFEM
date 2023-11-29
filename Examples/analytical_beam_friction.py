@@ -18,7 +18,7 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
 q = 3975  # N/m Uniformly Distributed Load
 general_length = 260  # meter
-n = 10  # amount of nodes of frame MINIMUM 2
+n = 512  # amount of nodes of frame MINIMUM 2
 Ar = math.pi / 2 * (1.5 ** 2 - (1.5 - 0.02) ** 2)
 Er = 1.95e9  # N/m
 Ix = math.pi * 1.5 ** 2 * 0.02 / 8  #
