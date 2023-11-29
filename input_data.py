@@ -26,7 +26,7 @@ LEMKE_LIMIT_STEPS = 400
 
 # Set the value of accuracy for LCP Lemke solver.
 # This value means that how many tightening weight (p parameter) we can left to end the solution
-ACCURACY_OF_LCP = 10**(-15)
+ACCURACY_OF_LCP = 10**(-10)
 
 # accuracy of stitching of nodes
 ACCURACY_OF_STITCHING = 1e-4

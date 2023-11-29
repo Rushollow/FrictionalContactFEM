@@ -11,19 +11,20 @@ from SchemeForm.macro_element import ElementMacroContainer
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
-from input_data import FRICTION_COEFFICIENT
+from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN
 assert FRICTION_COEFFICIENT == 0.6, 'Friction coef need to be 0.6'
+assert PLANE_STRAIN is True, 'Switch to Plane Strain!!, make plane strain True'
 # elements variables
-E_plate_top = 2e11/100  # Pa
+E_plate_top = 2e11  # Pa
 E_plate_bot = 2e11  # Pa
-mu_plate = 0.2  #
-t_plate = 0.5  # m
+mu_plate = 0.3  #
+t_plate = 0.01  # m
 
-plate_height = 1
-plate_length = 2
-mesh_size = 0.1
+plate_height = 0.1
+plate_length = 1
+mesh_size = 0.01
 
-F = 10e7  # сила в Н
+F = 1e5  # сила в Н
 dead_weight_bot = 75500  # удельный вес в Н/м3
 dead_weight_top = 75500
 
@@ -87,13 +88,13 @@ lv = LoadVector()
 
 node_bot_left = int(plate_length / mesh_size)
 # нагрузка на правый нижний узел
-lv.add_concentrated_force(-F, node_bot_left * 2 + 1)  # нагрузка
+lv.add_concentrated_force(F, node_bot_left * 2 + 1)  # нагрузка
 lv.add_own_weight_to_rf(nodes_scheme=nodes, element_container_list=[element_4node])  # собственный вес
 
 # Variable load
 lv_var = None
 # lv_var = LoadVector(vectors_amount=1)
-# lv_var.add_concentrated_force(force=-F, degree_of_freedom=305*2+1)
+# lv_var.add_concentrated_force(-F, node_bot_left * 2 + 1)
 
 # calculate time
 end = time.time()
@@ -106,7 +107,7 @@ autorun = True
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_var,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=10, autorun=autorun, force_incrementation=False)
+                   partition=10, scale_def=1, autorun=autorun, force_incrementation=False)
 
 if autorun:
     mytable = PrettyTable()
@@ -116,7 +117,7 @@ if autorun:
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
     print(mytable)
 
-print(f'xn sum: {sum(graph.lemke.xn)}, force sum = {2*F} '
+print(f'xn sum: {sum(graph.lemke.xn)}, '
       f'xt sum: {sum(graph.lemke.xt)}')
 
 
