@@ -11,6 +11,9 @@ from FEM.element_frame import ElementFrameContainer  # to add frame element
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
+from input_data import FRICTION_COEFFICIENT
+assert FRICTION_COEFFICIENT == 0.5, 'Friction coef need to be 0.5'
+
 start = time.time()
 
 np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})

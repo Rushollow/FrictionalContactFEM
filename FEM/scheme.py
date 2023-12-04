@@ -64,26 +64,30 @@ class NodeContainer:
         # when they're no longer needed.
         self.__class__.instances.append(weakref.proxy(self))
 
-    def add_node(self, x: float, y: float, rotation=False):
+    def add_node(self, x: float, y: float, rotation=False, indices=None):
         """
         Adds a node to a scheme
         :param x: x coordinate of a new node. horizontal
         :param y: y coordinate of a new node. vertical
         :param rotation: Is there a rotation degree of freedom in this node? False = no
         we need rotation in node for frame element (FEM.element_frame.ElementFrame())
+        :param indices: select specific indices in node, raise self.max_dof manually
         :return: None, void type
         """
         # if we set a rotation in this node, add third degree of freedom in it.
-        if rotation is False:
-            indices = [self.max_dof + 1, self.max_dof + 2]
-            self.max_dof += 2
+        if indices is not None:
+            indices_new = indices
         else:
-            indices = [self.max_dof + 1, self.max_dof + 2, self.max_dof+3]
-            self.max_dof += 3
+            if rotation is False:
+                indices_new = [self.max_dof + 1, self.max_dof + 2]
+                self.max_dof += 2
+            else:
+                indices_new = [self.max_dof + 1, self.max_dof + 2, self.max_dof+3]
+                self.max_dof += 3
         # node is added, so increase the number of the node
         self.number += 1
         # create a node
-        node = Node(x, y, indices, self.number, rotation)
+        node = Node(x, y, indices_new, self.number, rotation)
         self.nodes_list.append(node)
 
         assert isinstance(rotation, bool), 'rotation must be boolean value'
@@ -161,6 +165,27 @@ class NodeContainer:
         else:  # if sort is not needed
             sorted_list_of_nodes_numbers = list_of_nodes
         return sorted_list_of_nodes_numbers
+
+    def add_hinge(self, node_number, element_frame_container):
+        """
+        USE THIS FUNCTION ONLY AFTER ADDED ALL NODES TO SCHEME!!!
+        Add a hinge in node node_number between 2 frame elements
+        :param node_number: number of the node in scheme
+        :param element_frame_container: list of elements' containers
+        :return:
+        """
+        node = self.nodes_list[node_number]
+        new_indices = node.indices.copy()
+        new_indices[-1] = self.max_dof + 1
+        self.max_dof += 1
+        self.add_node(node.x, node.y, rotation=node.rotation, indices=new_indices)
+        new_node = self.nodes_list[-1]
+        for element in element_frame_container:
+            if node.number in element.EN:
+                # replace node numbers to new
+                element.EN = [new_node.number if x == node.number else x for x in element.EN]
+                break
+
 
 
 class StiffnessMatrix:
