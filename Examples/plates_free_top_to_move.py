@@ -106,7 +106,7 @@ autorun = True
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_var,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=10, autorun=autorun, force_incrementation=False)
+                   partition=10, scale_def=20, autorun=autorun, force_incrementation=False)
 
 if autorun:
     mytable = PrettyTable()
