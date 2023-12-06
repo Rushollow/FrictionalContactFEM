@@ -1,6 +1,7 @@
 import numpy as np
-from input_data import LEMKE_LIMIT_STEPS, ACCURACY_OF_LCP
+from input_data import LEMKE_LIMIT_STEPS, ACCURACY_OF_LCP, WRITE_EXCEL
 import xlsxwriter
+
 
 
 class Lemke:
@@ -63,7 +64,7 @@ class Lemke:
         self.table_previous = np.zeros(self.table.shape, dtype=float)
         self._basis_previous = self._basis.copy()
 
-        self.write_excel = False
+        self.write_excel = WRITE_EXCEL
         if self.write_excel:
             print("Excel is writing all tables!")
             self.workbook = xlsxwriter.Workbook('initial_table.xlsx')
