@@ -19,8 +19,7 @@ SCHEME_THICKNESS = 1
 SCALE_DEF = 50
 
 # friction coefficient
-FRICTION_COEFFICIENT = 0.3
-
+FRICTION_COEFFICIENT = 0.5
 # limit of steps for lcp_solve Lemke
 LEMKE_LIMIT_STEPS = 800
 
@@ -35,5 +34,5 @@ ACCURACY_OF_STITCHING = 1e-4
 BACKGROUND_COLOR = 'w'
 
 # create Excel file in execution directory and write Lemke tables inside
-WRITE_EXCEL = True
+WRITE_EXCEL = False
 
