@@ -11,7 +11,7 @@ from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
 from input_data import FRICTION_COEFFICIENT
-assert FRICTION_COEFFICIENT == 0.5, 'Friction coef need to be 0.3'  # 0.5
+assert FRICTION_COEFFICIENT == 0.5, 'Friction coef need to be 0.5'  # 0.5
 
 start = time.time()
 
@@ -19,9 +19,9 @@ start = time.time()
 Ar = 1  # 1
 Er = 50000  # 50000
 Ix = 1  # 1
-F = 1  # 500  # 207.83048427075536 - F=1 нарастающий параметр
+F = 500  # 500  # 207.83048427075536 - F=1 нарастающий параметр
 gap = 1  # 1
-force_inc_alg = True
+force_inc_alg = False
 
 # add nodes # for 4 node element
 nodes = NodeContainer()
