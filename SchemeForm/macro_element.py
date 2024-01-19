@@ -174,8 +174,8 @@ class ElementMacroContainer(ElementContainer):
         for me1_num in range(len(me_list)):  # iterate over one ME
             me_checked += 1
             for me2_num in range(me_checked, len(me_list)):  # iterate over another ME
-                # next value is int 0 or 1 or 2. It is 2 if both True to stitch and 0 if both is False to stitch
-                # and 1 if at least 1 is True to stitch
+                # next value is int 0 or 1 or 2. It is 2 if both "True to stitch" and 0 if both is "False to stitch"
+                # and 1 if at least 1 is "True to stitch"
                 to_stitch = me_list[me1_num].stitch + me_list[me2_num].stitch
                 if to_stitch == 0:  # if both False
                     continue  # do not do the stitch

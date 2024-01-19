@@ -53,7 +53,10 @@ nodes.add_node(L1+L2+L3, h0+h1)  # 6
 nodes.add_node(L1+L2+L3, h0)  # 7
 nodes.add_node(L1, h0+h1+h2+h3)  # 8
 nodes.add_node(L1 + L2_1, h0+h1+h2+h3)  # 9
-nodes.add_node(0, 0)  # 10 SUP NODE
+nodes.add_node(0, 0)  # 10
+nodes.add_node(L1, 0)  # 11
+nodes.add_node(L1+L2, 0)  # 12
+nodes.add_node(L1+L2+L3, 0)  # 13
 
 # Set elements
 element_4node = Element4NodeLinearContainer(nodes_scheme=nodes)
@@ -71,6 +74,13 @@ element_macro.add_element(EN=[5, 4, 6, 7], frag_size_h=mesh_size, frag_size_v=me
                           E=Erw, mu=mu_rw, t=trw, own_weight=0, stitch=True, stitch_list=[2])  # 3
 element_macro.add_element(EN=[2, 8, 9, 4], frag_size_h=mesh_size, frag_size_v=mesh_size*0.9,
                           E=Erw, mu=mu_rw, t=trw, own_weight=0, stitch=True, stitch_list=[2])  # 4
+# МЕ soil
+element_macro.add_element(EN=[10, 0, 3, 11], frag_size_h=mesh_size, frag_size_v=mesh_size*0.9,
+                          E=Eg, mu=mu_g, t=tg, own_weight=0, stitch=False)  # 5
+element_macro.add_element(EN=[11, 3, 5, 12], frag_size_h=mesh_size, frag_size_v=mesh_size*0.9,
+                          E=Eg, mu=mu_g, t=tg, own_weight=0, stitch=True, stitch_list=[5])  # 6
+element_macro.add_element(EN=[12, 5, 7, 13], frag_size_h=mesh_size, frag_size_v=mesh_size*0.9,
+                          E=Eg, mu=mu_g, t=tg, own_weight=0, stitch=True, stitch_list=[6])  # 7
 
 element_macro.fragment_all(element_4node, element_frame, element_null)
 
