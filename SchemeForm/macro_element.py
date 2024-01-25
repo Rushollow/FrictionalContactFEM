@@ -69,8 +69,8 @@ class ElementMacroContainer(ElementContainer):
         :param own_weight: own_weight of the element (further calculated as nodes load, added to LoadVector)
         :param frag_amount_v: amount of 4node elements in vertical direction after fragmentation
         :param frag_amount_h: amount of 4node elements in horizontal direction after fragmentation
-        :param frag_size_v: preferred vertical size
-        :param frag_size_h: preferred horizontal size
+        :param frag_size_v: preferred horizontal size
+        :param frag_size_h: preferred vertical size
         :param stitch: stitch this ME with others or not
         :param stitch_list: list of numbers of ME that should be stitched to this element.
         YOU MUST add only ME numbers that are already exists!
@@ -177,9 +177,13 @@ class ElementMacroContainer(ElementContainer):
                 # next value is int 0 or 1 or 2. It is 2 if both "True to stitch" and 0 if both is "False to stitch"
                 # and 1 if at least 1 is "True to stitch"
                 to_stitch = me_list[me1_num].stitch + me_list[me2_num].stitch
-                if to_stitch == 0:  # if both False
-                    continue  # do not do the stitch
-                if to_stitch == 1:  # if only 1 of them is True to stitch
+                # if to_stitch == 0:  # if both False
+                #     continue  # do not do the stitch
+                # if to_stitch == 1:  # if only 1 of them is True to stitch
+                #     stitch_list = me_list[me2_num].stitch_list + me_list[me1_num].stitch_list
+                #     if me1_num not in stitch_list:  # if macro element number is not in stitch list
+                #         continue  # do not do the stitch
+                if to_stitch == 0 or to_stitch == 1:  # if both False
                     stitch_list = me_list[me2_num].stitch_list + me_list[me1_num].stitch_list
                     if me1_num not in stitch_list:  # if macro element number is not in stitch list
                         continue  # do not do the stitch
