@@ -30,8 +30,8 @@ qn = 263
 qt = 213
 qx1 = 68
 qx2 = 89
-qx3 = 150
-qx4 = 142
+qx3 = 142
+qx4 = 150
 qy = 45
 qgr1 = 471
 qgr2 = 462
@@ -96,13 +96,34 @@ for spring_node_num in nodes_bot:
 lv = LoadVector()
 lv_v = LoadVector()
 
+# add load at the top node SIDE1
 for i, nn in enumerate(side1):
     length = L2_1 / len(side1)
     force = (2 * qn / L2_1 * length * i - qn) * length
     if i == 0 or i == len(side1)+1:
         force /= 2
     lv.add_concentrated_force(force, degree_of_freedom=nn*2)
-    # print(f'{force=}, {length=} {nn=}')
+    lv.add_concentrated_force(-qt * length, degree_of_freedom=nn * 2 - 1)
+    print(f'vertical {force=}, {length=} {nn=}, dof={nn*2}')
+
+# SIDE 2 top right nodes
+for i, nn in enumerate(side2):
+    length = math.sqrt((L2-L2_1)*(L2-L2_1) + h3*h3) / len(side2)
+    force_h = (2 * (qx1 + qx2) / math.sqrt((L2-L2_1)*(L2-L2_1) + h3*h3) * length * i - qx1) * length
+    lv.add_concentrated_force(-force_h, degree_of_freedom=nn * 2)
+    lv.add_concentrated_force(-qy * length, degree_of_freedom=nn * 2 - 1)
+
+# SIDE 3 right top
+for i, nn in enumerate(side3):
+    length = math.sqrt((h2*h2) + (L3*L3)) / len(side3)
+    lv.add_concentrated_force(-qgr1, degree_of_freedom=nn * 2)
+    lv.add_concentrated_force(-qx3 * length, degree_of_freedom=nn * 2 - 1)
+
+# SIDE 4 right top
+for i, nn in enumerate(side4):
+    length = h1 / len(side3)
+    lv.add_concentrated_force(-qx2, degree_of_freedom=nn * 2)
+    lv.add_concentrated_force(-qx4 * length, degree_of_freedom=nn * 2 - 1)
 
 
 if not force_inc:
