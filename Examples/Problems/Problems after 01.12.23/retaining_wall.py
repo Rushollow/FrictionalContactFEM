@@ -11,24 +11,25 @@ from SchemeForm.macro_element import ElementMacroContainer
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
-from input_data import FRICTION_COEFFICIENT
-assert FRICTION_COEFFICIENT == 0.3, 'Friction coef need to be 0.3'
+from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN
+assert FRICTION_COEFFICIENT == 0.6, 'Friction coef need to be 0.6'
+assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true!'
 
 start = time.time()
 
 # set inputs
 
-Eg = 2e5
+Eg = 10e6  # 1e6 - 68e6 Па для песчаных грунтов
 mu_g = 0.3
 tg = 1
-gamma_g = 10000 # !!!!!!!!!!!!!!!!
-Eg_bot = Eg*2  # !!!!!!!!!!!!
-mu_g_bot = mu_g # !!!!!!!!!!!!
-gamma_g_bot = gamma_g # !!!!!!!!!!!!!
-Erw = 2e8
+gamma_g = 1.47e4  # собственный вес грунта
+Eg_bot = 20000e6  # МУ для основания грунта скала
+mu_g_bot = mu_g  # !!!!!!!!!!!!
+gamma_g_bot = gamma_g*1.5  # !!!!!!!!!!!!!
+Erw = 26500e6
 mu_rw = 0.2
 trw = 1
-gamma_rw = gamma_g # !!!!!!!!!!!!!!
+gamma_rw = 24e3  # Н/m^3  own weight for retaining wall
 qn = 263
 qt = 213
 qx1 = 68

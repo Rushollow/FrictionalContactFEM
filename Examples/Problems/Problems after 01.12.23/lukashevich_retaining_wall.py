@@ -11,21 +11,22 @@ from SchemeForm.macro_element import ElementMacroContainer
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
-from input_data import FRICTION_COEFFICIENT
-assert FRICTION_COEFFICIENT == 0.3, 'Friction coef need to be 0.3'
+from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN
+assert FRICTION_COEFFICIENT == 1, 'Friction coef need to be 1'
+assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true!'
 
 start = time.time()
 
 # set inputs
 
-Eg = 2e5
-mu_g = 0.3
-tg = 1
-Erw = 2e8
-mu_rw = 0.2
-trw = 1
-gamma_rw = 100  # Н/m^3
-E_g_bot = 2000 # Spring stiffness 1!!!!
+Eg = 2e5  # soil stiffness
+mu_g = 0.3  # mu for soil
+tg = 1  # thickness
+Erw = 26500e6  # бетон stiffness retaining wall
+mu_rw = 0.2  # mu for retaining wall
+trw = 1   # thickness
+gamma_rw = 24e3  # Н/m^3  own weight for retaining wall
+E_g_bot = 20000e6  # Spring stiffness 1!!!!
 qn = 263
 qt = 213
 qx1 = 68
@@ -40,7 +41,7 @@ L1, L2, L3 = 2, 2, 4.5
 L2_1 = 1.5
 mesh_size = 0.2
 force_inc = False
-autorun = False
+autorun = True
 
 # add nodes # for 4 node element
 nodes = NodeContainer()
@@ -96,6 +97,7 @@ for spring_node_num in nodes_bot:
 lv = LoadVector()
 lv_v = LoadVector()
 
+print('SIDE 1:')
 # add load at the top node SIDE1
 for i, nn in enumerate(side1):
     length = L2_1 / len(side1)
@@ -105,25 +107,35 @@ for i, nn in enumerate(side1):
     lv.add_concentrated_force(force, degree_of_freedom=nn*2)
     lv.add_concentrated_force(-qt * length, degree_of_freedom=nn * 2 - 1)
     print(f'vertical {force=}, {length=} {nn=}, dof={nn*2}')
+    print(f'horizontal force={-qt * length}, {length=} {nn=}, dof={nn * 2-1}')
 
+print('SIDE 2:')
 # SIDE 2 top right nodes
 for i, nn in enumerate(side2):
     length = math.sqrt((L2-L2_1)*(L2-L2_1) + h3*h3) / len(side2)
     force_h = (2 * (qx1 + qx2) / math.sqrt((L2-L2_1)*(L2-L2_1) + h3*h3) * length * i - qx1) * length
-    lv.add_concentrated_force(-force_h, degree_of_freedom=nn * 2)
-    lv.add_concentrated_force(-qy * length, degree_of_freedom=nn * 2 - 1)
+    lv.add_concentrated_force(-qy * length, degree_of_freedom=nn * 2)
+    lv.add_concentrated_force(-force_h, degree_of_freedom=nn * 2 - 1)
+    print(f'vertical force={-qy * length}, {length=} {nn=}, dof={nn*2}')
+    print(f'horizontal force={force_h}, {length=} {nn=}, dof={nn * 2-1}')
 
+print('SIDE 3:')
 # SIDE 3 right top
 for i, nn in enumerate(side3):
     length = math.sqrt((h2*h2) + (L3*L3)) / len(side3)
-    lv.add_concentrated_force(-qgr1, degree_of_freedom=nn * 2)
+    lv.add_concentrated_force(-qgr1 * length, degree_of_freedom=nn * 2)
     lv.add_concentrated_force(-qx3 * length, degree_of_freedom=nn * 2 - 1)
+    print(f'vertical force={-qgr1 * length}, {length=} {nn=}, dof={nn*2}')
+    print(f'horizontal force={-qx3 * length}, {length=} {nn=}, dof={nn * 2-1}')
 
+print('SIDE 4:')
 # SIDE 4 right top
 for i, nn in enumerate(side4):
     length = h1 / len(side3)
-    lv.add_concentrated_force(-qx2, degree_of_freedom=nn * 2)
+    lv.add_concentrated_force(-qgr2 * length, degree_of_freedom=nn * 2)
     lv.add_concentrated_force(-qx4 * length, degree_of_freedom=nn * 2 - 1)
+    print(f'vertical force={-qgr2 * length}, {length=} {nn=}, dof={nn*2}')
+    print(f'horizontal force={-qx4 * length}, {length=} {nn=}, dof={nn * 2-1}')
 
 
 if not force_inc:
@@ -139,7 +151,7 @@ else:
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_v,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=1, autorun=autorun)
+                   partition=10, scale_def=200, autorun=autorun)
 
 # calculate time
 end = time.time()
