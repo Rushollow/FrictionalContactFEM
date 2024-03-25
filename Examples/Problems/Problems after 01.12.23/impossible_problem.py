@@ -2,6 +2,7 @@ import math
 import numpy as np
 import time
 from prettytable import PrettyTable
+import pathpy
 
 from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector
 from FEM.element_null import ElementNullContainer  # to add null-element
@@ -21,6 +22,7 @@ Er = 1  # 50000
 Ix = 1  # 1
 F = 1   # 2000
 gap = 1  # 1
+
 
 # add nodes # for 4 node element
 nodes = NodeContainer()
