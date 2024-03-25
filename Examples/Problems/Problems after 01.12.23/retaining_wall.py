@@ -12,7 +12,7 @@ from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
 from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN
-assert FRICTION_COEFFICIENT == 0.6, 'Friction coef need to be 0.6'
+assert FRICTION_COEFFICIENT == 1, 'Friction coef need to be 0.6'
 assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true!'
 
 start = time.time()
@@ -27,18 +27,9 @@ Eg_bot = 20000e6  # МУ для основания грунта скала
 mu_g_bot = mu_g  # !!!!!!!!!!!!
 gamma_g_bot = gamma_g*1.5  # !!!!!!!!!!!!!
 Erw = 26500e6
-mu_rw = 0.2
+mu_rw = 0.2  # !!!!!!!!!!!!!!!
 trw = 1
 gamma_rw = 24e3  # Н/m^3  own weight for retaining wall
-qn = 263e3
-qt = 213e3
-qx1 = 68e3
-qx2 = 89e3
-qx3 = 150e3
-qx4 = 142e3
-qy = 45e3
-qgr1 = 471e3
-qgr2 = 462e3
 h0, h1, h2, h3 = 5, 1, 1, 5.5
 L1, L2, L3 = 2, 2, 4.5
 L2_1 = 1.5
@@ -165,7 +156,7 @@ else:
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_v,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=1, autorun=autorun)
+                   partition=10, scale_def=5, autorun=autorun)
 
 # calculate time
 end = time.time()
