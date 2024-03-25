@@ -11,33 +11,34 @@ from SchemeForm.macro_element import ElementMacroContainer
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
-from input_data import FRICTION_COEFFICIENT
-assert FRICTION_COEFFICIENT == 0.3, 'Friction coef need to be 0.3'
+from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN
+assert FRICTION_COEFFICIENT == 0.6, 'Friction coef need to be 0.6'
+assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true!'
 
 start = time.time()
 
 # set inputs
 
-Eg = 2e5
+Eg = 10e6  # 1e6 - 68e6 Па для песчаных грунтов
 mu_g = 0.3
 tg = 1
-gamma_g = 10000 # !!!!!!!!!!!!!!!!
-Eg_bot = Eg*4  # !!!!!!!!!!!!
-mu_g_bot = mu_g # !!!!!!!!!!!!
-gamma_g_bot = gamma_g # !!!!!!!!!!!!!
-Erw = 2e8
+gamma_g = 1.47e4  # собственный вес грунта
+Eg_bot = 20000e6  # МУ для основания грунта скала
+mu_g_bot = mu_g  # !!!!!!!!!!!!
+gamma_g_bot = gamma_g*1.5  # !!!!!!!!!!!!!
+Erw = 26500e6
 mu_rw = 0.2
 trw = 1
-gamma_rw = gamma_g*0.8 # !!!!!!!!!!!!!!
-qn = 263
-qt = 213
-qx1 = 68
-qx2 = 89
-qx3 = 150
-qx4 = 142
-qy = 45
-qgr1 = 471
-qgr2 = 462
+gamma_rw = 24e3  # Н/m^3  own weight for retaining wall
+qn = 263e3
+qt = 213e3
+qx1 = 68e3
+qx2 = 89e3
+qx3 = 150e3
+qx4 = 142e3
+qy = 45e3
+qgr1 = 471e3
+qgr2 = 462e3
 h0, h1, h2, h3 = 5, 1, 1, 5.5
 L1, L2, L3 = 2, 2, 4.5
 L2_1 = 1.5
@@ -121,18 +122,18 @@ n_contact4 = nodes.find_nodes_numbers_along_segment((L0+L1+L2, h0+h1+h2), (L0+L1
 # add null elements to contact pairs
 for i in range(0, len(n_contact1), 2):
     element_null.add_element(EN=[n_contact1[i+1], n_contact1[i]], cke=123, alpha=math.pi/2, gap_length=0)
-    # print(f'contact1 at {n_contact1[i+1], n_contact1[i]}')
+    print(f'contact1 at {n_contact1[i+1], n_contact1[i]}')
 angle4 = math.pi / 2 - math.atan(h3 / (L2-L2_1))
 for i in range(2, len(n_contact4), 2):
     element_null.add_element(EN=[n_contact4[i], n_contact4[i+1]], cke=123, alpha=angle4, gap_length=0)
-    # print(f'contact4 at {n_contact4[i], n_contact4[i+1]}')
+    print(f'contact4 at {n_contact4[i], n_contact4[i+1]}')
 angle3 = math.pi/2 - math.atan(h2/L3)
 for i in range(2, len(n_contact3), 2):
     element_null.add_element(EN=[n_contact3[i], n_contact3[i+1]], cke=123, alpha=angle3, gap_length=0)
-    # print(f'contact3 at {n_contact3[i], n_contact3[i+1]}')
+    print(f'contact3 at {n_contact3[i], n_contact3[i+1]}')
 for i in range(2, len(n_contact2), 2):
     element_null.add_element(EN=[n_contact2[i], n_contact2[i+1]], cke=123, alpha=0, gap_length=0)
-    # print(f'contact2 at {n_contact2[i], n_contact2[i+1]}')
+    print(f'contact2 at {n_contact2[i], n_contact2[i+1]}')
 
 
 

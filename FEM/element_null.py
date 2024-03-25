@@ -20,7 +20,7 @@ class ElementNullContainer(ElementContainer):
         # but group by contact pairs
         self.contact_pairs_list = []
 
-    def add_element(self, EN, cke=None, alpha=None, cosa=None, sina=None, gap_length=0, add_t_el=True, orientation='n'):
+    def add_element(self, EN, cke=None, alpha=None, cosa=None, sina=None, gap_length=None, add_t_el=True, orientation='n'):
         """
         Adds an element to the system.
         :param EN: [1st node number, 2nd node number] list of 2 nodes numbers (contact pair) for null element
@@ -36,7 +36,7 @@ class ElementNullContainer(ElementContainer):
         :return: None
         """
         MI = []
-        if gap_length == 0:  # check if gap length could be not zero
+        if gap_length == None:  # check if gap length could be not zero
             dx = self.nodes_scheme[EN[1]].x - self.nodes_scheme[EN[0]].x
             dy = self.nodes_scheme[EN[1]].y - self.nodes_scheme[EN[0]].y
             distance = math.sqrt(dx * dx + dy * dy)  # distance between nodes
@@ -44,6 +44,8 @@ class ElementNullContainer(ElementContainer):
                 alpha2 = math.acos(dx / distance)
                 gap_length = math.fabs(math.cos(math.pi - alpha + alpha2)) * distance
                 print('Added gap_length ={} to null-element {}'.format(gap_length, len(self) + 1))
+            else:
+                gap_length = 0
         null_el_n = ElementNull(EN, MI, self.contact_pairs_amount, cke, alpha, cosa, sina, gap_length,
                                 orientation=orientation)
         ElementContainer.add_element(self, element=null_el_n)
