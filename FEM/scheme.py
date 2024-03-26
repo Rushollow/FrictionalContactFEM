@@ -128,27 +128,28 @@ class NodeContainer:
         del(self.nodes_list[node_number])
 
     def find_nodes_numbers_along_segment(self, point1:Tuple, point2:Tuple, sorted_by_x:bool=True,
-                                         sorted_by_y=True, relative_toletance:float=1e-5):
+                                         sorted_by_y=True, relative_tolerance:float=1e-5):
         """
         Finds all nodes along segment that are 'close' to the segment between point1 and point2
-        :param point1:
-        :param point2:
-        :param sorted_by_x:
-        :param sorted_by_y:
-        :param relative_toletance:
+        :param point1: first point of a segment
+        :param point2: second point of a segment
+        :param sorted_by_x: do nones need to be sorted by their X coordinate?
+        :param sorted_by_y: do nones need to be sorted by their Y coordinate?
+        :param relative_tolerance:
         :return: list of nodes' numbers sorted in chosen way
         """
+        rtol = relative_tolerance  # easy to read formulas below
         # first form list of Node objects that have needed coordinates and list of numbers
         list_of_nodes = []
         list_of_numbers = []
-        part_of_cp1 = point2[0] - point1[0]
+        part_of_cp1 = point2[0] - point1[0]  # part of cross product
         part_of_cp2 = point2[1] - point1[1]
         for i, node in enumerate(self.nodes_list):
             # The absolute value of the cross product is twice the area of the triangle formed by the three points
             cross_product = (node.y - point1[1]) * part_of_cp1 - (node.x - point1[0]) * part_of_cp2
-            if np.isclose(cross_product, 0, rtol=relative_toletance) and\
-                    min(point1[0], point2[0]) <= node.x <= max(point1[0], point2[0]) and\
-                    min(point1[1], point2[1]) <= node.y <= max(point1[1], point2[1]):
+            if np.isclose(cross_product, 0, rtol=rtol) and\
+                    min(point1[0]-rtol, point2[0]-rtol) <= node.x <= max(point1[0]+rtol, point2[0]+rtol) and\
+                    min(point1[1]-rtol, point2[1]-rtol) <= node.y <= max(point1[1]+rtol, point2[1]+rtol):
                 list_of_nodes.append(node)
                 list_of_numbers.append(i)
         # now form sorted list of found nodes, sort by attribute wished

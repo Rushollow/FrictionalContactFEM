@@ -131,7 +131,7 @@ sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node
 nodes_to_sup_bot = nodes.find_nodes_numbers_along_segment(point1=(0, 0), point2=(L0+L1+L2+L3+L4, 0))
 nodes_to_sup_right = nodes.find_nodes_numbers_along_segment(point1=(L0+L1+L2+L3+L4, 0),
                                                             point2=(L0+L1+L2+L3+L4, h0+h1+h2+h3+3*h4),
-                                                            relative_toletance=0.5)
+                                                            relative_tolerance=0.5)
 nodes_to_sup_left = nodes.find_nodes_numbers_along_segment(point1=(0, 0), point2=(0, h0))
 
 print(nodes_to_sup_right)
