@@ -26,7 +26,9 @@ Erw = 26500e6  # бетон stiffness retaining wall
 mu_rw = 0.2  # mu for retaining wall
 trw = 1   # thickness
 gamma_rw = 24e3  # Н/m^3  own weight for retaining wall
-E_g_bot = 20000e6  # Spring stiffness 1!!!!
+Eg_bot = 2e10  # Spring stiffness 1!!!!
+mu_g_bot = 0.2
+gamma_g_bot = 0
 qn = 263e3
 qt = 213e3
 qx1 = 68e3
@@ -39,6 +41,8 @@ qgr2 = 462e3
 h0, h1, h2, h3 = 5, 1, 1, 5.5
 L1, L2, L3 = 2, 2, 4.5
 L2_1 = 1.5
+L0 = L3
+L4 = L0
 mesh_size = 0.2
 force_inc = False
 autorun = True
@@ -46,16 +50,24 @@ autorun = True
 # add nodes # for 4 node element
 nodes = NodeContainer()
 # add ME nodes
-nodes.add_node(0, h0)  # 0
-nodes.add_node(0, h0+h1)  # 1
-nodes.add_node(L1, h0+h1+h2)  # 2
-nodes.add_node(L1, h0)  # 3
-nodes.add_node(L1+L2, h0+h1+h2)  # 4
-nodes.add_node(L1+L2, h0)  # 5
-nodes.add_node(L1+L2+L3, h0+h1)  # 6
-nodes.add_node(L1+L2+L3, h0)  # 7
-nodes.add_node(L1, h0+h1+h2+h3)  # 8
-nodes.add_node(L1 + L2_1, h0+h1+h2+h3)  # 9
+nodes.add_node(L0+0, h0)  # 0
+nodes.add_node(L0+0, h0+h1)  # 1
+nodes.add_node(L0+L1, h0+h1+h2)  # 2
+nodes.add_node(L0+L1, h0)  # 3
+nodes.add_node(L0+L1+L2, h0+h1+h2)  # 4
+nodes.add_node(L0+L1+L2, h0)  # 5
+nodes.add_node(L0+L1+L2+L3, h0+h1)  # 6
+nodes.add_node(L0+L1+L2+L3, h0)  # 7
+nodes.add_node(L0+L1, h0+h1+h2+h3)  # 8
+nodes.add_node(L0+L1 + L2_1, h0+h1+h2+h3)  # 9
+nodes.add_node(0, 0)  # 10
+nodes.add_node(0, h0)  # 11
+nodes.add_node(L0, 0)  # 12
+nodes.add_node(L0+L1, 0)  # 13
+nodes.add_node(L0+L1+L2, 0)  # 14
+nodes.add_node(L0+L1+L2+L3, 0)  # 15
+nodes.add_node(L0+L1+L2+L3+L4, h0)  # 16
+nodes.add_node(L0+L1+L2+L3+L4, 0)  # 17
 
 # Set elements
 element_4node = Element4NodeLinearContainer(nodes_scheme=nodes)
@@ -73,45 +85,44 @@ element_macro.add_element(EN=[5, 4, 6, 7], frag_amount_h=int((h1+h2)/mesh_size),
                           E=Erw, mu=mu_rw, t=trw, own_weight=gamma_rw, stitch=False, stitch_list=[1])  # 2
 element_macro.add_element(EN=[2, 8, 9, 4], frag_amount_h=int(h3/mesh_size), frag_amount_v=int(L2/mesh_size),
                           E=Erw, mu=mu_rw, t=trw, own_weight=gamma_rw, stitch=False, stitch_list=[0, 1, 2])  # 3
+element_macro.add_element(EN=[10, 11, 0, 12], frag_amount_h=int(h0/mesh_size/2), frag_amount_v=int(L0/mesh_size),
+                          E=Eg_bot, mu=mu_g_bot, t=tg, own_weight=gamma_g_bot, stitch=False)  # 4
+element_macro.add_element(EN=[12, 0, 3, 13], frag_amount_h=int(h0/mesh_size/2), frag_amount_v=int(L1/mesh_size),
+                          E=Eg_bot, mu=mu_g_bot, t=tg, own_weight=gamma_g_bot, stitch=False, stitch_list=[4])  # 5
+element_macro.add_element(EN=[13, 3, 5, 14], frag_amount_h=int(h0/mesh_size/2), frag_amount_v=int(L2/mesh_size),
+                          E=Eg_bot, mu=mu_g_bot, t=tg, own_weight=gamma_g_bot, stitch=False, stitch_list=[5])  # 6
+element_macro.add_element(EN=[14, 5, 7, 15], frag_amount_h=int(h0/mesh_size/2), frag_amount_v=int(L3/mesh_size),
+                          E=Eg_bot, mu=mu_g_bot, t=tg, own_weight=gamma_g_bot, stitch=False, stitch_list=[6])  # 7
+element_macro.add_element(EN=[15, 7, 16, 17], frag_amount_h=int(h0/mesh_size/2), frag_amount_v=int(L4/mesh_size),
+                          E=Eg_bot, mu=mu_g_bot, t=tg, own_weight=gamma_g_bot, stitch=False, stitch_list=[7])  # 8
+
 
 element_macro.fragment_all(element_4node, element_frame, element_null)
-### TODO: Add code below to the fragment function above
-max_dof = 0
-for node in nodes:
-    max_indx = max(node.indices)
-    if max_indx > max_dof:
-        max_dof = max_indx
-nodes.max_dof = max_dof
-nodes.number = len(nodes) - 1
-### #############################################
-# find all nodes alongside bottom of the retaining wall
-nodes_bot = nodes.find_nodes_numbers_along_segment(point1=(0, h0), point2=(L1+L2+L3, h0), relative_toletance=10e-1)
-print(nodes_bot)
-# add bot nodes to support:
-nodes_sup = []
-k = len(nodes)
-for node in nodes_bot:
-    nodes.add_node(nodes[node].x, nodes[node].y-0.3)
-    nodes_sup.append(k)
-    k += 1
+# find nodes for contact pairs
+n_contact1 = nodes.find_nodes_numbers_along_segment((L0, h0), (L0+L1+L2+L3, h0))
 
 # n null elements and adding t null elements silently
-for n_sup, n_bot in zip(nodes_sup, nodes_bot):
-    element_null.add_element(EN=[n_sup, n_bot], cke=123, alpha=math.pi / 2, gap_length=0)
+for i in range(0, len(n_contact1), 2):
+    element_null.add_element(EN=[n_contact1[i+1], n_contact1[i]], cke=123, alpha=math.pi/2, gap_length=0)
+    print(f'contact1 at {n_contact1[i+1], n_contact1[i]}')
 
 side1 = nodes.find_nodes_numbers_along_segment((L1, h0+h1+h2+h3), (L1+L2_1, h0+h1+h2+h3), sorted_by_y=False)
 side2 = nodes.find_nodes_numbers_along_segment((L1+L2_1, h0+h1+h2+h3), (L1+L2, h0+h1+h2), sorted_by_y=False)
 side3 = nodes.find_nodes_numbers_along_segment((L1+L2, h0+h1+h2), (L1+L2+L3, h0+h1), sorted_by_y=False)
 side4 = nodes.find_nodes_numbers_along_segment((L1+L2+L3, h0+h1), (L1+L2+L3, h0), sorted_by_y=True)
+side5 = 0  # TODO: HERE
 
 # form R, RF and solve SLAE
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
-# add springs
-for spring_node_num in nodes_sup:
-    sm.add_spring(degree_of_freedom=spring_node_num*2, stiffness=E_g_bot)
-# add supports
-sm.support_nodes(nodes_sup, direction='h')
-sm.support_nodes(nodes_sup[0:], direction='v')  # sup vertically first 3 nodes to the left
+nodes_to_sup_bot = nodes.find_nodes_numbers_along_segment(point1=(0, 0), point2=(L0+L1+L2+L3+L4, 0))
+nodes_to_sup_right = nodes.find_nodes_numbers_along_segment(point1=(L0+L1+L2+L3+L4, 0),
+                                                            point2=(L0+L1+L2+L3+L4, h0),
+                                                            relative_toletance=0.5)
+nodes_to_sup_left = nodes.find_nodes_numbers_along_segment(point1=(0, 0), point2=(0, h0))
+
+sm.support_nodes(nodes_to_sup_bot, direction='hv')
+sm.support_nodes(nodes_to_sup_right, direction='h')
+sm.support_nodes(nodes_to_sup_left, direction='h')
 
 lv = LoadVector()
 lv_v = LoadVector()

@@ -12,7 +12,7 @@ from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
 from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN
-assert FRICTION_COEFFICIENT == 1, 'Friction coef need to be 0.6'
+assert FRICTION_COEFFICIENT == 0.2, 'Friction coef need to be 0.6'
 assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true!'
 
 start = time.time()
@@ -125,8 +125,6 @@ for i in range(2, len(n_contact3), 2):
 for i in range(2, len(n_contact2), 2):
     element_null.add_element(EN=[n_contact2[i], n_contact2[i+1]], cke=123, alpha=0, gap_length=0)
     print(f'contact2 at {n_contact2[i], n_contact2[i+1]}')
-
-
 
 # form R, RF and solve SLAE
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
