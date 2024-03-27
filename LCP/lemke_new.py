@@ -36,12 +36,12 @@ class Lemke:
         self._leading_column_next = self._leading_column
         self._min_ratio = np.zeros(self._rows_table, dtype=float)
         if self.force_inc and not self.const_load:  # if there is no const load and force increment
-            self._leading_row_next = 0
+            self._leading_rows_next = 0
             self._form_min_ratio()
-            self._form_leading_row()
+            self._form_leading_rows()
         else:
-            self._leading_row_next = np.argmin(self.react_vector)
-        self._leading_row = self._leading_row_next
+            self._leading_rows_next = np.argmin(self.react_vector)
+        self._leading_rows = self._leading_rows_next
         # Result interaction forces and mutual displacements
         self.xn = np.zeros(self.n_amount, dtype=float)  # interaction forces along the normal to the contact zone
         self.xt = np.zeros(self.t_amount, dtype=float)  # interaction forces tangential to the contact zone
@@ -83,8 +83,8 @@ class Lemke:
         self._basis_next = None
         self._leading_column = None
         self._leading_column_next = None
-        self._leading_row = None
-        self._leading_row_next = None
+        self._leading_rows = None
+        self._leading_rows_next = None
 
     # region Different checks
     def _trivial_solution(self):
@@ -197,6 +197,20 @@ class Lemke:
                 self._min_ratio[i] = self.table[i, -1] / element
             else:
                 self._min_ratio[i] = np.Infinity
+
+    def _form_leading_rows_all(self):
+        # take all elements < 0 and make them Infinity
+        min_ratio_above_0 = np.where(self._min_ratio >= 0, self._min_ratio, np.inf)
+        # get indices of the sorted array
+        indx = np.argsort(min_ratio_above_0)
+        self._leading_rows_all.append(indx[0])
+        for i in range(1, len(indx)):
+            # if next value CLOSE to minimum
+            if np.isclose(min_ratio_above_0[indx[0]], min_ratio_above_0[indx[i]], atol=ACCURACY_OF_LCP):
+                # add to leading_rows
+                self._leading_rows_all.append(indx[i])
+
+
 
     def _form_leading_row(self):
         """

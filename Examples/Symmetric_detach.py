@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import time
+from prettytable import PrettyTable
 
 from input_data import SCALE_DEF
 from FEM.scheme import NodeContainer, StiffnessMatrix, LoadVector
@@ -54,18 +55,29 @@ lv_const.add_concentrated_force(force=-F, degree_of_freedom=25)
 #lv.add_concentrated_force(force=-F/100, degree_of_freedom=21)
 lv_variable = None
 
-
+autorun = True
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv_const, lv_variable=lv_variable,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=50, autorun=True)
+                   partition=10, scale_def=50, autorun=autorun)
 
 # calculate time
 end = time.time()
 last = end - start
 print("Time: ", last)
 
+if autorun:
+    mytable = PrettyTable()
+    mytable.field_names = ['step', 'p', 'zn', 'xn', 'zt', 'xt']
+    for i in range(len(graph.lemke.zn_anim)):
+        mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
+                         graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
+    print(mytable)
+
 if __name__ == "__main__":
     graph.fill_arrays_scheme()  # form info for plot at UI
     application(graph)
+
+
+
