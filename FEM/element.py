@@ -119,4 +119,12 @@ class ElementMethods:
         return displacements_on_element
 
 
+    def stress(self, U:[list], nodes):
+        """
+        method is realised in children classes
+        :return:
+        """
+        pass
+
+
 

@@ -205,15 +205,22 @@ class MainWindow(QMainWindow):
         zn, zt = self.graph.lemke.zn_anim[i_step], self.graph.lemke.zt_anim[i_step]  # mutual displacement
         xn, xt = self.graph.lemke.xn_anim[i_step], self.graph.lemke.xt_anim[i_step]  # contact forces
         # scale up mutual displacements, so they could be seen on the same chart with contact forces
-        scale_lcp = 1
+        scale_lcp_n = 1
+        scale_lcp_t = 1
         if zn.any() and np.max(zn) > 1e-8:  # some smaller value will make plots unreadable
-            scale_lcp = int(np.max(xn) / np.max(zn))
-        elif zt.any() and np.max(zt) > 1e-8:
-            scale_lcp = int(np.max(xt) / np.max(zt))
-        else: self.ui.statusbar.showMessage(f'Scale of LCP is {scale_lcp}')
+            small_range = np.max(zn) - np.min(xn)
+            large_range = np.max(xn) - np.min(zn)
+            small_max_abs = np.max(np.abs(zn))
+            scale_lcp_n = large_range / (1 * small_max_abs)
+        if zt.any() and (np.max(zt) > 1e-8 or np.min(zt) < -1e-8) :
+            small_range = np.max(zt) - np.min(xt)
+            large_range = np.max(xt) - np.min(zt)
+            small_max_abs = np.max(np.abs(zt))
+            scale_lcp_t = large_range / (1 * small_max_abs)
+        self.ui.statusbar.showMessage(f'Scale of LCP is {scale_lcp_n, scale_lcp_t}')
         # normal
         if zn.any():
-            zn_item = pg.BarGraphItem(x=n_range, height=zn * scale_lcp, width=bar_width, brush='b',
+            zn_item = pg.BarGraphItem(x=n_range, height=zn * scale_lcp_n, width=bar_width, brush='b',
                                       data=zn,
                                       tip='x: {x:.3g}\ny: {y:.3g}\nvalue={data}'.format,
                                       hoverable=True)
@@ -224,7 +231,7 @@ class MainWindow(QMainWindow):
             self.ui.graphicsView_contact_info_normal.addItem(xn_item)
         # tangent
         if zt.any():
-            zt_item = pg.BarGraphItem(x=n_range, height=zt * scale_lcp, width=bar_width, brush='b')
+            zt_item = pg.BarGraphItem(x=n_range, height=zt * scale_lcp_t, width=bar_width, brush='b')
             self.ui.graphicsView_contact_info_tangent.addItem(zt_item)
         if xt.any():
             xt_item = pg.BarGraphItem(x=n_range, height=xt, width=bar_width, brush='r')
@@ -348,3 +355,9 @@ def application(graph=None):
 
     window.show()
     sys.exit(app.exec_())
+
+def min_max_normalize(np_vec):
+    min_val = min(np_vec)
+    max_val = max(np_vec)
+    normalized_vector = (np_vec - min_val) / (max_val - min_val)
+    return normalized_vector

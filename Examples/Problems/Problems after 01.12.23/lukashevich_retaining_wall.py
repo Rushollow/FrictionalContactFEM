@@ -11,9 +11,10 @@ from SchemeForm.macro_element import ElementMacroContainer
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
-from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN
+from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
 assert FRICTION_COEFFICIENT == 1, 'Friction coef need to be 1'
 assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true!'
+assert ACCURACY_OF_LCP >= 1e-6
 
 start = time.time()
 
@@ -26,14 +27,14 @@ gamma_rw = 24e3  # Н/m^3  own weight for retaining wall
 Eg_bot = 2e10  # Spring stiffness 1!!!!
 mu_g_bot = 0.2
 gamma_g_bot = 0
-qn = 263e3
-qt = 213e3
+qn = 263e3  #263e3
+qt = 213e3  # 213e3
 qx1 = 68e3
 qx2 = 89e3
 qx3 = 142e3
 qx4 = 150e3
 qy = 45e3
-qgr1 = 471e3
+qgr1 = 471e3  # 471e3
 qgr2 = 462e3
 h0, h1, h2, h3 = 5, 1, 1, 5.5
 L1, L2, L3 = 2, 2, 4.5
@@ -130,63 +131,71 @@ sm.support_nodes(nodes_to_sup_left, direction='h')
 lv = LoadVector()
 lv_v = LoadVector()
 
+lv.add_own_weight_to_rf(nodes, [element_4node])
 print('SIDE 1:')
 # add load at the top node SIDE1
 for i, nn in enumerate(side1):
-    length = L2_1 / len(side1)
-    force = (2 * qn / L2_1 * length * i - qn) * length
-    if i == 0 or i == len(side1)+1:
-        force /= 2
-    lv.add_concentrated_force(force, degree_of_freedom=nn*2)
-    lv.add_concentrated_force(-qt * length, degree_of_freedom=nn * 2 - 1)
-    print(f'vertical   {force=}, {length=} {nn=}, dof={nn*2}')
-    # print(f'horizontal force={-qt * length}, {length=} {nn=}, dof={nn * 2-1}')
+    parts = len(side1)-1
+    length = L2_1 / parts
+    force_v = -(L2_1*qn*(parts - 2*i))/(parts*parts)
+    force_h = -qt * length
+    if i == 0 or i == parts:
+        force_v /= 2
+        force_h /= 2
+    lv.add_concentrated_force(force_v, degree_of_freedom=nn*2+1)
+    lv.add_concentrated_force(-qt * length, degree_of_freedom=nn * 2)
+    # print(f'{i=}|{force_v=},{length=}, {nn=}, dof={nn*2+1}')
+    # print(f'{force_h=}, {length=} {nn=}, dof={nn * 2}')
 
 print('SIDE 2:')
 # SIDE 2 top right nodes
 for i, nn in enumerate(side2):
-    length = math.sqrt((L2-L2_1)*(L2-L2_1) + h3*h3) / len(side2)
-    force_h = (2 * (qx1 + qx2) / math.sqrt((L2-L2_1)*(L2-L2_1) + h3*h3) * length * i - qx1) * length
+    parts = len(side2) - 1
+    length = h3 / parts
+    force_h = -(h3*(i*qx2-i*qx1+parts*qx1))/(parts*parts)
     force_v = -qy * length
-    if i == 0 or i == len(side1)+1:
+    if i == 0 or i == parts:
         force_h /= 2
         force_v /= 2
-    lv.add_concentrated_force(force_v, degree_of_freedom=nn * 2)
-    lv.add_concentrated_force(-force_h, degree_of_freedom=nn * 2 - 1)
-    # print(f'vertical   force={-qy * length}, {length=} {nn=}, dof={nn*2}')
-    # print(f'horizontal force={-force_h}, {length=} {nn=}, dof={nn * 2-1}')
+    lv.add_concentrated_force(force_v, degree_of_freedom=nn * 2 + 1)
+    lv.add_concentrated_force(force_h, degree_of_freedom=nn * 2)
+    # print(f'vertical   force={force_v}, {length=} {nn=}, dof={nn*2+1}')
+    # print(f'horizontal force={force_h}, {length=} {nn=}, dof={nn * 2}')
 
 print('SIDE 3:')
 # SIDE 3 right top
 for i, nn in enumerate(side3):
-    length = math.sqrt((h2*h2) + (L3*L3)) / len(side3)
-    force_h = -qx3 * length
+    parts = len(side3)-1
+    length = L3 / parts
+    force_h = -qx3 * h2/parts
     force_v = -qgr1 * length
-    if i == 0 or i == len(side1)+1:
+    if i == 0 or i == parts:
         force_h /= 2
         force_v /= 2
-    lv.add_concentrated_force(force_v, degree_of_freedom=nn * 2)
-    lv.add_concentrated_force(force_h, degree_of_freedom=nn * 2 - 1)
-    # print(f'vertical   force={-qgr1 * length}, {length=} {nn=}, dof={nn*2}')
-    # print(f'horizontal force={-qx3 * length}, {length=} {nn=}, dof={nn * 2-1}')
+    lv.add_concentrated_force(force_v, degree_of_freedom=nn * 2+1)
+    lv.add_concentrated_force(force_h, degree_of_freedom=nn * 2)
+    # print(f'{force_v=}, {length=} {nn=}, dof={nn*2+1}')
+    # print(f'{force_h=}, length={h2/parts} {nn=}, dof={nn * 2}')
 #
 print('SIDE 4:')
 # SIDE 4 right top
 for i, nn in enumerate(side4):
-    length = h1 / len(side3)
+    parts = len(side4) -1
+    length = h1 / parts
     force_h = -qx4 * length
-    if i == 0 or i == len(side1)+1:
+    if i == 0 or i == parts:
         force_h /= 2
-    lv.add_concentrated_force(force_h, degree_of_freedom=nn * 2 - 1)
+    lv.add_concentrated_force(force_h, degree_of_freedom=nn * 2)
     # print(f'horizontal force={-qx4 * length}, {length=} {nn=}, dof={nn * 2-1}')
 print('SIDE 5:')
 for i, nn in enumerate(side5):
-    length = L4 / len(side5)
+    parts = len(side5) - 1
+    length = L4 / parts
     force_v = -qgr2 * length
-    if i == len(side1)+1:
+    if i == parts:
         force_v /= 2
-    lv.add_concentrated_force(force_v, degree_of_freedom=nn*2)
-    # print(f'vertical   force={-qgr2 * length}, {length=} {nn=}, dof={nn*2}')
+    lv.add_concentrated_force(force_v, degree_of_freedom=nn*2+1)
+    # print(f'{force_v=}, {length=} {nn=}, dof={nn*2}')
 
 
 if not force_inc:
@@ -200,20 +209,20 @@ else:
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_v,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=2000, autorun=autorun)
+                   partition=10, scale_def=1000, autorun=autorun)
 
 # calculate time
 end = time.time()
 last = end - start
 print("Time: ", last)
 
-# if autorun:
-#     mytable = PrettyTable()
-#     mytable.field_names = ['step', 'p', 'zn', 'xn', 'zt', 'xt']
-#     for i in range(len(graph.lemke.zn_anim)):
-#         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
-#                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
-#     print(mytable)
+if autorun:
+    mytable = PrettyTable()
+    mytable.field_names = ['step', 'p', 'zn', 'xn', 'zt', 'xt']
+    for i in range(len(graph.lemke.zn_anim)):
+        mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
+                         graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
+    print(mytable)
 
 
 if __name__ == "__main__":

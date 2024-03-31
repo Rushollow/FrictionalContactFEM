@@ -87,6 +87,9 @@ class Element4NodeLinear(ElementMethods):
         if own_weight > 0:
             own_weight = -own_weight
         self.own_weight = own_weight * t
+        # stresses calculated by def stress
+        self.sigma_x: float = 0
+        self.sigma_y: float = 0
 
     def elastic_matrix(self, plane_deformation=PLANE_STRAIN):
         """
@@ -107,7 +110,7 @@ class Element4NodeLinear(ElementMethods):
 
     def __det_jacobian_matrix__(self, nodes, k, n):
         """
-        Calculates the Jacobian matrix for 4node element
+        Calculates the determinant of Jacobian matrix for 4node element
         :param self: Object of 4node element
         :param nodes: Object of Scheme.Node class with nodes in nodes_list
         :param k: ksi variable to know where we should calculate
@@ -223,5 +226,52 @@ class Element4NodeLinear(ElementMethods):
 
     def __str__(self):
         return f'4 node element: {self.EN}'
+
+    def _element_displacements(self, U: [float]):
+        element_dis = []
+        for indx in self.MI:
+            element_dis.append(U[indx])
+        return element_dis
+
+
+    def _bilinear_shape_function(self, x, y):
+        """
+        Compute the bilinear shape function derivative
+        at a given natural coordinate (xi, eta).
+        """
+        dN = np.array([[-(1 - y), (1 - y), (1 + y), -(1 + y)]],
+                          [-(1 - x), -(1 + x), (1 + x), (1 - x)]) / 4
+        return dN
+
+    def stress(self, U:[float], nodes):
+        """
+        Calculate stresses (sigma_x, sigma_y)
+        :param U: vector of global displacements
+        :param nodes: scheme nodes container
+        :return: None
+        """
+        el_dis = np.array(self._element_displacements(U))
+        x_coord, y_coord = self.nodes_coordinates_positive(nodes=nodes)
+
+        sigma_x, sigma_y = 0, 0
+
+        for i in range(4):
+            x, y = x_coord[i], y_coord[i]
+            # Compute bilinear shape functions and their derivatives
+            dN = self._bilinear_shape_function(x, y)
+            # Compute Jacobian matrix
+            J = np.dot(dN, el_dis.reshape(-1, 2))
+            # Compute strains
+            epsilon_xi = np.dot(np.linalg.inv(J), dN) @ el_dis.reshape(-1, 2)
+            epsilon_yi = np.dot(np.linalg.inv(J), dN) @ el_dis.reshape(-1, 2)
+            # Compute stresses
+            sigma_x += self.E / (1 - self.mu ** 2) * (epsilon_xi + self.mu * epsilon_yi)
+            sigma_y += self.E / (1 - self.mu ** 2) * (self.mu * epsilon_xi + epsilon_yi)
+
+        return sigma_x, sigma_y
+
+
+
+
 
 
