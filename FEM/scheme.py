@@ -188,7 +188,6 @@ class NodeContainer:
                 break
 
 
-
 class StiffnessMatrix:
     """
     All field and methods about stiffness matrix
@@ -450,8 +449,6 @@ def add_displacement(degree_of_freedom, stiffness_matrix, load_vector):  # TODO 
     else:
         load_vector.rf[degree_of_freedom] = 0
     # modifying stiffness matrix
-
-
 
 
 def find_max_degree_of_freedom():

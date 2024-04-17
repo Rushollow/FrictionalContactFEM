@@ -3,13 +3,15 @@ from input_data import PLANE_STRAIN
 import numpy as np
 from typing import List
 
+
 class Element4NodeLinearContainer(ElementContainer):
     """
     Class for storing and adding 4node elements
     """
+
     # Some methods for 4node elements
-    def add_element(self, EN:List[int], MI:List[int]=None,
-                    E:float=None, mu:float=None, t:float=None, own_weight: float=0):
+    def add_element(self, EN: List[int], MI: List[int] = None,
+                    E: float = None, mu: float = None, t: float = None, own_weight: float = 0):
         """
         Adding element 4NodeLinear to the scheme
         :param EN: element nodes: [node1, node2, node3, node4]. Numbers of the element nodes
@@ -63,6 +65,40 @@ class Element4NodeLinearContainer(ElementContainer):
             for node_num in element.EN:
                 MI += self.nodes_scheme[node_num].indices[:2]
             element.MI = MI
+
+    def find_elements_along_segment(self, nodes_container, point1, point2, rtol=1e-1) -> (list, list[int]):
+        """
+        Finds all 4node elements between 2 given point
+        calculates center on the element, if it is near the segment -> OK!
+        :param nodes_container:
+        :param point1: first point (x1, y1)
+        :param point2: second point (x2, y2)
+        :param rtol: relative tolerance
+        :return:
+        """
+        central_points = []  # central points of elements 4node (average coordinates x and y)
+        elements = []
+        list_of_numbers = []
+        for element in self.elements_list:
+            avg_x, avg_y = 0, 0  # average x coordinate
+            for nn in element.EN:
+                avg_x += nodes_container[nn].x
+                avg_y += nodes_container[nn].y
+            avg_x /= 4  # case its 4 nodes in this element
+            avg_y /= 4
+            central_points.append((avg_x, avg_y))
+
+        part_of_cp1 = point2[0] - point1[0]  # part of cross product
+        part_of_cp2 = point2[1] - point1[1]
+        for i, cp in enumerate(central_points):
+            # The absolute value of the cross product is twice the area of the triangle formed by the three points
+            cross_product = (cp[1] - point1[1]) * part_of_cp1 - (cp[0] - point1[0]) * part_of_cp2
+            if np.isclose(cross_product, 0, rtol=rtol) and\
+                    min(point1[0]-rtol, point2[0]-rtol) <= cp[0] <= max(point1[0]+rtol, point2[0]+rtol) and\
+                    min(point1[1]-rtol, point2[1]-rtol) <= cp[1] <= max(point1[1]+rtol, point2[1]+rtol):
+                elements.append(self.elements_list[i])
+                list_of_numbers.append(i)
+        return elements, list_of_numbers
 
 
 class Element4NodeLinear(ElementMethods):
@@ -134,13 +170,17 @@ class Element4NodeLinear(ElementMethods):
         loc = 0.577350269
         res = []
         if point_num == 0:
-            res.append(-loc); res.append(-loc)
+            res.append(-loc);
+            res.append(-loc)
         elif point_num == 1:
-            res.append(-loc); res.append(loc)
+            res.append(-loc);
+            res.append(loc)
         elif point_num == 2:
-            res.append(loc); res.append(-loc)
+            res.append(loc);
+            res.append(-loc)
         elif point_num == 3:
-            res.append(loc); res.append(loc)
+            res.append(loc);
+            res.append(loc)
         return res
 
     def form_ke(self, nodes):
@@ -177,17 +217,17 @@ class Element4NodeLinear(ElementMethods):
 
         den = self.__det_jacobian_matrix__(nodes, k, n) * 8
 
-        n11 = -(n*(y[1]-y[2])+k*( y[2]-y[3])-y[1]+y[3])/(den)
-        n12 =  (n*(x[1]-x[2])+k*( x[2]-x[3])-x[1]+x[3])/(den)
-        n21 =  (n*(y[0]-y[3])+k*( y[2]-y[3])-y[0]+y[2])/(den)
-        n22 = -(n*(x[0]-x[3])+k*( x[2]-x[3])-x[0]+x[2])/(den)
-        n31 = -(n*(y[0]-y[3])+k*(-y[0]+y[1])+y[1]-y[3])/(den)
-        n32 =  (n*(x[0]-x[3])+k*(-x[0]+x[1])+x[1]-x[3])/(den)
-        n41 =  (n*(y[1]-y[2])+k*(-y[0]+y[1])+y[0]-y[2])/(den)
-        n42 = -(n*(x[1]-x[2])+k*(-x[0]+x[1])+x[0]-x[2])/(den)
+        n11 = -(n * (y[1] - y[2]) + k * (y[2] - y[3]) - y[1] + y[3]) / (den)
+        n12 = (n * (x[1] - x[2]) + k * (x[2] - x[3]) - x[1] + x[3]) / (den)
+        n21 = (n * (y[0] - y[3]) + k * (y[2] - y[3]) - y[0] + y[2]) / (den)
+        n22 = -(n * (x[0] - x[3]) + k * (x[2] - x[3]) - x[0] + x[2]) / (den)
+        n31 = -(n * (y[0] - y[3]) + k * (-y[0] + y[1]) + y[1] - y[3]) / (den)
+        n32 = (n * (x[0] - x[3]) + k * (-x[0] + x[1]) + x[1] - x[3]) / (den)
+        n41 = (n * (y[1] - y[2]) + k * (-y[0] + y[1]) + y[0] - y[2]) / (den)
+        n42 = -(n * (x[1] - x[2]) + k * (-x[0] + x[1]) + x[0] - x[2]) / (den)
 
-        return np.array([[n11, 0  , n21, 0  , n31, 0   , n41, 0   ],
-                         [0  , n12, 0  , n22, 0   , n32, 0   , n42],
+        return np.array([[n11, 0, n21, 0, n31, 0, n41, 0],
+                         [0, n12, 0, n22, 0, n32, 0, n42],
                          [n12, n11, n22, n21, n32, n31, n42, n41]])
 
     def mass_part_in_nodes(self, nodes):
@@ -200,10 +240,14 @@ class Element4NodeLinear(ElementMethods):
 
         x, y = self.nodes_coordinates(nodes)
 
-        a1 = (2*x[0]*(y[1]-y[3])+x[1]*(y[2]-2*y[0]+y[3])+x[2]*(y[3]-y[1])+x[3]*(2*y[0]-y[1]-y[2]))/12
-        a2 = (x[0]*(2*y[1]-y[2]-y[3])+2*x[1]*(y[2]-y[0])+x[2]*(y[0]-2*y[1]+y[3])+x[3]*(y[0]-y[2]))/12
-        a3 = (x[0]*(y[1]-y[3])+x[1]*(2*y[2]-y[0]-y[3])+2*x[2]*(y[3]-y[1])+x[3]*(y[0]+y[1]-2*y[2]))/12
-        a4 = (x[0]*(y[1]+y[2]-2*y[3])+x[1]*(-y[0]+y[2])+x[2]*(-y[0]-y[1]+2*y[3])+x[3]*(+2*y[0]-2*y[2]))/12
+        a1 = (2 * x[0] * (y[1] - y[3]) + x[1] * (y[2] - 2 * y[0] + y[3]) + x[2] * (y[3] - y[1]) + x[3] * (
+                    2 * y[0] - y[1] - y[2])) / 12
+        a2 = (x[0] * (2 * y[1] - y[2] - y[3]) + 2 * x[1] * (y[2] - y[0]) + x[2] * (y[0] - 2 * y[1] + y[3]) + x[3] * (
+                    y[0] - y[2])) / 12
+        a3 = (x[0] * (y[1] - y[3]) + x[1] * (2 * y[2] - y[0] - y[3]) + 2 * x[2] * (y[3] - y[1]) + x[3] * (
+                    y[0] + y[1] - 2 * y[2])) / 12
+        a4 = (x[0] * (y[1] + y[2] - 2 * y[3]) + x[1] * (-y[0] + y[2]) + x[2] * (-y[0] - y[1] + 2 * y[3]) + x[3] * (
+                    +2 * y[0] - 2 * y[2])) / 12
         return np.abs(np.array([a1, a2, a3, a4]))
 
     def set_stiffness(self, E=None, mu=None, t=None, own_weight=0):
@@ -233,14 +277,13 @@ class Element4NodeLinear(ElementMethods):
             element_dis.append(U[indx])
         return element_dis
 
-
     def _bilinear_shape_function(self, x, y):
         """
         Compute the bilinear shape function derivative
         at a given natural coordinate (xi, eta).
         """
-        dN = np.array([[-(1 - y), (1 - y), (1 + y), -(1 + y)]],
-                          [-(1 - x), -(1 + x), (1 + x), (1 - x)]) / 4
+        dN = np.array([[-(1 - y), (1 - y), (1 + y), -(1 + y)],
+                      [-(1 - x), -(1 + x), (1 + x), (1 - x)]]) / 4
         return dN
 
     def stress(self, U:[float], nodes):
@@ -266,12 +309,6 @@ class Element4NodeLinear(ElementMethods):
             epsilon_yi = np.dot(np.linalg.inv(J), dN) @ el_dis.reshape(-1, 2)
             # Compute stresses
             sigma_x += self.E / (1 - self.mu ** 2) * (epsilon_xi + self.mu * epsilon_yi)
-            sigma_y += self.E / (1 - self.mu ** 2) * (self.mu * epsilon_xi + epsilon_yi)
+            sigma_y += self.E / (1 - self.mu ** 2) * (epsilon_yi + self.mu * epsilon_xi)
 
-        return sigma_x, sigma_y
-
-
-
-
-
-
+        return np.mean(sigma_x), np.mean(sigma_y)
