@@ -286,7 +286,7 @@ class Element4NodeLinear(ElementMethods):
                       [-(1 - x), -(1 + x), (1 + x), (1 - x)]]) / 4
         return dN
 
-    def stress(self, U:[float], nodes):
+    def stress(self, U:[float], nodes):  # TODO: not working, need to check
         """
         Calculate stresses (sigma_x, sigma_y)
         :param U: vector of global displacements

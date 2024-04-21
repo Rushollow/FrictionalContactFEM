@@ -3,19 +3,19 @@ import datetime
 import socket
 
 
-class Foo:
-    def __init__(self, a=None):
-        if not a:
-            a = 1
-        print('a')
+import time
+import numpy as np
+def calc_fib(n):
+    if n <= 1:
+        return n
+    else:
+        return calc_fib(n - 1) + calc_fib(n - 2)
 
-    a = 3
-
-ob = Foo()
-
-s = "Hello"
-
-print(s+1)
+var = 40
+start = time.time()
+print(f"{var}th number of Fibonacci is {calc_fib(var)}")
+end = time.time()
+print(f"time: {end - start} sec.")
 
 
 

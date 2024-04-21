@@ -12,7 +12,7 @@ from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
 from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN
-assert FRICTION_COEFFICIENT == 0.2, 'Friction coef need to be 0.6'
+assert FRICTION_COEFFICIENT == 0.01, 'Friction coef need to be 0.2'
 assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true!'
 
 start = time.time()

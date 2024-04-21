@@ -14,8 +14,8 @@ from GUI.PyQt.contactFEM import application
 
 from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
 
-assert FRICTION_COEFFICIENT == 1, 'Friction coef need to be 1'
-assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true!'
+assert FRICTION_COEFFICIENT == 1, 'Friction coef need to be 1 НЕПРАВИЛЬНО!'
+assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true! НЕПРАВИЛЬНО!!!!'
 assert ACCURACY_OF_LCP >= 1e-6
 
 start = time.time()
@@ -100,9 +100,11 @@ element_macro.fragment_all(element_4node, element_frame, element_null)
 # find nodes for contact pairs
 n_contact1 = nodes.find_nodes_numbers_along_segment((L0, h0), (L0 + L1 + L2 + L3, h0))
 
+nodes_contact_top = []
 # n null elements and adding t null elements silently
 for i in range(0, len(n_contact1), 2):
     element_null.add_element(EN=[n_contact1[i + 1], n_contact1[i]], cke=123, alpha=math.pi / 2, gap_length=0)
+    nodes_contact_top.append(n_contact1[i])
     # print(f'contact1 at {n_contact1[i+1], n_contact1[i]}')
 
 side1 = nodes.find_nodes_numbers_along_segment((L0 + L1, h0 + h1 + h2 + h3), (L0 + L1 + L2_1, h0 + h1 + h2 + h3),
@@ -142,7 +144,7 @@ for i, nn in enumerate(side1):
     if i == 0 or i == parts:
         force_v /= 2
         force_h /= 2
-    lv.add_concentrated_force(force_v, degree_of_freedom=nn * 2 + 1)
+    lv.add_concentrated_force(force_v, degree_of_freedom =nn * 2 + 1)
     lv.add_concentrated_force(-qt * length, degree_of_freedom=nn * 2)
     # print(f'{i=}|{force_v=},{length=}, {nn=}, dof={nn*2+1}')
     # print(f'{force_h=}, {length=} {nn=}, dof={nn * 2}')
@@ -210,29 +212,27 @@ graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_v,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
                    partition=10, scale_def=1000, autorun=autorun)
 
-elements_stress1, num1 = element_4node.find_elements_along_segment(nodes, point1=(L0, h0 + mesh_size / 4),
-                                                                   point2=(L0 + L1, h0 + mesh_size / 2))
-elements_stress2, num2 = element_4node.find_elements_along_segment(nodes, point1=(L0 + L1, h0 + mesh_size / 2),
-                                                                   point2=(L0 + L1 + L2, h0 + mesh_size / 2))
-elements_stress3, num3 = element_4node.find_elements_along_segment(nodes, point1=(L0 + L1 + L2, h0 + mesh_size / 2),
-                                                                   point2=(L0 + L1 + L2 + L3, h0 + mesh_size / 4))
-elements_stress = elements_stress1 + elements_stress2 + elements_stress3
+sizes_for_stress = [(nodes[nodes_contact_top[1]].x-nodes[nodes_contact_top[0]].x)/2]  # first half size
+for i in range(1, len(nodes_contact_top)-1):
+    size = nodes[nodes_contact_top[i+1]].x - nodes[nodes_contact_top[i]].x
+    sizes_for_stress.append(size)
+sizes_for_stress.append((nodes[nodes_contact_top[-1]].x-nodes[nodes_contact_top[-2]].x)/2)  # last half size
 
+xn = graph.lemke.xn_anim[-1]
+xt = graph.lemke.xt_anim[-1]
 if autorun:
-    U = graph.u_contact_anim[-1]
     stress_x = []
     stress_y = []
-    for el in elements_stress:
-        sigma_x, sigma_y = el.stress(U=U, nodes=nodes)
-        stress_x.append(sigma_x)
-        stress_y.append(sigma_y)
+    for i in range(len(xn)):
+        stress_x.append(-xt[i]/sizes_for_stress[i]/1000000)  # MPa
+        stress_y.append(-xn[i]/sizes_for_stress[i]/1000000)   # MPa
     print(stress_x)
     print(stress_y)
     x = np.arange(1, len(stress_x) + 1, 1, dtype=int)
-    sigma_x = np.array(stress_x)
-    sigma_y = np.array(stress_y)
-    pg.plot(x, sigma_x, pen=None, symbol='o')  # setting pen=None disables line drawing
-    pg.plot(x, sigma_y, pen=None, symbol='o')  # setting pen=None disables line drawing
+    stress_x = np.array(stress_x)
+    stress_y = np.array(stress_y)
+    # pg.plot(x, stress_x, pen=None, symbol='o')  # setting pen=None disables line drawing
+    # pg.plot(x, stress_y, pen=None, symbol='o')  # setting pen=None disables line drawing
 
 # calculate time
 end = time.time()
@@ -242,10 +242,10 @@ print("Time: ", last)
 if autorun:
     mytable = PrettyTable()
     mytable.field_names = ['step', 'p', 'zn', 'xn', 'zt', 'xt']
-    for i in range(len(graph.lemke.zn_anim)):
+    for i in range(len(graph.lemke.zn_anim)-1, len(graph.lemke.zn_anim)):
         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
-    # print(mytable)
+    print(mytable)
 
 if __name__ == "__main__":
     graph.fill_arrays_scheme()  # form info for plot at UI
