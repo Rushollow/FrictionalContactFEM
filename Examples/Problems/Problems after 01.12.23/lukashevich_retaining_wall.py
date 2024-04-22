@@ -16,7 +16,7 @@ from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
 
 assert FRICTION_COEFFICIENT == 1, 'Friction coef need to be 1 НЕПРАВИЛЬНО!'
 assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true! НЕПРАВИЛЬНО!!!!'
-assert ACCURACY_OF_LCP >= 1e-6
+assert ACCURACY_OF_LCP == 1e-7
 
 start = time.time()
 
@@ -85,15 +85,16 @@ element_macro.add_element(EN=[5, 4, 6, 7], frag_amount_h=int((h1 + h2) / mesh_si
                           E=Erw, mu=mu_rw, t=trw, own_weight=gamma_rw, stitch=False, stitch_list=[1])  # 2
 element_macro.add_element(EN=[2, 8, 9, 4], frag_amount_h=int(h3 / mesh_size), frag_amount_v=int(L2 / mesh_size),
                           E=Erw, mu=mu_rw, t=trw, own_weight=gamma_rw, stitch=False, stitch_list=[0, 1, 2])  # 3
-element_macro.add_element(EN=[10, 11, 0, 12], frag_amount_h=int(h0 / mesh_size / 2), frag_amount_v=int(L0 / mesh_size),
+# soil
+element_macro.add_element(EN=[10, 11, 0, 12], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L0 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False)  # 4
-element_macro.add_element(EN=[12, 0, 3, 13], frag_amount_h=int(h0 / mesh_size / 2), frag_amount_v=int(L1 / mesh_size),
+element_macro.add_element(EN=[12, 0, 3, 13], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L1 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False, stitch_list=[4])  # 5
-element_macro.add_element(EN=[13, 3, 5, 14], frag_amount_h=int(h0 / mesh_size / 2), frag_amount_v=int(L2 / mesh_size),
+element_macro.add_element(EN=[13, 3, 5, 14], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L2 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False, stitch_list=[5])  # 6
-element_macro.add_element(EN=[14, 5, 7, 15], frag_amount_h=int(h0 / mesh_size / 2), frag_amount_v=int(L3 / mesh_size),
+element_macro.add_element(EN=[14, 5, 7, 15], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L3 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False, stitch_list=[6])  # 7
-element_macro.add_element(EN=[15, 7, 16, 17], frag_amount_h=int(h0 / mesh_size / 2), frag_amount_v=int(L4 / mesh_size),
+element_macro.add_element(EN=[15, 7, 16, 17], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L4 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False, stitch_list=[7])  # 8
 
 element_macro.fragment_all(element_4node, element_frame, element_null)
@@ -113,10 +114,11 @@ side2 = nodes.find_nodes_numbers_along_segment((L0 + L1 + L2_1, h0 + h1 + h2 + h
                                                sorted_by_y=False)
 side3 = nodes.find_nodes_numbers_along_segment((L0 + L1 + L2, h0 + h1 + h2), (L0 + L1 + L2 + L3, h0 + h1),
                                                sorted_by_y=False)
-side4 = nodes.find_nodes_numbers_along_segment((L0 + L1 + L2 + L3, h0 + h1), (L0 + L1 + L2 + L3, h0), sorted_by_y=True)
-# first 2 nodes are with contact pair
+side4 = nodes.find_nodes_numbers_along_segment((L0 + L1 + L2 + L3, h0 + h1), (L0 + L1 + L2 + L3, h0),
+                                               sorted_by_y=True)[2:] # first 2 nodes are with contact pair, so skip them
+
 side5 = nodes.find_nodes_numbers_along_segment((L0 + L1 + L2 + L3, h0), (L0 + L1 + L2 + L3 + L4, h0),
-                                               sorted_by_y=False)[2:]
+                                               sorted_by_y=False)[2:] # first 2 nodes are with contact pair, so skip them
 
 # form R, RF and solve SLAE
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
@@ -185,11 +187,11 @@ for i, nn in enumerate(side4):
     parts = len(side4) - 1
     length = h1 / parts
     force_h = -qx4 * length
-    if i == 0 or i == parts:
+    if i == parts:
         force_h /= 2
     lv.add_concentrated_force(force_h, degree_of_freedom=nn * 2)
-    # print(f'horizontal force={-qx4 * length}, {length=} {nn=}, dof={nn * 2-1}')
-print('SIDE 5:')
+    print(f'horizontal force={force_h}, {length=} {nn=}, dof={nn * 2}')
+print('SIDE 5:') # down soil surface
 for i, nn in enumerate(side5):
     parts = len(side5) - 1
     length = L4 / parts
@@ -218,8 +220,8 @@ for i in range(1, len(nodes_contact_top)-1):
     sizes_for_stress.append(size)
 sizes_for_stress.append((nodes[nodes_contact_top[-1]].x-nodes[nodes_contact_top[-2]].x)/2)  # last half size
 
-xn = graph.lemke.xn_anim[-1]
-xt = graph.lemke.xt_anim[-1]
+xn = graph.lemke.xn_anim[12]
+xt = graph.lemke.xt_anim[12]
 if autorun:
     stress_x = []
     stress_y = []
@@ -233,6 +235,7 @@ if autorun:
     stress_y = np.array(stress_y)
     # pg.plot(x, stress_x, pen=None, symbol='o')  # setting pen=None disables line drawing
     # pg.plot(x, stress_y, pen=None, symbol='o')  # setting pen=None disables line drawing
+print('12 шаг лемке ЭТО РЕШЕНИЕ!')
 
 # calculate time
 end = time.time()
@@ -242,7 +245,7 @@ print("Time: ", last)
 if autorun:
     mytable = PrettyTable()
     mytable.field_names = ['step', 'p', 'zn', 'xn', 'zt', 'xt']
-    for i in range(len(graph.lemke.zn_anim)-1, len(graph.lemke.zn_anim)):
+    for i in range(12, 13):  # len(graph.lemke.zn_anim)
         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
     print(mytable)
