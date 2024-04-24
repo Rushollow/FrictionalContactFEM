@@ -16,7 +16,7 @@ from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
 
 assert FRICTION_COEFFICIENT == 1, 'Friction coef need to be 1 НЕПРАВИЛЬНО!'
 assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true! НЕПРАВИЛЬНО!!!!'
-assert ACCURACY_OF_LCP >= 1e-6
+assert ACCURACY_OF_LCP >= 1e-7
 
 start = time.time()
 
@@ -85,15 +85,16 @@ element_macro.add_element(EN=[5, 4, 6, 7], frag_amount_h=int((h1 + h2) / mesh_si
                           E=Erw, mu=mu_rw, t=trw, own_weight=gamma_rw, stitch=False, stitch_list=[1])  # 2
 element_macro.add_element(EN=[2, 8, 9, 4], frag_amount_h=int(h3 / mesh_size), frag_amount_v=int(L2 / mesh_size),
                           E=Erw, mu=mu_rw, t=trw, own_weight=gamma_rw, stitch=False, stitch_list=[0, 1, 2])  # 3
-element_macro.add_element(EN=[10, 11, 0, 12], frag_amount_h=int(h0 / mesh_size / 2), frag_amount_v=int(L0 / mesh_size),
+# soil
+element_macro.add_element(EN=[10, 11, 0, 12], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L0 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False)  # 4
-element_macro.add_element(EN=[12, 0, 3, 13], frag_amount_h=int(h0 / mesh_size / 2), frag_amount_v=int(L1 / mesh_size),
+element_macro.add_element(EN=[12, 0, 3, 13], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L1 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False, stitch_list=[4])  # 5
-element_macro.add_element(EN=[13, 3, 5, 14], frag_amount_h=int(h0 / mesh_size / 2), frag_amount_v=int(L2 / mesh_size),
+element_macro.add_element(EN=[13, 3, 5, 14], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L2 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False, stitch_list=[5])  # 6
-element_macro.add_element(EN=[14, 5, 7, 15], frag_amount_h=int(h0 / mesh_size / 2), frag_amount_v=int(L3 / mesh_size),
+element_macro.add_element(EN=[14, 5, 7, 15], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L3 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False, stitch_list=[6])  # 7
-element_macro.add_element(EN=[15, 7, 16, 17], frag_amount_h=int(h0 / mesh_size / 2), frag_amount_v=int(L4 / mesh_size),
+element_macro.add_element(EN=[15, 7, 16, 17], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L4 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False, stitch_list=[7])  # 8
 
 element_macro.fragment_all(element_4node, element_frame, element_null)

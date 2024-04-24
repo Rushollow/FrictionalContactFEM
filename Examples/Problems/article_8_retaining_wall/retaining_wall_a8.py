@@ -40,7 +40,8 @@ qy = 45e3
 qgr1 = 471e3  # 471e3
 qgr2 = 462e3
 h0, h1, h2, h3 = 5, 1, 1, 5.5
-L1, L2, L3 = 2, 2, 2.8  # 2, 2, 4.5
+L1, L2, L3 = 2, 2, 4.5  # 2, 2, 4.5 - по умолчанию
+L3 = 3
 L2_1 = 1.5
 L0 = L3
 L4 = L0
@@ -248,6 +249,10 @@ if autorun:
         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
     print(mytable)
+
+print(f'L/h = {(L2+L3)/(h1+h2+h3)}')
+print('Штука ниже правда если не ЛУЧевое решение!')
+print(f'max zn {max(graph.lemke.zn_anim[-1])}')
 
 if __name__ == "__main__":
     graph.fill_arrays_scheme()  # form info for plot at UI
