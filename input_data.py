@@ -19,7 +19,7 @@ SCHEME_THICKNESS = 1
 SCALE_DEF = 50
 
 # friction coefficient
-FRICTION_COEFFICIENT = 1
+FRICTION_COEFFICIENT = 0.9
 # limit of steps for lcp_solve Lemke
 LEMKE_LIMIT_STEPS = 800
 
