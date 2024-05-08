@@ -70,6 +70,18 @@ class Lemke:
             self.workbook = xlsxwriter.Workbook('initial_table.xlsx')
             self.worksheet = self.workbook.add_worksheet(name='Sheet1')
             self.excel_table_count = 0
+            for i in range(self.n_amount):  # write range (top row)
+                self.worksheet.write(0, 1 + i, 'xn'+str(i))
+            for i in range(self.t_amount):
+                self.worksheet.write(0, 1 + i + self.n_amount, 'xt' + str(i) + '+')
+            for i in range(self.t_amount):
+                self.worksheet.write(0, 1 + i + self.n_amount+self.t_amount, 'xt' + str(i) + '-')
+            for i in range(self.n_amount):  # write range (top row)
+                self.worksheet.write(0, 1 + i + self.n_amount+self.t_amount*2, 'zn'+str(i))
+            for i in range(self.t_amount):
+                self.worksheet.write(0, 1 + i + self.n_amount*2+self.t_amount*2, 'zt' + str(i) + '+')
+            for i in range(self.t_amount):
+                self.worksheet.write(0, 1 + i + self.n_amount*2+self.t_amount*3, 'zt' + str(i) + '-')
 
     def clear(self):
         """
@@ -342,8 +354,23 @@ class Lemke:
                 self.worksheet.write(2 + move + i, 1 + self.table.shape[1], self._min_ratio[i])
         for j in range(self.table.shape[1]-2):                     # write range (top row)
             self.worksheet.write(1 + move, 1 + j, j)
+        # write leading column and row
         self.worksheet.write(move + 2, self.table.shape[1] + 2, self._leading_row)
         self.worksheet.write(move + 3, self.table.shape[1] + 2, self._leading_column)
+        # write columns names
+        self.worksheet.write(move + 1, self.table.shape[1] + 1, 'min ratio')
+        self.worksheet.write(move + 1, self.table.shape[1] + 0, 'Rf')
+        # write zn, xn, zt, xt
+        self.worksheet.write(move + 2, self.table.shape[1] + 3, 'zn')
+        self.worksheet.write(move + 2, self.table.shape[1] + 4, 'xn')
+        self.worksheet.write(move + 2, self.table.shape[1] + 5, 'zt')
+        self.worksheet.write(move + 2, self.table.shape[1] + 6, 'xt')
+        for i in range(self.xn.shape[0]):
+            self.worksheet.write(move + 3 + i, self.table.shape[1] + 3, self.zn[i])
+            self.worksheet.write(move + 3 + i, self.table.shape[1] + 4, self.xn[i])
+            self.worksheet.write(move + 3 + i, self.table.shape[1] + 5, self.zt[i])
+            self.worksheet.write(move + 3 + i, self.table.shape[1] + 6, self.xt[i])
+
         self.excel_table_count += 1
 
     def _lemke_step(self):
