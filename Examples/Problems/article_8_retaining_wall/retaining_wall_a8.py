@@ -14,7 +14,7 @@ from GUI.PyQt.contactFEM import application
 
 from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
 
-assert FRICTION_COEFFICIENT == 0.5, 'Friction coef need to be 0.5 НЕПРАВИЛЬНО!'
+assert FRICTION_COEFFICIENT == 0.9, 'Friction coef need to be 0.9 НЕПРАВИЛЬНО!'
 assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true! НЕПРАВИЛЬНО!!!!'
 assert ACCURACY_OF_LCP >= 1e-15
 print('Starting to calculate...')
@@ -40,7 +40,8 @@ qy = 45e3
 qgr1 = 471e3  # 471e3
 qgr2 = 462e3
 h0, h1, h2, h3 = 5, 1, 1, 5.5
-L1, L2, L3 = 2, 2, 2.8  # 2, 2, 4.5
+L1, L2, L3 = 2, 2, 4.5  # 2, 2, 4.5 - по умолчанию
+L3 = 1.5  # 2.913 при f=0.5, 1.5 при f=0.9
 L2_1 = 1.5
 L0 = L3
 L4 = L0
@@ -247,7 +248,16 @@ if autorun:
     for i in range(len(graph.lemke.zn_anim)-1, len(graph.lemke.zn_anim)):
         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
-    print(mytable)
+    # print(mytable)
+
+print(f'h/L = {(h1+h2+h3)/(L2+L3)}')
+print('Штука ниже правда если не ЛУЧевое решение!')
+Fv, Fh = 0, 0
+for i in range(11, len(graph.lemke.xn_anim[-1])):
+    Fv += graph.lemke.xn_anim[-1][i]
+for xn, xt in zip(graph.lemke.xn_anim[-1], graph.lemke.xt_anim[-1]):
+    Fh += xn*FRICTION_COEFFICIENT - xt
+print(f'Fv= \n{Fv} \nFh=\n{Fh}')
 
 if __name__ == "__main__":
     graph.fill_arrays_scheme()  # form info for plot at UI
