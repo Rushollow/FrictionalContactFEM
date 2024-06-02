@@ -14,9 +14,10 @@ from GUI.PyQt.contactFEM import application
 
 from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
 
-assert FRICTION_COEFFICIENT == 0.99999999, 'Friction coef need to be 0.99999999 НЕПРАВИЛЬНО!'
+assert FRICTION_COEFFICIENT == 0.9, 'Friction coef need to be 0.9 НЕПРАВИЛЬНО!'
 assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true! НЕПРАВИЛЬНО!!!!'
-# assert ACCURACY_OF_LCP > 1e-8
+assert ACCURACY_OF_LCP >= 1e-15
+print('Starting to calculate...')
 
 start = time.time()
 
@@ -39,7 +40,8 @@ qy = 45e3
 qgr1 = 471e3  # 471e3
 qgr2 = 462e3
 h0, h1, h2, h3 = 5, 1, 1, 5.5
-L1, L2, L3 = 2, 2, 4.5
+L1, L2, L3 = 2, 2, 4.5  # 2, 2, 4.5 - по умолчанию
+L3 = 1.5  # 2.913 при f=0.5, 1.5 при f=0.9.     Изменения от 9 до 1.5
 L2_1 = 1.5
 L0 = L3
 L4 = L0
@@ -85,8 +87,8 @@ element_macro.add_element(EN=[5, 4, 6, 7], frag_amount_h=int((h1 + h2) / mesh_si
                           E=Erw, mu=mu_rw, t=trw, own_weight=gamma_rw, stitch=False, stitch_list=[1])  # 2
 element_macro.add_element(EN=[2, 8, 9, 4], frag_amount_h=int(h3 / mesh_size), frag_amount_v=int(L2 / mesh_size),
                           E=Erw, mu=mu_rw, t=trw, own_weight=gamma_rw, stitch=False, stitch_list=[0, 1, 2])  # 3
-# soil
-element_macro.add_element(EN=[10, 11, 0, 12], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L0 / mesh_size),
+# ME soil foundation, from left to right
+element_macro.add_element(EN=[10, 11, 0, 12], frag_amount_h=int(h0 / mesh_size/ 1), frag_amount_v=int(L0 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False)  # 4
 element_macro.add_element(EN=[12, 0, 3, 13], frag_amount_h=int(h0 / mesh_size / 1), frag_amount_v=int(L1 / mesh_size),
                           E=Eg_bot, mu=mu_g_bot, t=t, own_weight=gamma_g_bot, stitch=False, stitch_list=[4])  # 5
@@ -114,11 +116,10 @@ side2 = nodes.find_nodes_numbers_along_segment((L0 + L1 + L2_1, h0 + h1 + h2 + h
                                                sorted_by_y=False)
 side3 = nodes.find_nodes_numbers_along_segment((L0 + L1 + L2, h0 + h1 + h2), (L0 + L1 + L2 + L3, h0 + h1),
                                                sorted_by_y=False)
-side4 = nodes.find_nodes_numbers_along_segment((L0 + L1 + L2 + L3, h0 + h1), (L0 + L1 + L2 + L3, h0),
-                                               sorted_by_y=True)[2:] # first 2 nodes are with contact pair, so skip them
-
+side4 = nodes.find_nodes_numbers_along_segment((L0 + L1 + L2 + L3, h0 + h1), (L0 + L1 + L2 + L3, h0), sorted_by_y=True)
+# first 2 nodes are with contact pair
 side5 = nodes.find_nodes_numbers_along_segment((L0 + L1 + L2 + L3, h0), (L0 + L1 + L2 + L3 + L4, h0),
-                                               sorted_by_y=False)[2:] # first 2 nodes are with contact pair, so skip them
+                                               sorted_by_y=False)[2:]
 
 # form R, RF and solve SLAE
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
@@ -187,11 +188,11 @@ for i, nn in enumerate(side4):
     parts = len(side4) - 1
     length = h1 / parts
     force_h = -qx4 * length
-    if i == parts:
+    if i == 0 or i == parts:
         force_h /= 2
     lv.add_concentrated_force(force_h, degree_of_freedom=nn * 2)
-    print(f'horizontal force={force_h}, {length=} {nn=}, dof={nn * 2}')
-print('SIDE 5:') # down soil surface
+    # print(f'horizontal force={-qx4 * length}, {length=} {nn=}, dof={nn * 2-1}')
+print('SIDE 5:')
 for i, nn in enumerate(side5):
     parts = len(side5) - 1
     length = L4 / parts
@@ -212,7 +213,7 @@ else:
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_v,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=10, scale_def=3000, autorun=autorun)
+                   partition=10, scale_def=1000, autorun=autorun)
 
 sizes_for_stress = [(nodes[nodes_contact_top[1]].x-nodes[nodes_contact_top[0]].x)/2]  # first half size
 for i in range(1, len(nodes_contact_top)-1):
@@ -220,8 +221,8 @@ for i in range(1, len(nodes_contact_top)-1):
     sizes_for_stress.append(size)
 sizes_for_stress.append((nodes[nodes_contact_top[-1]].x-nodes[nodes_contact_top[-2]].x)/2)  # last half size
 
-xn = graph.lemke.xn_anim[12]
-xt = graph.lemke.xt_anim[12]
+xn = graph.lemke.xn_anim[-1]
+xt = graph.lemke.xt_anim[-1]
 if autorun:
     stress_x = []
     stress_y = []
@@ -235,7 +236,6 @@ if autorun:
     stress_y = np.array(stress_y)
     # pg.plot(x, stress_x, pen=None, symbol='o')  # setting pen=None disables line drawing
     # pg.plot(x, stress_y, pen=None, symbol='o')  # setting pen=None disables line drawing
-print('12 шаг лемке ЭТО РЕШЕНИЕ! если accuracy lcp = 10^-8, frict coef = 1')
 
 # calculate time
 end = time.time()
@@ -245,13 +245,19 @@ print("Time: ", last)
 if autorun:
     mytable = PrettyTable()
     mytable.field_names = ['step', 'p', 'zn', 'xn', 'zt', 'xt']
-    for i in range(len(graph.lemke.zn_anim)-1, len(graph.lemke.zn_anim)):  # len(graph.lemke.zn_anim)  # range(12, 13)
+    for i in range(len(graph.lemke.zn_anim)-1, len(graph.lemke.zn_anim)):
         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
-    print(mytable)
+    # print(mytable)
 
-print('12 шаг лемке ЭТО РЕШЕНИЕ! если accuracy lcp = 10^-8, frict coef = 1')
-print('Это решение реализовано в дисс. Здесь взят коэф трения 0.9999999 чтобы точность была выше, усилия ненмого другие и есть отрыв')
+print(f'h/L = {(h1+h2+h3)/(L2+L3)}')
+print('Штука ниже правда если не ЛУЧевое решение!')
+sigma_v, sigma_h = 0, 0
+for i in range(11, len(graph.lemke.xn_anim[-1])):
+    sigma_v += xn[i]/sizes_for_stress[i] / 1000000  # MPa
+for i in range(0, len(graph.lemke.xn_anim[-1])):
+    sigma_h += (xn[i]*FRICTION_COEFFICIENT - xt[i]) / sizes_for_stress[i] / 1000000 # MPa
+print(f'sigma_v= \n{sigma_v} \nsigma_h=\n{sigma_h}')
 
 if __name__ == "__main__":
     graph.fill_arrays_scheme()  # form info for plot at UI

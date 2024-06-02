@@ -19,7 +19,7 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 # set inputs
 if input_data.FRICTION_COEFFICIENT != 0.5:
     raise ValueError('КОЭФФИЦИЕНТ ТРЕНИЯ ПОСТАВИТЬ 0.5')
-SITUATION = 5  # SITUATION CHOSE HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+SITUATION = 3  # SITUATION CHOSE HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Ar = 1  # 1
 Er = 1  # 1
 Ix = 1  # 0.5

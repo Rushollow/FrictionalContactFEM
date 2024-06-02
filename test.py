@@ -3,19 +3,16 @@ import datetime
 import socket
 
 
-import time
-import numpy as np
-def calc_fib(n):
-    if n <= 1:
-        return n
-    else:
-        return calc_fib(n - 1) + calc_fib(n - 2)
+a = 1
+a.test = 1
+print(a.__dir__())
 
-var = 40
-start = time.time()
-print(f"{var}th number of Fibonacci is {calc_fib(var)}")
-end = time.time()
-print(f"time: {end - start} sec.")
 
+def foo():
+    return 1
+
+foo.test = 1
+print(dir(foo))
+print(foo.__dict__)
 
 
