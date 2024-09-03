@@ -400,6 +400,7 @@ class Lemke:
         """
         if self._trivial_solution() and self.const_load:
             print('LCP trivial solution')
+
             if not self.force_inc:
                 self._results_anim()
                 if self.write_excel:

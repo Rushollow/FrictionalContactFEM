@@ -13,6 +13,8 @@ from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 
 from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
+import input_data
+input_data.FRICTION_COEFFICIENT = 0.9
 
 assert FRICTION_COEFFICIENT == 0.9, 'Friction coef need to be 0.9 НЕПРАВИЛЬНО!'
 assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true! НЕПРАВИЛЬНО!!!!'

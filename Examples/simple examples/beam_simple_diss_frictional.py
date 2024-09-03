@@ -16,9 +16,11 @@ start = time.time()
 
 np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
+input_data.FRICTION_COEFFICIENT = 0.5
 # set inputs
 if input_data.FRICTION_COEFFICIENT != 0.5:
     raise ValueError('КОЭФФИЦИЕНТ ТРЕНИЯ ПОСТАВИТЬ 0.5')
+input_data.FRICTION_COEFFICIENT = 0.5
 SITUATION = 3  # SITUATION CHOSE HERE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Ar = 1  # 1
 Er = 1  # 1
