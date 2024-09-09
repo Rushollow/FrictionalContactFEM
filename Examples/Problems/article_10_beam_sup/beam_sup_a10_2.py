@@ -39,7 +39,7 @@ autorun = True
 
 Lp = 3  # half of prol`ot length (span)
 Lw = 0.3 # thikness of wall
-Lg = 0.25  # how much beam is now reaching towards outside wall
+Lg = 0.1  # how much beam is now reaching towards outside wall
 Lb = Lp - Lg  # how long is half of the beam
 hw = 3  # height of the wall in calculations
 hwt = 3
