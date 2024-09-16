@@ -25,7 +25,7 @@ start = time.time()
 tc = 1  # Thickness
 Ec = 2e9  # бетон stiffness
 gamma_c = 24e3  # Н/m^3  own weight for concrete wall
-mu_c = 0.15
+mu_c = 0.2
 # Двутавр стальной горячекатный
 Er = 2e11  # Pa for beam
 Ar = 2.68e-3  # m^2 for beam
@@ -39,16 +39,18 @@ autorun = True
 
 Lp = 3  # half of prol`ot length (span)
 Lw = 0.3 # thikness of wall
-Lg = 0.1  # how much beam is now reaching towards outside wall
+##########################################
+Lg = 0.3  # how much beam is now reaching towards outside wall
 Lb = Lp - Lg  # how long is half of the beam
 hw = 3  # height of the wall in calculations
 hwt = 3
-if Lg >= 0.025:
-    mesh_size = Lg/4
-else:
-    mesh_size = 0.05
-if mesh_size > 0.05:
-    mesh_size = 0.05
+# if Lg >= 0.025:
+#     mesh_size = Lg/4
+# else:
+#     mesh_size = 0.05
+# if mesh_size > 0.05:
+#     mesh_size = 0.05
+mesh_size = 0.05/4
 
 # add nodes  for frame element
 nodes = NodeContainer()
@@ -85,12 +87,15 @@ element_macro.add_element(EN=[nn+4, nn+5, nn+6, nn+7], frag_size=mesh_size, E=Ec
 element_macro.fragment_all(element_4node, element_frame, element_null)
 # find nodes for contact pairs
 n_contact = nodes.find_nodes_numbers_along_segment((Lg, hw), (Lw, hw))
-n_contact_wall = nodes.find_nodes_numbers_along_segment(point1=(0, hw), point2=(Lg-mesh_size/1.5, hw))
-# n null elements and adding t null elements silently
-for i in range(0, len(n_contact_wall), 2):
-    tnodes = sorted(n_contact_wall[i:i+2])
-    element_null.add_element(EN=[tnodes[0], tnodes[1]], cke=123, alpha=math.pi / 2, gap_length=0)
-    print(f'bot node: {tnodes[0]} top node: {tnodes[1]}')
+
+if Lg != 0:
+
+    n_contact_wall = nodes.find_nodes_numbers_along_segment(point1=(0, hw), point2=(Lg-mesh_size/1.5, hw))
+    # n null elements and adding t null elements silently
+    for i in range(0, len(n_contact_wall), 2):
+        tnodes = sorted(n_contact_wall[i:i+2])
+        element_null.add_element(EN=[tnodes[0], tnodes[1]], cke=123, alpha=math.pi / 2, gap_length=0)
+        print(f'bot node: {tnodes[0]} top node: {tnodes[1]}')
 for i in range(0, len(n_contact), 3):
     tnodes = sorted(n_contact[i:i+3])
     element_null.add_element(EN=[tnodes[1], tnodes[0]], cke=123, alpha=math.pi / 2, gap_length=0)
@@ -130,24 +135,40 @@ else:
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_v,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=2, scale_def=200, autorun=autorun)
+                   partition=2, scale_def=400, autorun=autorun)
 
 
 if autorun:
     xn = graph.lemke.xn_anim[-1]
     xt = graph.lemke.xt_anim[-1]
+    xnl = graph.lemke.xn_anim[0]
+    xtl = graph.lemke.xt_anim[0]
     stress_x = []
     stress_y = []
+    stress_xl = []
+    stress_yl = []
     for i in range(len(xn)):
-        stress_x.append(-xt[i]/mesh_size/1000000)  # MPa
-        stress_y.append(-xn[i]/mesh_size/1000000)   # MPa
-    print(stress_x)
-    print(stress_y)
-    x = np.arange(1, len(stress_x) + 1, 1, dtype=int)
-    stress_x = np.array(stress_x)
-    stress_y = np.array(stress_y)
-    # pg.plot(x, stress_x, pen=None, symbol='o')  # setting pen=None disables line drawing
-    # pg.plot(x, stress_y, pen=None, symbol='o')  # setting pen=None disables line drawing
+        # when element is half size
+        k = 1
+        if i == int(Lg/mesh_size+1) or i==(int(Lw/mesh_size)+1) or i==(int(Lw/mesh_size)+2) or i == (len(xn) - 1):
+            k=2
+        stress_x.append(-xt[i]*k/mesh_size/1000000)  # MPa
+        stress_y.append(-xn[i]*k/mesh_size/1000000)   # MPa
+        stress_xl.append(-xtl[i] * k / mesh_size / 1000000)  # MPa
+        stress_yl.append(-xnl[i] * k / mesh_size / 1000000)  # MPa
+    print(f'Lg: {Lg}')
+    print(f'________________________')
+    print(f'max xn: {max(xn)/1000}')   # kN
+    print(f'max xt: {max(xt)/1000} min: {min(xt)/1000}')  #kN
+    print(f'max stress x: {max(stress_x)} min: {min(stress_x)}')
+    print(f'max stress y: {max(stress_y)} min: {min(stress_y)}')
+    print(f'_______________________')
+    print(f'max xnl: {max(xnl)/1000} min: {min(xnl)/1000}')   # kN
+    print(f'max xtl: {max(xtl)/1000} min: {min(xtl)/1000}')   #kN
+    print(f'max stress xl: {max(stress_xl)} min: {min(stress_xl)}')
+    print(f'max stress yl: {max(stress_yl)} min: {min(stress_yl)}')
+    print(f"________________________")
+
 
 # calculate time
 end = time.time()
