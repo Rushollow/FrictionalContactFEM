@@ -81,8 +81,10 @@ class Calculate:
         Solving LCP (by Lemke's algorithm)
         :return:
         """
+        start = time.time()
         self.lemke = Lemke(self.intl_table)
         self.lemke.lcp_solve()
+        print(f"LCP solved in:{time.time() - start} sec.")
 
     def form_u_contact(self):
         """
