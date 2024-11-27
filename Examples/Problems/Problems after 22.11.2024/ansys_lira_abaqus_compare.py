@@ -23,7 +23,7 @@ print('Starting to calculate...')
 start = time.time()
 
 # set inputs
-t = 1  # Thickness
+t = 0.1  # Thickness
 E_bot = 2e10  # steel
 E_top = 2e10
 mu = 0.2
@@ -32,12 +32,12 @@ F = 10_000_000 # Н
 # sizes
 L_bot = 4
 L_top = L_bot / 2
-h_bot = 2
-h_top = 1
+h_bot = 0.5
+h_top = 0.5
 force_inc = False
 autorun = True
 
-mesh_size = 0.1
+mesh_size = 0.05
 
 # add nodes  for frame element
 nodes = NodeContainer()
@@ -66,7 +66,6 @@ element_macro.add_element(EN=[4, 5, 6, 7], frag_size=mesh_size, E=E_top, mu=mu, 
 element_macro.fragment_all(element_4node=element_4node, element_frame=element_frame, element_null=element_null)
 
 # add null elements
-print("null elements")
 contact_nodes = nodes.find_nodes_numbers_along_segment(point1=(0, h_bot), point2=(L_top, h_bot))
 for i in range(2, len(contact_nodes), 2):
     contact_pair = sorted(contact_nodes[i:i+2])
@@ -76,14 +75,19 @@ for i in range(2, len(contact_nodes), 2):
 # form R, RF and solve SLAE
 sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node, el_null=element_null)
 
-sup_nodes = nodes.find_nodes_numbers_along_segment(point1=(0, 0), point2=(0, h_bot + h_top))
-sm.support_nodes(sup_nodes, direction='hv')
+sup_nodes_left = nodes.find_nodes_numbers_along_segment(point1=(0, h_bot), point2=(0, h_bot + h_top))
+sup_nodes_bot = nodes.find_nodes_numbers_along_segment(point1=(0, 0), point2=(L_bot, 0))
+print(sup_nodes_bot)
+print(sup_nodes_left)
+sm.support_nodes(sup_nodes_left, direction='hv')
+sm.support_nodes(sup_nodes_bot, direction='hv')
+
 
 # load cheme
 lv = LoadVector()
 lv_v = LoadVector()
 force_node = int(L_bot/mesh_size + 1) * int(h_bot/mesh_size + 1) + int(L_top/mesh_size + 1) * int(h_top/mesh_size + 1) - 1
-print(f'node force: {force_node}')
+print(f'node number with force: {force_node}')
 
 if not force_inc:
     lv.add_concentrated_force(force=-F, degree_of_freedom=force_node*2 + 1) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -96,18 +100,31 @@ else:
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_v,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=2, scale_def=10, autorun=autorun)
+                   partition=2, scale_def=5, autorun=autorun)
 
+def maximum(vec: list):
+    return max(abs(min(vec)), max(vec))
 
 if autorun:
     xn = graph.lemke.xn_anim[-1]
     xt = graph.lemke.xt_anim[-1]
     xnl = graph.lemke.xn_anim[0]
     xtl = graph.lemke.xt_anim[0]
-    stress_x = []
-    stress_y = []
-    stress_xl = []
-    stress_yl = []
+    stress_t = []
+    stress_n = []
+    stress_tl = []
+    stress_nl = []
+    for i in range(len(xn)):
+        stress_t.append(xt[i]/mesh_size/1e6) # MPa
+        stress_n.append(xn[i]/mesh_size/1e6) # MPa
+        stress_tl.append(xtl[i]/mesh_size/1e6) #MPa
+        stress_nl.append(xnl[i]/mesh_size/1e6) #MPa
+    print(f'MaxAbs: {maximum(stress_n)} Stress n: \n{stress_n}')
+    print(f'MaxAbs: {maximum(stress_t)} Stress t: \n{stress_t}')
+    print(f"MaxAbs: {maximum(stress_nl)} Stress nl: \n{stress_nl}")
+    print(f'MaxAbs: {maximum(stress_tl)} Stress tl: \n{stress_tl}')
+    print(f'Average Stress n: {sum(stress_n)/len(stress_n)}')
+    print(f'Average Stress t: {sum(stress_t)/len(stress_t)}')
 
 
 # calculate time
