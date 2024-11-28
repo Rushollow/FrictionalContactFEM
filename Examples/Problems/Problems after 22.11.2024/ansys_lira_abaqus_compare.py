@@ -24,20 +24,22 @@ start = time.time()
 
 # set inputs
 t = 0.1  # Thickness
-E_bot = 2e10  # steel
-E_top = 2e10
+E_bot = 2e9  # steel
+E_top = 2e9
 mu = 0.2
-# load
-F = 10_000_000 # Н
 # sizes
 L_bot = 4
 L_top = L_bot / 2
-h_bot = 0.5
-h_top = 0.5
+h_bot = 0.4
+h_top = 0.4
+# load
+q = 100_000 # Н
+Lq = L_top/10 # m
+
 force_inc = False
 autorun = True
 
-mesh_size = 0.05
+mesh_size = 0.025
 
 # add nodes  for frame element
 nodes = NodeContainer()
@@ -77,8 +79,6 @@ sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node
 
 sup_nodes_left = nodes.find_nodes_numbers_along_segment(point1=(0, h_bot), point2=(0, h_bot + h_top))
 sup_nodes_bot = nodes.find_nodes_numbers_along_segment(point1=(0, 0), point2=(L_bot, 0))
-print(sup_nodes_bot)
-print(sup_nodes_left)
 # sm.support_nodes(sup_nodes_left, direction='hv')
 sm.support_nodes(sup_nodes_bot, direction='hv')
 
@@ -87,26 +87,44 @@ sm.support_nodes(sup_nodes_bot, direction='hv')
 lv = LoadVector()
 lv_v = LoadVector()
 force_node = int(L_bot/mesh_size + 1) * int(h_bot/mesh_size + 1) + int(L_top/mesh_size + 1) * int(h_top/mesh_size + 1) - 1
-print(f'node number with force: {force_node}')
 
+print("LOAD ======================================")
+print(f'{q=}, {Lq=}, {mesh_size=}')
+nodes_under_load = int(Lq / mesh_size) + 1  # how many nodes under the load
+force_in_one_node = - q * mesh_size
+force_sum = 0
 if not force_inc:
-    lv.add_concentrated_force(force=-F/4, degree_of_freedom=force_node*2 + 1)
-    lv.add_concentrated_force(force=-F/2, degree_of_freedom=(force_node-1) * 2 + 1)
-    lv.add_concentrated_force(force=-F/4, degree_of_freedom=(force_node-2) * 2 + 1)
+
+    for i in range(nodes_under_load):
+        degree_of_freedom = (force_node - i)*2 + 1
+        if i == 0 or i == nodes_under_load - 1:
+            lv.add_concentrated_force(force=force_in_one_node/2, degree_of_freedom=degree_of_freedom)
+            force_sum += force_in_one_node/2
+            print(f'force: {force_in_one_node/2} in {force_node - i}')
+        else:
+            lv.add_concentrated_force(force=force_in_one_node, degree_of_freedom=degree_of_freedom)
+            force_sum += force_in_one_node
+            print(f'force: {force_in_one_node} in {force_node - i}')
+
+    print(f'{nodes_under_load=}, {force_in_one_node=}')
+    print(f'Sum of all forces: {force_sum}, should be {-q*Lq}')
+    assert force_sum==-q*Lq, 'forces are WRONG!'
     pass
 
 else:
     pass
+print("LOAD ======================================")
 
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_v,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=2, scale_def=1, autorun=autorun)
+                   partition=2, scale_def=50, autorun=autorun)
 
 def maximum(vec: list):
     return max(abs(min(vec)), max(vec))
 
+print("STRESS________________________________________________________________________________________________________")
 if autorun:
     xn = graph.lemke.xn_anim[-1]
     xt = graph.lemke.xt_anim[-1]
@@ -125,8 +143,9 @@ if autorun:
     print(f'MaxAbs: {maximum(stress_t)} Stress t: \n{stress_t}')
     print(f"MaxAbs: {maximum(stress_nl)} Stress nl: \n{stress_nl}")
     print(f'MaxAbs: {maximum(stress_tl)} Stress tl: \n{stress_tl}')
-    print(f'Average Stress n: {sum(stress_n)/len(stress_n)}')
-    print(f'Average Stress t: {sum(stress_t)/len(stress_t)}')
+    print(f'maxabsXn: {maximum((xn))}, maxabsXt: {maximum(xt)}')
+
+print("STRESS________________________________________________________________________________________________________")
 
 
 # calculate time
