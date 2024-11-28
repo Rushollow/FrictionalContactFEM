@@ -79,7 +79,7 @@ sup_nodes_left = nodes.find_nodes_numbers_along_segment(point1=(0, h_bot), point
 sup_nodes_bot = nodes.find_nodes_numbers_along_segment(point1=(0, 0), point2=(L_bot, 0))
 print(sup_nodes_bot)
 print(sup_nodes_left)
-sm.support_nodes(sup_nodes_left, direction='hv')
+# sm.support_nodes(sup_nodes_left, direction='hv')
 sm.support_nodes(sup_nodes_bot, direction='hv')
 
 
@@ -90,7 +90,9 @@ force_node = int(L_bot/mesh_size + 1) * int(h_bot/mesh_size + 1) + int(L_top/mes
 print(f'node number with force: {force_node}')
 
 if not force_inc:
-    lv.add_concentrated_force(force=-F, degree_of_freedom=force_node*2 + 1) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    lv.add_concentrated_force(force=-F/4, degree_of_freedom=force_node*2 + 1)
+    lv.add_concentrated_force(force=-F/2, degree_of_freedom=(force_node-1) * 2 + 1)
+    lv.add_concentrated_force(force=-F/4, degree_of_freedom=(force_node-2) * 2 + 1)
     pass
 
 else:
@@ -100,7 +102,7 @@ else:
 # Calculation and plotting object
 graph = PlotScheme(nodes=nodes, sm=sm, lv_const=lv, lv_variable=lv_v,
                    element_frame=element_frame, element_container_obj=element_4node, element_null=element_null,
-                   partition=2, scale_def=5, autorun=autorun)
+                   partition=2, scale_def=1, autorun=autorun)
 
 def maximum(vec: list):
     return max(abs(min(vec)), max(vec))

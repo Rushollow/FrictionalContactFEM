@@ -14,13 +14,18 @@ from GUI.PyQt.contactFEM import application
 start = time.time()
 np.set_printoptions(formatter={'float': lambda x: "{0:0.5f}".format(x)})
 
+from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
+assert FRICTION_COEFFICIENT == 0.3, 'Friction coef need to be 0.3 НЕПРАВИЛЬНО!'
+assert PLANE_STRAIN is False, 'PLANE STRAIN need to be false! НЕПРАВИЛЬНО!!!!'
+assert ACCURACY_OF_LCP >= 1e-15
+print('Starting to calculate...')
 # set inputs
 
 q = 3975  # N/m Uniformly Distributed Load
 general_length = 260  # meter
-n = 512  # amount of nodes of frame MINIMUM 2
+n = 4  # amount of nodes of frame MINIMUM 2
 Ar = math.pi / 2 * (1.5 ** 2 - (1.5 - 0.02) ** 2)
-Er = 1.95e9  # N/m
+Er = 1.95e10  # N/m
 Ix = math.pi * 1.5 ** 2 * 0.02 / 8  #
 F = q * general_length / (n - 1)  # concentrated force in each node
 Fv = 243.75e3  # N (force pulling to the right)
