@@ -144,6 +144,7 @@ if autorun:
     print(f"MaxAbs: {maximum(stress_nl)} Stress nl: \n{stress_nl}")
     print(f'MaxAbs: {maximum(stress_tl)} Stress tl: \n{stress_tl}')
     print(f'maxabsXn: {maximum((xn))}, maxabsXt: {maximum(xt)}')
+    print(f'Z top rigt {graph.u_contact_anim[-1][force_node*2 + 1]}')
 
 print("STRESS________________________________________________________________________________________________________")
 
