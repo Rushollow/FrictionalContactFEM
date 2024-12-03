@@ -108,20 +108,20 @@ force_sum = 0
 if not force_inc:
 
     if not force_in_one_node_flag:
-      for i in range(nodes_under_load):
-          degree_of_freedom = (force_node + i)*2 + 1
-          if i == 0 or i == nodes_under_load - 1:
-              lv.add_concentrated_force(force=force_in_one_node/2, degree_of_freedom=degree_of_freedom)
-              force_sum += force_in_one_node/2
-              print(f'force: {force_in_one_node/2} in {force_node + i}')
-          else:
-              lv.add_concentrated_force(force=force_in_one_node, degree_of_freedom=degree_of_freedom)
-              force_sum += force_in_one_node
-              print(f'force: {force_in_one_node} in {force_node + i}')
+        for i in range(nodes_under_load):
+            degree_of_freedom = (force_node + i)*2 + 1
+            if i == 0 or i == nodes_under_load - 1:
+                lv.add_concentrated_force(force=force_in_one_node/2, degree_of_freedom=degree_of_freedom)
+                force_sum += force_in_one_node/2
+                print(f'force: {force_in_one_node/2} in {force_node + i}')
+            else:
+                lv.add_concentrated_force(force=force_in_one_node, degree_of_freedom=degree_of_freedom)
+                force_sum += force_in_one_node
+                print(f'force: {force_in_one_node} in {force_node + i}')
 
-      print(f'{nodes_under_load=}, {force_in_one_node=}')
-      print(f'Sum of all forces: {force_sum}, should be {-q*Lq}')
-      assert force_sum==-q*Lq, 'forces are WRONG!'
+        print(f'{nodes_under_load=}, {force_in_one_node=}')
+        print(f'Sum of all forces: {force_sum}, should be {-q*Lq}')
+        assert force_sum == -q*Lq, 'forces are WRONG!'
 
     if force_in_one_node_flag:
        print(f'One force')
