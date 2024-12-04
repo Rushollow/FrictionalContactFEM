@@ -123,11 +123,11 @@ for i in range(0, len(contact_nodes0), 2):
     # print(f'{contact_pair[0], contact_pair[1]}')
 for i in range(2, len(contact_nodes1_1)):
     contact_pair = [contact_nodes1_2[i], contact_nodes1_1[i]]
-    element_null.add_element(EN=[contact_pair[0], contact_pair[1]], cke=E_top, alpha=math.pi/2)  # -math.atan(gap1/L2) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    element_null.add_element(EN=[contact_pair[0], contact_pair[1]], cke=E_top, alpha=math.pi/2)  # +math.atan(gap1/L2) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # print(f'{contact_pair[0], contact_pair[1]}')
 for i in range(1, len(contact_nodes2_1)):
     contact_pair = [contact_nodes2_2[i], contact_nodes2_1[i]]
-    element_null.add_element(EN=[contact_pair[0], contact_pair[1]], cke=E_top, alpha=math.pi/2) # -math.atan(gap2/L2) !!!!!!!!!!!!!!!!!!!!!!!!!!
+    element_null.add_element(EN=[contact_pair[0], contact_pair[1]], cke=E_top, alpha=math.pi/2) # +math.atan(gap2/L3_top) !!!!!!!!!!!!!!!!!!!!!!!!!!
     # print(f'{contact_pair[0], contact_pair[1]}')
 
 # form R, RF and solve SLAE
@@ -145,7 +145,7 @@ force_node_F = nodes.find_nodes_numbers_along_segment(point1=(0, h_bot+h_top),
                                                        point2=(0, h_bot+h_top))
 force_node_F = force_node_F[0]
 
-print("LOAD ======================================")
+print("LOAD START======================================")
 print(f'{q=}, {mesh_size=}')
 nodes_under_load_amount = len(force_nodes_q)  # how many nodes under the load
 force_in_one_node = - q * mesh_size
@@ -168,8 +168,9 @@ if not force_inc:
         assert force_sum == -q*L2, 'forces are WRONG!'
 
         print(f'Force {F=} in node {force_node_F=}')
-        degree_of_freedom = force_node_F*2 + 1
+        degree_of_freedom = force_node_F
         lv.add_concentrated_force(force=F, degree_of_freedom=degree_of_freedom)
+
     if one_force_only:
         node_one_force = nodes.find_nodes_numbers_along_segment(point1=(L1+L2+L3_top, h_bot + h_top),
                                                               point2=(L1+L2+L3_top, h_bot + h_top))
@@ -186,7 +187,7 @@ if not force_inc:
 
 else:
     pass
-print("LOAD ======================================")
+print("LOAD END======================================")
 
 # plot --------------------------------------------------------------------------
 # Calculation and plotting object
@@ -246,6 +247,9 @@ if autorun:
         mytable.add_row([i, graph.lemke.p_anim[i], graph.lemke.zn_anim[i], graph.lemke.xn_anim[i],
                          graph.lemke.zt_anim[i], graph.lemke.xt_anim[i]])
     print(mytable)
+
+    # for i, (p, xn, xt) in enumerate(zip(graph.lemke.p_anim, graph.lemke.xn_anim, graph.lemke.xt_anim)):
+    #     print(f'{i}: sum Xn: {sum(xn)-p*len(xn)}, sum Xt: {sum(xt)}')
 
 if __name__ == "__main__":
     graph.fill_arrays_scheme()  # form info for plot at UI
