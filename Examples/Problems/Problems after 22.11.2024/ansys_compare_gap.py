@@ -12,6 +12,7 @@ from FEM.element_frame import ElementFrameContainer  # to add frame element
 from SchemeForm.macro_element import ElementMacroContainer
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
+import xlsxwriter
 
 from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
 
@@ -39,7 +40,7 @@ gap2 = 0.002
 
 # load
 q = 100_000  # Н
-F = 75_000  # N
+F = 100_000  # N
 
 print(f'Equivalent q: {q*L2}, Ultimate friction: {q*L2*FRICTION_COEFFICIENT}, {F=}')
 print(f'Equivalent q is MORE or EQUAL than F: {q*L2 >= F}')
@@ -50,6 +51,7 @@ force_inc = False
 autorun = True
 one_force_only = False  # TEST FORCE ON the RIGHT
 one_F = 100_000
+Excel = True
 
 # add nodes  for frame element
 nodes = NodeContainer()
@@ -168,7 +170,7 @@ if not force_inc:
         assert force_sum == -q*L2, 'forces are WRONG!'
 
         print(f'Force {F=} in node {force_node_F=}')
-        degree_of_freedom = force_node_F
+        degree_of_freedom = force_node_F*2
         lv.add_concentrated_force(force=F, degree_of_freedom=degree_of_freedom)
 
     if one_force_only:
@@ -231,6 +233,22 @@ if autorun:
     print(f'Z vertical NONlinear most right top node of bot plate {graph.u_contact_anim[-1][right_top_node_bot_plate * 2 + 1]}\n'
           f'the node number is: {right_top_node_bot_plate}')
     print(f'SUM xn: {sum(xn)}, SUM xt: {sum(xt)}')
+
+    if Excel:
+        workbook = xlsxwriter.Workbook('LCP results.xlsx')
+        worksheet = workbook.add_worksheet()
+        column = 0
+        names = ['xn', 'xt', 'xnl', 'xtl', 'stress_n', 'stress_t', 'stress_nl', 'stress_tl']
+        for vec in [xn, xt, xnl, xtl, stress_n, stress_t, stress_nl, stress_tl]:
+            worksheet.write(0, column, names[column])
+            row = 1
+            for item in vec:
+                # write operation perform
+                worksheet.write(row, column, item)
+                row += 1
+            column += 1
+
+        workbook.close()
 
 print("STRESS________________________________________________________________________________________________________")
 
