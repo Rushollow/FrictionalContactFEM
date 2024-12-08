@@ -34,7 +34,7 @@ class Calculate:
         if lv_const is None:
             self.lv_const = FEM.scheme.LoadVector()
         self.element_frame = element_frame
-        if isinstance(element_container_obj, Element4NodeLinearContainer):
+        if isinstance(element_container_obj, Element4NodeLinearContainer) and element_container_obj.elements_list:
             self.element_4node = element_container_obj
         else: self.element_4node = None
         self.element_null = element_null
