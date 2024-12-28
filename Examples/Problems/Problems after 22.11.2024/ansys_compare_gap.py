@@ -16,7 +16,7 @@ import xlsxwriter
 
 from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
 
-assert FRICTION_COEFFICIENT == 0.21, 'Friction coef need to be 0.5 НЕПРАВИЛЬНО!'
+assert FRICTION_COEFFICIENT == 0.22, 'Friction coef need to be 0.5 НЕПРАВИЛЬНО!'
 assert PLANE_STRAIN is False, 'PLANE STRAIN need to be false! НЕПРАВИЛЬНО!!!!'
 assert 1e-16 <= ACCURACY_OF_LCP <= 1e-10
 print('Starting to calculate...')
@@ -40,19 +40,19 @@ gap2 = 0.002
 
 # load
 q = 100_000  # Н
-F = 75_000  # N !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+F = 75_000  # N
 
 print(f'Equivalent q: {q*L2}, Ultimate friction: {q*L2*FRICTION_COEFFICIENT}, {F=}')
 print(f'Equivalent q is MORE or EQUAL than F: {q*L2 >= F}')
 
-mesh_size = 0.05
+mesh_size = 0.1
 
 force_inc = False
 autorun = True
 one_force_only = False  # TEST FORCE ON the RIGHT
 one_F = 100_000
 Excel = True
-right_force = True
+right_support = True
 
 # add nodes  for frame element
 nodes = NodeContainer()
@@ -140,7 +140,7 @@ sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node
 sup_nodes_bot = nodes.find_nodes_numbers_along_segment(point1=(0, 0), point2=(L1+L2+L3_bot, 0))
 sm.support_nodes(sup_nodes_bot, direction='hv')
 # support nodes right
-if right_force:
+if right_support:
     sup_nodes_right = nodes.find_nodes_numbers_along_segment(point1=(L1+L2+L3_top, h_bot+mesh_size/2),
                                                              point2=(L1+L2+L3_top, h_bot+h_top))
     sm.support_nodes(sup_nodes_right, direction='h')

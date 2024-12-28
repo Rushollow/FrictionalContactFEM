@@ -19,13 +19,13 @@ SCHEME_THICKNESS = 1
 SCALE_DEF = 50
 
 # friction coefficient
-FRICTION_COEFFICIENT = 0.21
+FRICTION_COEFFICIENT = 0.5
 # limit of steps for lcp_solve Lemke
 LEMKE_LIMIT_STEPS = 800
 
 # Set the value of accuracy for LCP Lemke solver.
 # This value means that how many tightening weight (p parameter) we can left to end the solution
-ACCURACY_OF_LCP = 10**(-16)
+ACCURACY_OF_LCP = 10**(-15)
 
 # accuracy of stitching of nodes
 ACCURACY_OF_STITCHING = 1e-4
@@ -34,5 +34,5 @@ ACCURACY_OF_STITCHING = 1e-4
 BACKGROUND_COLOR = 'w'
 
 # create Excel file in execution directory and write Lemke tables inside
-WRITE_EXCEL = False
+WRITE_EXCEL = True
 
