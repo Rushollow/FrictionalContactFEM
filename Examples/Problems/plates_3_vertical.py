@@ -13,6 +13,10 @@ import math
 from Visualize.plot_data_qt import PlotScheme  # for visualizing
 from GUI.PyQt.contactFEM import application
 from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
+assert FRICTION_COEFFICIENT == 0.19, 'Friction coef need to be 0.19 НЕПРАВИЛЬНО!'
+assert PLANE_STRAIN is False, 'PLANE STRAIN need to be false! НЕПРАВИЛЬНО!!!!'
+assert ACCURACY_OF_LCP >= 1e-15
+
 
 # elements variables
 E_plate = 3.5e10  # Pa
@@ -22,9 +26,9 @@ t_plate = 1  # m
 plate_height = 8
 plate_length = 2
 mesh_size = 0.25  #0.25
-gap_left = 0.3  #0.01
-gap_right = 0.3  #0.01
-F = 1e9  # 1e8
+gap_left = 0.1  #0.01
+gap_right = 0.1  #0.01
+F = 1e8  # 1e8
 
 
 start = time.time()
@@ -94,12 +98,17 @@ sm = StiffnessMatrix(nodes=nodes, el_frame=element_frame, el_4node=element_4node
 nodes_to_support = nodes.find_nodes_numbers_along_segment((0, 0), (plate_length * 3 + gap_left + gap_right, 0))
 sm.support_nodes(nodes_to_support, direction='hv')
 nodes_left_side = nodes.find_nodes_numbers_along_segment((0, 0), (0, plate_height))
+
+const_load = True
 lv_const = LoadVector()
-lv_const.add_concentrated_force(F/100, nodes_left_side[-1] * 2)
-# lv_const.add_concentrated_force(F, nodes_left_side[-2] * 2)
-# lv_const.add_concentrated_force(F, nodes_left_side[-3] * 2)
 lv_variable = LoadVector()
-lv_variable.add_concentrated_force(F, nodes_left_side[-1] * 2)
+
+if const_load:
+    lv_const.add_concentrated_force(F, nodes_left_side[-1] * 2)
+    # lv_const.add_concentrated_force(F, nodes_left_side[-2] * 2)
+    # lv_const.add_concentrated_force(F, nodes_left_side[-3] * 2)
+else:
+    lv_variable.add_concentrated_force(F / 100, nodes_left_side[-1] * 2)
 
 # calculate time
 end = time.time()
