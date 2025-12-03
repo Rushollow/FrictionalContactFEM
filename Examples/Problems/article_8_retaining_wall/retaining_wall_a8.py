@@ -14,7 +14,7 @@ from GUI.PyQt.contactFEM import application
 
 from input_data import FRICTION_COEFFICIENT, PLANE_STRAIN, ACCURACY_OF_LCP
 
-assert FRICTION_COEFFICIENT == 1.9, 'Friction coef need to be 0.9 НЕПРАВИЛЬНО!'
+assert FRICTION_COEFFICIENT == 0.9, 'Friction coef need to be 0.9 НЕПРАВИЛЬНО!'
 assert PLANE_STRAIN is True, 'PLANE STRAIN need to be true! НЕПРАВИЛЬНО!!!!'
 assert ACCURACY_OF_LCP >= 1e-15
 print('Starting to calculate...')

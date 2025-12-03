@@ -1,5 +1,5 @@
 # Plane deformation state. Boolean variable. If False - the plane stress is used. If True - Plane strain is used
-PLANE_STRAIN = False  # Plane strain - плоская деформация
+PLANE_STRAIN = True  # Plane strain - плоская деформация
 
 # Soil type. We can choose soil type or set soil characteristics
 SOIL_TYPE = 0
@@ -19,7 +19,7 @@ SCHEME_THICKNESS = 1
 SCALE_DEF = 50
 
 # friction coefficient
-FRICTION_COEFFICIENT = 0.19
+FRICTION_COEFFICIENT = 0.9
 # limit of steps for lcp_solve Lemke
 LEMKE_LIMIT_STEPS = 800
 
